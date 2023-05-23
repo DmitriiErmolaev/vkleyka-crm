@@ -10,7 +10,7 @@ function Web() {
     <div className="wrapper">
       <div className="container">
         <Header />
-        <div className="main-container">
+        <div className="secondary-container">
           <Aside />
           <Main />
         </div>

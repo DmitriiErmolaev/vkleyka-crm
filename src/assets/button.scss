@@ -1,0 +1,18 @@
+.filters__item {
+  max-height:39.6px;
+  padding: 9px 24px;
+  border-radius: 10px;
+  
+  background-color: #fff;
+}
+
+.active {
+  background-color: #D9D9D9;
+  color: #4F6FDF;
+}
+
+.outlineless {
+  background-color:inherit;
+  padding: 0;
+  border-radius: 0;
+}
