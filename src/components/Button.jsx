@@ -3,11 +3,11 @@ import "../assets/button.scss";
 
 
 
-const Button = ({name, id, toggleActive, style}) => {
+const Button = ({name, id, toggleActive, styles}) => {
 
   
 
-  return <a className="filters__link" href="#" onClick={() => toggleActive(id)}><li className={style} >{name}</li></a>;
+  return <a className={styles} href="#" onClick={() => toggleActive(id)}><li className="filters__item" >{name}</li></a>;
 }
 
 export default Button;

@@ -1,38 +1,28 @@
-import React, {useState} from "react";
-import "../assets/commfilters.scss";
+import React,{useState} from "react";
+import "../assets/countryfilter.scss";
 import Button from "./Button";
+
 
 const buttons = [
   {
     id:"1",
-    name:"Все",
+    name:"США",
     isActive: false,
-    style: "outlined",
   },
   {
     id:"2",
-    name:"Новые",
+    name:"Индия",
     isActive: false,
-    style: "outlined",
   },
   {
     id:"3",
-    name:"В процессе",
+    name:"Великобритания",
     isActive: false,
-    style: "outlined",
   },
-  {
-    id:"4",
-    name:"Завершенные",
-    isActive: false,
-    style: "outlineless",
-  }
 ]
 
- 
-
-const CommFilters = () => {
-  const [links, setLinks] = useState(buttons);
+const CountryFilter = () => {
+  const [links,setLinks] = useState(buttons);
 
   const toggleActive = (id) => {
     setLinks(links.map(link => {
@@ -47,10 +37,8 @@ const CommFilters = () => {
   }
 
   let result = links.map(link => {
-    let style = "filters__link "
-    if(link.style === "outlineless") {
-      style += "outlineless "
-    }
+    let style = "country-filter__link "
+    
     if(link.isActive){
       style += "active "
     }
@@ -59,13 +47,12 @@ const CommFilters = () => {
   })
 
   return (
-    <div className="filters-container">
-      <ul className="filters__list">
+    <div className="country-filter-container">
+      <ul className="country-filter__list">
         {result}
       </ul>
-      
-    </div>
+  </div>
   )
 }
 
-export default CommFilters;
+export default CountryFilter;
