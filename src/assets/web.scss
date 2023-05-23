@@ -7,8 +7,15 @@
 
   .container {
     width:1280px;
+    min-height:100vh;
     background-color: $project-bgc;
     margin:0 2%;
+    border:1px solid red;
+
+    .main-container {
+      display:flex;
+      min-height:751px;
+    }
   }
 }
 
