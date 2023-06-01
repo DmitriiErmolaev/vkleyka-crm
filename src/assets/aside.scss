@@ -1,7 +1,9 @@
+@import "../variables.scss";
+
 .menu {
   width:15.625%;
   padding:53px 0 0 37px;
-  background-color: #767680;
+  background-color: $aside-menu-bgc;
   border-radius: 0 20px 0 0;
 
   .menu__item {
@@ -9,6 +11,6 @@
     
   }
   .menu__item-link {
-    color:#fff;
+    color:$menu-button-text-c;
   }
 }

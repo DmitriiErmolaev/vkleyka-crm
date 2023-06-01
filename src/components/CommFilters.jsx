@@ -47,7 +47,7 @@ const CommFilters = () => {
   }
 
   let result = links.map(link => {
-    let style = "filters__link "
+    let style = "comm-filters__link "
     if(link.style === "outlineless") {
       style += "outlineless "
     }
@@ -59,8 +59,8 @@ const CommFilters = () => {
   })
 
   return (
-    <div className="filters-container">
-      <ul className="filters__list">
+    <div className="comm-filters-container">
+      <ul className="comm-filters__list">
         {result}
       </ul>
       

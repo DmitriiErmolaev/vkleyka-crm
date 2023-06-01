@@ -2,6 +2,7 @@ import React from "react";
 import "../assets/main.scss";
 import CommFilters from "./CommFilters";
 import CountryFilter from "./CountryFilter"
+import Request from "./Request";
 
 
 const Main = () => {
@@ -9,6 +10,7 @@ const Main = () => {
     <div className="main-container">
       <CommFilters />
       <CountryFilter />
+      <Request />
     </div>
   )
 }
