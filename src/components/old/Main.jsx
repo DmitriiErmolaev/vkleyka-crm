@@ -2,7 +2,7 @@ import React from "react";
 import "../assets/main.scss";
 import CommFilters from "./CommFilters";
 import CountryFilter from "./CountryFilter"
-import Request from "./Request";
+import Request from "../Request";
 
 
 const Main = () => {

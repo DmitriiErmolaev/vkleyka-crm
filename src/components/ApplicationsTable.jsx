@@ -1,23 +1,5 @@
 import React from "react";
-import {Layout, Button, Table, Typography, Tag, Space} from "antd";
-
-const {Header, Sider, Content} = Layout;
-
-const primeLayoutStyle = {
-  width:"100%", 
-  maxWidth:"1280px",
-  minHeight:"100vh",
-  margin:"0 auto", 
-  // backgroundColor:"white",
-}
-
-const headerStyle = {
-  height:"81px", 
-  boxShadow:"0 3px 6px 2px #0000002c",
-  backgroundColor:"#F8F8F8", 
-}
-
-// const header = ["id", "date", "applicant", "status", "country", "viser"]
+import {Layout, Table, Tag} from "antd";
 
 const parsedJSON = [
   {id:2,date:"26.05.2023",applicant:"Dmitriy Ermolaev",status:"новое",country:"США", viser:"Анастасия",},
@@ -35,19 +17,22 @@ const parsedJSON = [
 
 const createTag = (text) => {
   let tagColor="blue";
+
   switch(text) {
     case ("в работе"):
-         tagColor = "yellow";
-         break;
+      tagColor = "yellow";
+      break;
     case "завершено":
-         tagColor = "green";
-         break;
+      tagColor = "green";
+      break;
     case "отменено":
-        tagColor = "red"
-        break;
+      tagColor = "red"
+      break;
   }
+
   return <Tag bordered="false" color={tagColor}>{text}</Tag>
 }
+
 const columns = [
   {
     title: 'ID',
@@ -173,28 +158,13 @@ const paginationConfig = {
   position: ["topRight", "bottomRight"]
 }
 
-const ViserPage = () => {
+const ApplicationsTable = () => {
 
   return (
-    <div className="wrapper">
-      <Layout className="primary-container" style={primeLayoutStyle}>
-        <Header style={headerStyle}>
-        </Header>
-        <Layout hasSider>
-          <Layout style={{width:"200px"}}>
-            <Sider style={{height:"calc(100vh - 81px)", borderRadius:"0 20px 0 0", backgroundColor:"#767680", position:"fixed"}}>
-                <p>Sider</p>
-            </Sider>
-          </Layout>
-          <Content style={{width:"calc(100% - 200px)"}}>
-            <Layout >
-              <Table dataSource={parsedJSON} columns={columns} sticky pagination={paginationConfig}/>;
-            </Layout>
-          </Content>
-        </Layout>
-      </Layout>
-    </div>
+    <Layout >
+      <Table dataSource={parsedJSON} columns={columns} sticky pagination={paginationConfig}/>;
+    </Layout>
   )
 }
 
-export default ViserPage;
+export default ApplicationsTable;
