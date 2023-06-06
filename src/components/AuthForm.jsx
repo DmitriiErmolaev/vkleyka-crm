@@ -1,5 +1,10 @@
 import React from "react";
-import {Form, Input, Button, Checkbox, Layout} from "antd";
+import {useNavigate} from "react-router-dom";
+import {Form, Input, Button, Checkbox, Layout, Space} from "antd";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import {auth} from "../firebase";
+
+const user = {};
 
 const contentInsideLayoutStyle = {
   width:"60%", 
@@ -11,14 +16,18 @@ const contentInsideLayoutStyle = {
   boxShadow:"3px 3px 6px 2px #0000002c",
 }
 
-const onFinish = (values) => {
-  console.log('Success:', values);
-};
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
+const onFinish = async ({email,pass:password}) => {
+  let userCredential = await signInWithEmailAndPassword(auth, email, password);
+
 };
 
+// const onFinishFailed = (errorInfo) => {
+//   console.log('Failed:', errorInfo);
+// };
+
 const AuthForm = () => {
+
+  const navigate = useNavigate()
 
   return (
     <Layout style={contentInsideLayoutStyle}>
@@ -39,17 +48,21 @@ const AuthForm = () => {
           remember: true,
         }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item
-          label="Username"
-          name="username"
+          label="email"
+          name="email"
           rules={[
             {
               required: true,
               message: 'Please input your username!',
             },
+            {
+              type: "email",
+              message: "неверный формат"
+            }
           ]}
         >
           <Input />
@@ -58,8 +71,8 @@ const AuthForm = () => {
         <Form.Item
           // hasFeedback={true}
           colon={true}
-          label="Password"
-          name="password"
+          label="password"
+          name="pass"
           rules={[
             {
               required: true,
@@ -87,9 +100,15 @@ const AuthForm = () => {
             span: 16,
           }}
         >
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
+          <Space size="large">
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+            <Button type="primary" onClick={()=> navigate("/login/register")}>
+              Register
+            </Button>
+          </Space>
+          
         </Form.Item>
       </Form>
     </Layout>

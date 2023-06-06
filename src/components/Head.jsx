@@ -1,5 +1,7 @@
 import React from "react";
-import {Layout, Menu} from "antd";
+import {Layout, Menu, Row, Col, Button} from "antd";
+import {signOut} from "firebase/auth";
+import {auth} from "../firebase";
 const {Header} = Layout;
 
 const headerContainerStyle = 
@@ -33,7 +35,15 @@ const Head = ({handleClick, currentPage})=> {
     <div style={headerContainerStyle}>
       <Header style={headerStyle} >
         <div className="logo" style={{width:"150px", height:"100%"}}></div>
-        <Menu style={{backgroundColor:"#F8F8F8", width:"20%" ,borderBottom:"none", marginLeft: "auto"}} items={topMenuItems} mode="horizontal" selectedKeys={[currentPage]} onClick={(e)=> handleClick(e)}/>
+        <Row justify="end" style={{width:"calc(100% - 150px)"}}>
+          {/* <Col span={12}></Col> */}
+          <Col span={8} >
+            <Menu style={{backgroundColor:"#F8F8F8", justifyContent:"center", borderBottom:"none", marginLeft: "auto"}} items={topMenuItems} mode="horizontal" selectedKeys={[currentPage]} onClick={(e)=> handleClick(e)}/>
+          </Col>
+          <Col span={2} >
+            <Button type="primary" onClick={() => signOut(auth) }>Выйти</Button>
+          </Col>
+        </Row>
       </Header>
     </div>
   )

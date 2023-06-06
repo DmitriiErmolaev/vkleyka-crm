@@ -1,19 +1,24 @@
 import React from "react";
-import {Layout, Table, Tag} from "antd";
-
-const parsedJSON = [
-  {id:2,date:"26.05.2023",applicant:"Dmitriy Ermolaev",status:"новое",country:"США", viser:"Анастасия",},
-  {id:1,date:"25.05.2023",applicant:"Alexander Pavlov",status:"завершено",country:"Германия", viser:"Екатерина"},
-  {id:3,date:"22.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Авcтрия", viser:"Анастасия"},
-  {id:4,date:"19.05.2023",applicant:"Andrei Demidov",status:"новое",country:"Папуа-Новая Гвинея", viser:"Павел"},
-  {id:5,date:"17.05.2023",applicant:"Andrei Demidov",status:"завершено",country:"Шри-Ланка", viser:"Макар"},
-  {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"новое",country:"Шри Ланка", viser:"Яна"},
-  {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"отменено",country:"Шри Ланка", viser:"Яна"},
-  {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Шри Ланка", viser:"Яна"},
-  {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Шри Ланка", viser:"Яна"},
+import {Link} from "react-router-dom";
+import {Layout, Table, Tag, Spin, Button, Dropdown} from "antd";
+import {useCollection} from "react-firebase-hooks/firestore"
+import {collection, query} from "firebase/firestore"
+import {firestore} from "../firebase"
 
 
-]
+// const parsedJSON = [
+//   {id:2,date:"26.05.2023",applicant:"Dmitriy Ermolaev",status:"новое",country:"США", viser:"Анастасия",},
+//   {id:1,date:"25.05.2023",applicant:"Alexander Pavlov",status:"завершено",country:"Германия", viser:"Екатерина"},
+//   {id:3,date:"22.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Авcтрия", viser:"Анастасия"},
+//   {id:4,date:"19.05.2023",applicant:"Andrei Demidov",status:"новое",country:"Папуа-Новая Гвинея", viser:"Павел"},
+//   {id:5,date:"17.05.2023",applicant:"Andrei Demidov",status:"завершено",country:"Шри-Ланка", viser:"Макар"},
+//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"новое",country:"Шри Ланка", viser:"Яна"},
+//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"отменено",country:"Шри Ланка", viser:"Яна"},
+//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Шри Ланка", viser:"Яна"},
+//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Шри Ланка", viser:"Яна"},
+
+
+// ]
 
 const createTag = (text) => {
   let tagColor="blue";
@@ -40,6 +45,9 @@ const columns = [
     key: 'id',
     align: "center",
     sorter:(a, b) => {return a.id - b.id},
+    render: (text, record, index) => {
+      return <Link to={`/application/${text}`} state={{id:text}} style={{color:"#0EA5E9", fontWeight:"800"}}>{text}</Link>
+    }
   },
   {
     title: 'Date',
@@ -154,15 +162,55 @@ const columns = [
   },
 ];
 
+
+const dropdownMenuItems = [];
+
 const paginationConfig = {
   position: ["topRight", "bottomRight"]
 }
 
 const ApplicationsTable = () => {
+  const [countriesCollSnapshot, countriesLoading, countriesError ] = useCollection(collection(firestore, "countries"));
+  const [appsCollSnapshot, tableLoading , tableError] = useCollection(query(collection(firestore, "applications")))
+  const [currentCountry, setCurrentCountry] = useState(null)
 
+  const array = [];
+
+  if ( tableLoading || countriesLoading) {
+    return (
+      <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
+        <Spin size="large"/>
+      </div>
+    )
+  }
+
+  countriesCollSnapshot.forEach(countrySnapshot => {
+    const countryData = countrySnapshot.data()
+    dropdownMenuItems.push(
+      {
+      key: countryData.name,
+      lable:(
+        <a href="#" onClick={(e) => {
+          e.preventDefault();
+          setCurrentCountry(countryData.name);
+        }}>{countryData.name}</a>
+      )
+      }
+    )
+  })
+
+  appsCollSnapshot.forEach(DocSnapshot => {
+    array.push(DocSnapshot.data())
+  })
+
+  console.log(array)
+  
   return (
     <Layout >
-      <Table dataSource={parsedJSON} columns={columns} sticky pagination={paginationConfig}/>;
+      <Dropdown arrow="true">
+        <Button>Country</Button>
+      </Dropdown>
+      <Table dataSource={array} columns={columns} sticky pagination={paginationConfig}/>;
     </Layout>
   )
 }

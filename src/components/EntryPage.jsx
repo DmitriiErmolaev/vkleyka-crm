@@ -1,5 +1,8 @@
 import React from "react";
 import {Layout}  from "antd";
+// import AuthForm from "./AuthForm";
+// import RegisterForm from "./RegisterForm";
+import {Outlet} from "react-router-dom";
 import AuthForm from "./AuthForm";
 
 const {Content} = Layout;
@@ -17,7 +20,7 @@ const EntryPage = () => {
     <div className="wrapper">
       <Layout className="primary-container" style={primeLayoutStyle} >
         <Content >
-            <AuthForm />
+          <Outlet/>
         </Content>
       </Layout>
     </div>

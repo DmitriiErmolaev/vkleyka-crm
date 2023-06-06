@@ -1,7 +1,10 @@
 import React, {useState} from "react";
-import {Layout, Menu} from "antd";
+
+import {Layout, Menu, Spin} from "antd";
 import Head from "./Head";
 import {Outlet, Link} from "react-router-dom"
+
+// const data = getDocs(collection(firestore, "applications"), )
 
 
 const {Sider, Content} = Layout;
@@ -15,12 +18,14 @@ const primeLayoutStyle = {
 }
 
 const siderMenuItems = [
-  {key:"all applications",label:(<Link to="all-applications">Все заявки</Link>),},
-  {key:"start page",label:(<a href="#">стартовая страница</a>),},
+  {key:"all applications",label:(<Link to="/">Все заявки</Link>),},
+  {key:"start page",label:(<Link to="application">Тестовая заявка</Link>),},
 ]
 
 const WorkPage = ()=> {
-  const [currentPage, setCurrentPage] = useState("");
+  const [currentPage, setCurrentPage] = useState(""); 
+
+ 
 
   const handleClick = (e) => {
     console.log(e.key)
