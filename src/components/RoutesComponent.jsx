@@ -26,7 +26,7 @@ const RoutesComponent = () => {
       <Routes>
         <Route path="/" element={<WorkPage/>}>
             <Route index element={< ApplicationsTable/>}/>
-            <Route path="application/:id" element={< Application/>}/>
+            <Route path="application/:id" element={< Application />}/>
         </Route>
         <Route path="*" element={<Navigate to="/" replace={true}/>} />
       </Routes>

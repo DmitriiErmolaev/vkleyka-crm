@@ -1,218 +1,222 @@
-import React from "react";
-import {Link} from "react-router-dom";
-import {Layout, Table, Tag, Spin, Button, Dropdown} from "antd";
-import {useCollection} from "react-firebase-hooks/firestore"
-import {collection, query} from "firebase/firestore"
-import {firestore} from "../firebase"
+import React, {useState, useEffect} from "react";
+import {Layout, Select, Row, Col, Space, Button, Menu,  Radio} from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
+import {useCollection} from "react-firebase-hooks/firestore";
+import {collection, query, where, orderBy, addDoc, setDoc, doc, limit, getCountFromServer} from "firebase/firestore";
+import {firestore} from "../firebase";
+import TableComponent from "./TableComponent";
+import {appStatus} from "../table-columns-config";
+
+const APPS_REF = collection(firestore, "applications")
+const COUNTRIES_REF = collection(firestore, "countries")
+const TABLE_PAGE_ITEMS_NUMBER = 10;
+
+const ApplicationsTable = ({}) => {
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [columnSorting, setColumnSorting] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [curTablePage, setCurTablePage] = useState();
+  const [firstApplicationRef, setFirstApplicationRef] = useState();
+  const [lastApplicationRef, setLastApplicationRef] = useState();
 
 
-// const parsedJSON = [
-//   {id:2,date:"26.05.2023",applicant:"Dmitriy Ermolaev",status:"новое",country:"США", viser:"Анастасия",},
-//   {id:1,date:"25.05.2023",applicant:"Alexander Pavlov",status:"завершено",country:"Германия", viser:"Екатерина"},
-//   {id:3,date:"22.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Авcтрия", viser:"Анастасия"},
-//   {id:4,date:"19.05.2023",applicant:"Andrei Demidov",status:"новое",country:"Папуа-Новая Гвинея", viser:"Павел"},
-//   {id:5,date:"17.05.2023",applicant:"Andrei Demidov",status:"завершено",country:"Шри-Ланка", viser:"Макар"},
-//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"новое",country:"Шри Ланка", viser:"Яна"},
-//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"отменено",country:"Шри Ланка", viser:"Яна"},
-//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Шри Ланка", viser:"Яна"},
-//   {id:6,date:"13.05.2023",applicant:"Andrei Demidov",status:"в работе",country:"Шри Ланка", viser:"Яна"},
-
-
-// ]
-
-const createTag = (text) => {
-  let tagColor="blue";
-
-  switch(text) {
-    case ("в работе"):
-      tagColor = "yellow";
-      break;
-    case "завершено":
-      tagColor = "green";
-      break;
-    case "отменено":
-      tagColor = "red"
-      break;
+  let filters = [];
+  if(columnSorting && columnSorting.order) {
+    filters.push(orderBy(columnSorting.column, columnSorting.order))
+  } else {
+    filters.push(orderBy("date", "desc"))
   }
-
-  return <Tag bordered="false" color={tagColor}>{text}</Tag>
-}
-
-const columns = [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-    key: 'id',
-    align: "center",
-    sorter:(a, b) => {return a.id - b.id},
-    render: (text, record, index) => {
-      return <Link to={`/application/${text}`} state={{id:text}} style={{color:"#0EA5E9", fontWeight:"800"}}>{text}</Link>
-    }
-  },
-  {
-    title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
-    align: "center",
-    sorter: (a,b) => {
-      if(a.date > b.date){
-        return 1;
-      } else if (a.date < b.date) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
-    
-  },
-  {
-    title: 'Applicant',
-    dataIndex: 'applicant',
-    key: 'applicant',
-    align: "center",
-    sorter: (a,b) => {
-      const name1 = a.applicant.toLowerCase();
-      const name2 = b.applicant.toLowerCase();
-      if( name1 > name2) {
-        return 1;
-      } else if ( name1 < name2) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status',
-    align: "center",
-    filters:[
-      {
-        text: "новое",
-        value: "новое",
-      },
-      {
-        text: "в работе",
-        value: "в работе",
-      },
-      {
-        text: "завершено",
-        value: "завершено",
-      },
-    ],
-    render: (text)=> {
-      return createTag(text)
-    },
-    onFilter: (value, dataItem) => dataItem.status.includes(value),
-    sorter: (a,b) => {
-      let aNum;
-      let bNum;
-      if (a.status == "новое") {
-        aNum = 1
-      } else if (a.status == "в работе") {
-        aNum = 2
-      } else {
-        aNum = 3
-      }
-      if (b.status == "новое") {
-        bNum = 1
-      } else if (b.status == "в работе") {
-        bNum = 2
-      } else {
-        bNum = 3
-      }
-      return aNum - bNum;
-    },
-  },
-  {
-    title: 'Country',
-    dataIndex: 'country',
-    key: 'country',
-    align: "center",
-    sorter: (a,b) => {
-      const name1 = a.country.toLowerCase();
-      const name2 = b.country.toLowerCase();
-      if( name1 > name2) {
-        return 1;
-      } else if ( name1 < name2) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
-  },
-  {
-    title: 'Viser',
-    dataIndex: 'viser',
-    key: 'viser',
-    align: "center",
-    sorter: (a,b) => {
-      const name1 = a.viser.toLowerCase()
-      const name2 = b.viser.toLowerCase()
-      if (name1 > name2) {
-        return 1;
-      } else if (name1 < name2) {
-        return -1;
-      } else {
-        return 0
-      }
-     
-    }
-  },
-];
-
-
-const dropdownMenuItems = [];
-
-const paginationConfig = {
-  position: ["topRight", "bottomRight"]
-}
-
-const ApplicationsTable = () => {
-  const [countriesCollSnapshot, countriesLoading, countriesError ] = useCollection(collection(firestore, "countries"));
-  const [appsCollSnapshot, tableLoading , tableError] = useCollection(query(collection(firestore, "applications")))
-  const [currentCountry, setCurrentCountry] = useState(null)
-
-  const array = [];
-
-  if ( tableLoading || countriesLoading) {
-    return (
-      <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
-        <Spin size="large"/>
-      </div>
-    )
+  if(selectedCountry) {
+    filters.push(where("country", "==", selectedCountry));
   }
+  if(status && status !== "all") {
+    filters.push(where("status", "==", status))
+  }
+  const queryForCountries = query(COUNTRIES_REF);
+  const queryForAppsWithoutLimit = query(APPS_REF, ...filters);
+  const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));
 
+  const [countriesCollSnapshot, countriesLoading, countriesError] = useCollection(queryForCountries);
+  const [appsCollSnapshot, tableLoading, tableError] = useCollection(queryForAppsWithoutLimit);
+  const [tableDataBeforeChanging, setTableDataBeforeChanging] = useState(null);
+
+  useEffect(()=> {
+    if(array.length !== 0 ){
+      setTableDataBeforeChanging(array)
+    }
+  }, [appsCollSnapshot])
+
+  let array = [];
+  let dropdownMenuItems = [];
+  let refArray = []
+ 
+  if(!countriesLoading )
   countriesCollSnapshot.forEach(countrySnapshot => {
     const countryData = countrySnapshot.data()
     dropdownMenuItems.push(
       {
-      key: countryData.name,
-      lable:(
-        <a href="#" onClick={(e) => {
-          e.preventDefault();
-          setCurrentCountry(countryData.name);
-        }}>{countryData.name}</a>
-      )
+        value: countryData.name,
+        label: countryData.name,
       }
     )
   })
 
-  appsCollSnapshot.forEach(DocSnapshot => {
-    array.push(DocSnapshot.data())
-  })
-
-  console.log(array)
+  // TODO: Убрать. Временная проверка на ошибки при запросе данных таблицы
+  if(!tableLoading) {
+    if(tableError) {
+      console.log(tableError)
+    } else {
+      console.log(appsCollSnapshot.size)
+      console.log(appsCollSnapshot[0])
+      console.log(appsCollSnapshot[9])
+      appsCollSnapshot.forEach(docSnapshot => {
+        array.push(docSnapshot.data())
+        refArray.push(docSnapshot.ref)
+      })
+    }
+  }
   
+  let dirstDocRef = refArray[0];
+  let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
+  //INFO: реализация  кнопок-фильтров через меню-бар: полоска снизу, а кнопки не стилизуются. Стремно выглядит
+    // function handleStatusButtonСlick({ item, key, keyPath, domEvent }) {
+    //   if(key === "all") {
+    //     setStatus(null)
+    //   }
+    //   setStatus(key);
+    // }
+    //
+    // const statusMenuItems = [
+    //   {
+    //     key: "all",
+    //     label: (
+    //       <Button 
+    //         size="large" 
+    //         data-status="все" 
+    //         shape="round" 
+    //         // onClick={btnClick}
+    //       >Все</Button>
+    //     ),
+    //   },
+    //   {
+    //     key: appStatus.new,
+    //     label: (
+    //       <Button 
+    //         size="large" 
+    //         data-status="все" 
+    //         shape="round" 
+    //         // onClick={btnClick}
+    //       >{appStatus.new}</Button>
+    //     ),
+    //   },
+    //   {
+    //     key: appStatus.inWork,
+    //     label: (
+    //       <Button 
+    //         size="large" 
+    //         data-status="все" 
+    //         shape="round" 
+    //         // onClick={btnClick}
+    //       >{appStatus.inWork}</Button>
+    //     ),
+    //   },
+    //   {
+    //     key:appStatus.finished,
+    //     label: (
+    //       <Button 
+    //         size="large" 
+    //         data-status="завершено" 
+    //         style={{border:"none", backgroundColor:"inherit", boxShadow:"none"}} 
+    //         // onClick={btnClick}
+    //       >{appStatus.finished}</Button>
+    //     ),
+    //   },
+    // ]
+
+  //INFO: Реализация кнопок-фильтров через самостоятельные кнопки. Нельзя влиять на состояние :active...
+    // function btnClick(e) {
+    //   console.log(e)
+    //   const status = e.currentTarget.dataset.status;
+    //   (status === "all") ? setStatus(null) : setStatus(e.currentTarget.dataset.status)
+    // }
+
+  
+
+  // INFO: реализация кнопок как фильтры в качестве радиокнопок. Кнопки веделены после выбора. Можно выбрать только одну
+  function radioChange(e) {
+    setStatus(e.target.value)
+  }
+
   return (
-    <Layout >
-      <Dropdown arrow="true">
-        <Button>Country</Button>
-      </Dropdown>
-      <Table dataSource={array} columns={columns} sticky pagination={paginationConfig}/>;
+    <Layout style={{height:"calc(100vh - 101px)"}}>
+      <Space direction="vertical" size="large">
+        <Radio.Group 
+          optionType="button" 
+          value={status} 
+          onChange={radioChange} 
+          size="large"
+          // buttonStyle="solid"
+          style={{marginLeft:"30px"}}
+        >
+          <Radio value="all">все</Radio>
+          <Radio value={appStatus.new}>Новые</Radio>
+          <Radio value={appStatus.inWork}>В работе</Radio>
+          <Radio value={appStatus.finished}>Завершенные</Radio>
+        </Radio.Group>
+
+        {/* <Menu 
+          theme="dark"
+          mode="horizontal" 
+          items={statusMenuItems}
+          selectedKeys={[status]}
+          onClick={handleStatusButtonСlick}
+        ></Menu> */}
+
+        {/* <Row style={{marginLeft:"30px"}}>
+          <Col span={2}>
+            <Button size="large" data-status="all" shape="round" onClick={btnClick}>Все</Button>
+          </Col>
+          <Col span={2}>
+            <Button size="large" data-status={appStatus.new} shape="round" onClick={btnClick}>{appStatus.new}</Button>
+          </Col>
+          <Col span={3}>
+            <Button size="large" data-status={appStatus.inWork} shape="round" onClick={btnClick}>{appStatus.inWork}</Button>
+          </Col>
+          <Col span={3}>
+            <Button size="large" data-status={appStatus.finished} style={{border:"none", backgroundColor:"inherit", boxShadow:"none"}} onClick={btnClick}>{appStatus.finished}</Button>
+          </Col>
+        </Row> */}
+        <Select 
+          showSearch
+          allowClear="true"
+          placeholder="Выберите страну"
+          clearIcon={<CloseCircleOutlined style={{color:"red"}}/>}
+          onChange={setSelectedCountry}
+          value={selectedCountry}
+          options={dropdownMenuItems}
+          style={{
+            marginLeft:"30px",
+            width: 180,
+          }}
+          size="large"
+        />
+      </Space>
+      <TableComponent 
+        dirstDocRef = {dirstDocRef}
+        lastDocRef = {lastDocRef}
+        setFirstApplicationRef = {setFirstApplicationRef}
+        setLastApplicationRef = {setLastApplicationRef}
+        setCurTablePage = {setCurTablePage}
+        queryForAppsWithoutLimit = {queryForAppsWithoutLimit}
+        tableDataBeforeChanging={tableDataBeforeChanging} 
+        appsCollSnapshot={appsCollSnapshot} 
+        array={array} 
+        setColumnSorting={setColumnSorting} 
+        tableLoading={tableLoading}
+      />
     </Layout>
   )
 }
 
 export default ApplicationsTable;
+// export {TABLE_PAGE_ITEMS_NUMBER}

@@ -18,7 +18,6 @@ const contentInsideLayoutStyle = {
 
 const onFinish = async ({email,pass:password}) => {
   let userCredential = await signInWithEmailAndPassword(auth, email, password);
-
 };
 
 // const onFinishFailed = (errorInfo) => {

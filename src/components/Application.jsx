@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {collection} from "firebase/firestore"
 import {uploadBytes, ref} from "firebase/storage"
 import {useCollection} from "react-firebase-hooks/firestore"
@@ -7,15 +7,20 @@ import  {firestore, storage} from "../firebase"
 import { UploadOutlined } from '@ant-design/icons';
 import {Layout, Button,Divider,  Upload, Typography, Descriptions, Row,Col, Space, Spin} from "antd";
 
-
 const { Title } = Typography;
+
+// TODO: изменить пути на динамические для каждого заявителя
+const UPLOAD_PATHS = {
+  application: "form/application.pdf",
+  docs: "docs/docs.pdf",
+}
 
 const DESCRIPTION_FIELDS_VAR_1 = ['ID заявителя', 'Login', 'Password', 'E-mail', 'Tel', ]
 const DESCRIPTION_FIELDS_VAR_2 = ['Name','Surname','ИНН', 'Gender', "Datebirth",]
-const DESCRIPTION_FIELDS_VAR_3 = [ 'паспорт', 'дата выдачи', 'окончание действия', 'кем выдан', " факт. домашний адрес", 'юр. домашний адрес', 'семейный статус', 'страна гражданства', 'страна рождения', 'город рождения', ]
+const DESCRIPTION_FIELDS_VAR_3 = [ 'Паспорт', 'Дата выдачи', 'Окончание действия', 'Кем выдан', "Факт. домашний адрес", 'Юр. домашний адрес', 'Семейный статус', 'Страна гражданства', 'Страна рождения', 'Город рождения', ]
 
 const makeDescriptionList = (obj, descriptionFields) => {
-  //Данную проверку удалить перед релизом.
+  // TODO: Данную проверку удалить перед релизом.
   if (obj === undefined) {
     return descriptionFields.map(key => {
       return <Descriptions.Item label={key}>-</Descriptions.Item>
@@ -27,11 +32,11 @@ const makeDescriptionList = (obj, descriptionFields) => {
   })
 }
 
-const Application = () => {
+const Application = ({}) => {
   const {id} = useParams();
-  const [collectionSnapshot, loading, error] = useCollection(collection(firestore, `applications/${id}/application`,));
-  const [docsFile, setDocsFile] = useState(null);
-  const [applicationFile, setApplicationFile] = useState(null);
+  const [collectionSnapshot, loading, error] = useCollection(collection(firestore, `applications/${id}/application`));
+  // const [docsFile, setDocsFile] = useState(null);
+  // const [applicationFile, setApplicationFile] = useState(null);
  
   if ( loading ) {
     return (
@@ -40,14 +45,11 @@ const Application = () => {
       </div>
     )
   }
-
-  const formRef = ref(storage, "form/images.jpg")
-  const docsRef = ref(storage, "docs/docs.pdf")
   const array = []
  
   collectionSnapshot.forEach(docSnapshot => {
-   array.push(docSnapshot.data());
-  })  
+    array.push(docSnapshot.data());
+  })
 
   const [docVar1, docVar2, docVar3] = array
   
@@ -80,16 +82,16 @@ const Application = () => {
           <Divider></Divider>
           <Descriptions column={1}  labelStyle={{width:"150px", padding:"5px", textAlign:"center"}} title="Passport & Adress" bordered>
             {makeDescriptionList(docVar3, DESCRIPTION_FIELDS_VAR_3)}
-            {/* <Descriptions.Item label="паспорт">2742 912742</Descriptions.Item>
-            <Descriptions.Item label="дата выдачи">28.05.2023</Descriptions.Item>
-            <Descriptions.Item label="окончание действия"span={2}>28.05.2023</Descriptions.Item>
-            <Descriptions.Item label="кем выдан" span={2}>много много текста текста текста много много текста текста и даже если перейдет на вторую строку</Descriptions.Item>
-            <Descriptions.Item label="факт. домашний адрес" span={2}>-</Descriptions.Item>
-            <Descriptions.Item label="юр. домашний адрес" span={2}>-</Descriptions.Item>
-            <Descriptions.Item label="семейный статус">-</Descriptions.Item>
-            <Descriptions.Item label="страна гражданства">-</Descriptions.Item>
-            <Descriptions.Item label="страна рождения">-</Descriptions.Item>
-            <Descriptions.Item label="город рождения">-</Descriptions.Item> */}
+            {/* <Descriptions.Item label="Паспорт">2742 912742</Descriptions.Item>
+            <Descriptions.Item label="Дата выдачи">28.05.2023</Descriptions.Item>
+            <Descriptions.Item label="Окончание действия"span={2}>28.05.2023</Descriptions.Item>
+            <Descriptions.Item label="Кем выдан" span={2}>много много текста текста текста много много текста текста и даже если перейдет на вторую строку</Descriptions.Item>
+            <Descriptions.Item label="Факт. домашний адрес" span={2}>-</Descriptions.Item>
+            <Descriptions.Item label="Юр. домашний адрес" span={2}>-</Descriptions.Item>
+            <Descriptions.Item label="Семейный статус">-</Descriptions.Item>
+            <Descriptions.Item label="Страна гражданства">-</Descriptions.Item>
+            <Descriptions.Item label="Страна рождения">-</Descriptions.Item>
+            <Descriptions.Item label="Город рождения">-</Descriptions.Item> */}
           </Descriptions>
           <Divider></Divider>
         </Col>
@@ -98,14 +100,34 @@ const Application = () => {
             <Title level={3} style={{textAlign:"center"}}>Файлы</Title>
           </Typography> 
           <Space style={{flexDirection:"column"}}>
-            <Upload multiiple="false" onChange={(info) => {
-              const formdata = new FormData(info.file)
-              
-              uploadBytes(formRef, formdata)
-            }}>
+            <Upload 
+              accept=".pdf, application/pdf"
+              beforeUpload={() => false} 
+              onChange={(info ) => {
+                // TODO: блокировать загрузку на фронт, выдать пользователю сообщение. 
+                // Проверка предотвращает загрузку неверного файла в firebase
+                if (info.file.type !== "application/pdf") {
+                  console.log("неверный формат");
+                  return
+                }
+                uploadBytes(ref(storage, UPLOAD_PATHS.application ), info.file)
+              }}
+            >
               <Button icon={<UploadOutlined/>} >Прикрепить анкету</Button>
             </Upload> 
-            <Upload>
+            <Upload
+              accept=".pdf, application/pdf"
+              beforeUpload={() => false} 
+              onChange={(info ) => {
+                // TODO: блокировать загрузку на фронт, выдать пользователю сообщение. 
+                // Проверка предотвращает загрузку неверного файла в firebase, но не на фронт
+                if (info.file.type !== "application/pdf") {
+                  console.log("неверный формат");
+                  return
+                }
+                uploadBytes(ref(storage, UPLOAD_PATHS.docs), info.file)
+              }}
+            >
               <Button icon={<UploadOutlined/>}>Прикрепить документы</Button>
             </Upload>    
           </Space> 

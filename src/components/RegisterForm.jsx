@@ -35,11 +35,11 @@ const RegisterForm = () => {
           rules={[
             {
               required:true,
-              message:"введите e-mail",
+              message:"введите E-mail адрес",
             },
             {
               type:"email",
-              message:"формат нарушен"
+              message:"неверный E-mail адрес"
             }
           ]}
         >
@@ -53,10 +53,10 @@ const RegisterForm = () => {
         <Form.Item 
           name="pass"
           rules={[
-            // {
-            //   required: true,
-            //   message:"обязательно для заполнения"
-            // },
+            {
+              required: true,
+              message:"введите пароль"
+            },
             {
               max: 10,
               message:"количество символов должно быть не более 10"

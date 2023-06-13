@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-
-import {Layout, Menu, Spin} from "antd";
+import {Layout, Menu} from "antd";
 import Head from "./Head";
-import {Outlet, Link} from "react-router-dom"
+import {Outlet, Link, useParams} from "react-router-dom"
 
 // const data = getDocs(collection(firestore, "applications"), )
 
@@ -19,29 +18,41 @@ const primeLayoutStyle = {
 
 const siderMenuItems = [
   {key:"all applications",label:(<Link to="/">Все заявки</Link>),},
-  {key:"start page",label:(<Link to="application">Тестовая заявка</Link>),},
+  // {key:"start page",label:(<Link to="application">Тестовая заявка</Link>),},
 ]
 
 const WorkPage = ()=> {
-  const [currentPage, setCurrentPage] = useState(""); 
+  // const [currentRouteRendered, setCurrentRouteRendered] = useState("all applications");
+  const {id} = useParams();
 
- 
-
-  const handleClick = (e) => {
-    console.log(e.key)
-    setCurrentPage(e.key)
+  const getRouteRendered = () => {
+    return id ? [null] : ["all applications"]
   }
 
   return (
     <div className="wrapper">
       <Layout className="primary-container" style={primeLayoutStyle}>
-        <Head handleClick={handleClick} currentPage={currentPage}/>
+        <Head />
         <Layout hasSider>
-          <Sider style={{zIndex:"1", position:"fixed", top:"81px", borderRadius:"0 20px 0 0", backgroundColor:"#767680", height:"calc(200vh - 81px)"}}>
-              <Menu mode="inline" theme="dark" items={siderMenuItems} style={{backgroundColor:"transparent", color:"white", marginTop:"50px"}} />
+          <Sider 
+            style={{
+              zIndex:"1", 
+              position:"fixed", 
+              top:"81px", 
+              borderRadius:"0 20px 0 0", 
+              backgroundColor:"#767680", 
+              height:"calc(200vh - 81px)"
+            }}>
+              <Menu 
+                mode="inline" 
+                theme="dark" 
+                selectedKeys={getRouteRendered()} 
+                items={siderMenuItems} 
+                style={{backgroundColor:"transparent", color:"white", marginTop:"50px"}} 
+              />
           </Sider>
           <Content style={{marginLeft:"200px", backgroundColor:"#F8F8F8"}}>
-            <Outlet />
+            <Outlet/>
           </Content>
         </Layout>
       </Layout>

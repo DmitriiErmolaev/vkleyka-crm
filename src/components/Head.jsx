@@ -8,7 +8,7 @@ const headerContainerStyle =
 {
   position:"sticky",
   top:"0",
-  zIndex: "1",
+  zIndex: "2",
   width:"100%",
   height:"101px",
   paddingBottom:"20px",
@@ -30,7 +30,7 @@ const topMenuItems =
   {key:"profile", label:(<a href="#">профиль</a>),},
 ]
 
-const Head = ({handleClick, currentPage})=> {
+const Head = ({})=> {
   return (
     <div style={headerContainerStyle}>
       <Header style={headerStyle} >
@@ -38,7 +38,7 @@ const Head = ({handleClick, currentPage})=> {
         <Row justify="end" style={{width:"calc(100% - 150px)"}}>
           {/* <Col span={12}></Col> */}
           <Col span={8} >
-            <Menu style={{backgroundColor:"#F8F8F8", justifyContent:"center", borderBottom:"none", marginLeft: "auto"}} items={topMenuItems} mode="horizontal" selectedKeys={[currentPage]} onClick={(e)=> handleClick(e)}/>
+            <Menu style={{backgroundColor:"#F8F8F8", justifyContent:"center", borderBottom:"none", marginLeft: "auto"}} items={topMenuItems} mode="horizontal"/>
           </Col>
           <Col span={2} >
             <Button type="primary" onClick={() => signOut(auth) }>Выйти</Button>
