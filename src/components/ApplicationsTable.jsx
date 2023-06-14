@@ -158,7 +158,7 @@ const ApplicationsTable = ({}) => {
           // buttonStyle="solid"
           style={{marginLeft:"30px"}}
         >
-          <Radio value="all">все</Radio>
+          <Radio value="all">Все</Radio>
           <Radio value={appStatus.new}>Новые</Radio>
           <Radio value={appStatus.inWork}>В работе</Radio>
           <Radio value={appStatus.finished}>Завершенные</Radio>

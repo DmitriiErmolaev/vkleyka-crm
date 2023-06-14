@@ -27,7 +27,7 @@ const headerStyle =
 const topMenuItems = 
 [
   {key:"notifications", label:(<a href="#">Уведомления</a>),},
-  {key:"profile", label:(<a href="#">профиль</a>),},
+  {key:"profile", label:(<a href="#">Профиль</a>),},
 ]
 
 const Head = ({})=> {

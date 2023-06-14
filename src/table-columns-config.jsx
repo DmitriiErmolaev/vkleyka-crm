@@ -84,8 +84,8 @@ const columns = [
     render: (text)=> {
       return createTag(text)
     },
-    onFilter: (value, dataItem) => dataItem.status.includes(value),
-    sorter:true,
+    // onFilter: (value, dataItem) => dataItem.status.includes(value),
+    // sorter:true,
     // sorter: (a,b) => {
     //   let aNum;
     //   let bNum;
@@ -105,41 +105,41 @@ const columns = [
     //   }
     //   return aNum - bNum;
     // },
-    filters:[
-      {
-        text: "новое",
-        value: "новое",
-      },
-      {
-        text: "в работе",
-        value: "в работе",
-      },
-      {
-        text: "завершено",
-        value: "завершено",
-      },
-      {
-        text: "отменено",
-        value: "отменено",
-      },
-    ],
+    // filters:[
+    //   {
+    //     text: "новое",
+    //     value: "новое",
+    //   },
+    //   {
+    //     text: "в работе",
+    //     value: "в работе",
+    //   },
+    //   {
+    //     text: "завершено",
+    //     value: "завершено",
+    //   },
+    //   {
+    //     text: "отменено",
+    //     value: "отменено",
+    //   },
+    // ],
   },
   {
     title: 'Country',
     dataIndex: 'country',
     key: 'country',
     align: "center",
-    sorter: (a,b) => {
-      const name1 = a.country.toLowerCase();
-      const name2 = b.country.toLowerCase();
-      if( name1 > name2) {
-        return 1;
-      } else if ( name1 < name2) {
-        return -1;
-      } else {
-        return 0;
-      }
-    }
+    // sorter: (a,b) => {
+    //   const name1 = a.country.toLowerCase();
+    //   const name2 = b.country.toLowerCase();
+    //   if( name1 > name2) {
+    //     return 1;
+    //   } else if ( name1 < name2) {
+    //     return -1;
+    //   } else {
+    //     return 0;
+    //   }
+    // }
   },
   {
     title: 'Viser',

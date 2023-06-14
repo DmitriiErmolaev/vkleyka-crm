@@ -10,10 +10,10 @@ const {Sider, Content} = Layout;
 
 const primeLayoutStyle = {
   width:"100%", 
-  maxWidth:"1900px",
+  // maxWidth:"1900px",
   minHeight:"100vh",
   margin:"0 auto", 
-  background:"#F8F8F8 !important" , 
+  background:"#F8F8F8 !important" ,
 }
 
 const siderMenuItems = [

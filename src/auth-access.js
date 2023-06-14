@@ -1,8 +1,8 @@
 const ROLES = {
-  viser: "viser",
+  owner: "owner",
   admin: "admin",
-  manager: "MANAGER",
-  owner: "OWNER",
+  viser: "viser",
+  manager: "manager",
 }
 
 const AVAILABLE_ROUTES = {
