@@ -4,8 +4,6 @@ import {Form, Input, Button, Checkbox, Layout, Space} from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "../firebase";
 
-const user = {};
-
 const contentInsideLayoutStyle = {
   width:"60%", 
   minHeight:"400px", 
@@ -25,7 +23,6 @@ const onFinish = async ({email,pass:password}) => {
 // };
 
 const AuthForm = () => {
-
   const navigate = useNavigate()
 
   return (

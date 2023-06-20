@@ -6,6 +6,7 @@ import {collection, query, where, orderBy, addDoc, setDoc, doc, limit, getCountF
 import {firestore} from "../firebase";
 import TableComponent from "./TableComponent";
 import {appStatus} from "../table-columns-config";
+import {SelectComponent} from "./SelectComponent";
 
 const APPS_REF = collection(firestore, "applications")
 const COUNTRIES_REF = collection(firestore, "countries")
@@ -32,12 +33,14 @@ const ApplicationsTable = ({}) => {
   if(status && status !== "all") {
     filters.push(where("status", "==", status))
   }
-  const queryForCountries = query(COUNTRIES_REF);
+  const queryForCountries = query(COUNTRIES_REF, orderBy("name"));
+  // const queryForOperators = query(OPERATORS_REF, orderBy("operatorName"));
   const queryForAppsWithoutLimit = query(APPS_REF, ...filters);
   const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));
 
   const [countriesCollSnapshot, countriesLoading, countriesError] = useCollection(queryForCountries);
   const [appsCollSnapshot, tableLoading, tableError] = useCollection(queryForAppsWithoutLimit);
+  // const [operatorsCollSnapshot, operatorsLoading, operatorsError] = useCollection(queryForOperators);
   const [tableDataBeforeChanging, setTableDataBeforeChanging] = useState(null);
 
   useEffect(()=> {
@@ -50,25 +53,28 @@ const ApplicationsTable = ({}) => {
   let dropdownMenuItems = [];
   let refArray = []
  
-  if(!countriesLoading )
-  countriesCollSnapshot.forEach(countrySnapshot => {
-    const countryData = countrySnapshot.data()
-    dropdownMenuItems.push(
-      {
-        value: countryData.name,
-        label: countryData.name,
-      }
-    )
-  })
+  if(!countriesLoading ) {
+    countriesCollSnapshot.forEach(countrySnapshot => {
+      const countryData = countrySnapshot.data()
+      dropdownMenuItems.push(
+        {
+          value: countryData.name,
+          label: countryData.name,
+        }
+      )
+    })
+  }
+  
+  // if (!operatorsLoading) {
+  //   operatorsCollSnapshot.forEach(operatorDocSnapshot => {
 
+  //   })
+  // }
   // TODO: Убрать. Временная проверка на ошибки при запросе данных таблицы
   if(!tableLoading) {
     if(tableError) {
       console.log(tableError)
     } else {
-      console.log(appsCollSnapshot.size)
-      console.log(appsCollSnapshot[0])
-      console.log(appsCollSnapshot[9])
       appsCollSnapshot.forEach(docSnapshot => {
         array.push(docSnapshot.data())
         refArray.push(docSnapshot.ref)
@@ -76,7 +82,7 @@ const ApplicationsTable = ({}) => {
     }
   }
   
-  let dirstDocRef = refArray[0];
+  let firstDocRef = refArray[0];
   let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
   //INFO: реализация  кнопок-фильтров через меню-бар: полоска снизу, а кнопки не стилизуются. Стремно выглядит
     // function handleStatusButtonСlick({ item, key, keyPath, domEvent }) {
@@ -186,6 +192,7 @@ const ApplicationsTable = ({}) => {
             <Button size="large" data-status={appStatus.finished} style={{border:"none", backgroundColor:"inherit", boxShadow:"none"}} onClick={btnClick}>{appStatus.finished}</Button>
           </Col>
         </Row> */}
+        {/* <SelectComponent collectionType={"countries"}/> */}
         <Select 
           showSearch
           allowClear="true"
@@ -202,7 +209,7 @@ const ApplicationsTable = ({}) => {
         />
       </Space>
       <TableComponent 
-        dirstDocRef = {dirstDocRef}
+        firstDocRef = {firstDocRef}
         lastDocRef = {lastDocRef}
         setFirstApplicationRef = {setFirstApplicationRef}
         setLastApplicationRef = {setLastApplicationRef}

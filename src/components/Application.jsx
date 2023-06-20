@@ -6,7 +6,7 @@ import {useParams} from "react-router-dom";
 import  {firestore, storage} from "../firebase"
 import { UploadOutlined } from '@ant-design/icons';
 import {Layout, Button,Divider,  Upload, Typography, Descriptions, Row,Col, Space, Spin} from "antd";
-
+import Chat from "./Chat";
 const { Title } = Typography;
 
 // TODO: изменить пути на динамические для каждого заявителя
@@ -15,7 +15,7 @@ const UPLOAD_PATHS = {
   docs: "docs/docs.pdf",
 }
 
-const DESCRIPTION_FIELDS_VAR_1 = ['ID заявителя', 'Login', 'Password', 'E-mail', 'Tel', ]
+const DESCRIPTION_FIELDS_VAR_1 = ['Ответственный визовик','ID заявителя', 'Login', 'Password', 'E-mail', 'Tel', ]
 const DESCRIPTION_FIELDS_VAR_2 = ['Name','Surname','ИНН', 'Gender', "Datebirth",]
 const DESCRIPTION_FIELDS_VAR_3 = [ 'Паспорт', 'Дата выдачи', 'Окончание действия', 'Кем выдан', "Факт. домашний адрес", 'Юр. домашний адрес', 'Семейный статус', 'Страна гражданства', 'Страна рождения', 'Город рождения', ]
 
@@ -28,13 +28,18 @@ const makeDescriptionList = (obj, descriptionFields) => {
   }
   
   return descriptionFields.map(key => {
+    if(key === "Ответственный визовик" ){
+      return <Descriptions.Item label={key} span={2} labelStyle={{color:"rgb(75, 216, 86)"}}>{obj.viser}</Descriptions.Item>
+    }
     return <Descriptions.Item label={key}>{obj[key]}</Descriptions.Item>
   })
 }
 
-const Application = ({}) => {
-  const {id} = useParams();
-  const [collectionSnapshot, loading, error] = useCollection(collection(firestore, `applications/${id}/application`));
+const Application = ({user}) => {
+  console.log(user)
+  const {appId} = useParams();
+
+  const [collectionSnapshot, loading, error] = useCollection(collection(firestore, `applications/${appId}/application`));
   // const [docsFile, setDocsFile] = useState(null);
   // const [applicationFile, setApplicationFile] = useState(null);
  
@@ -57,7 +62,7 @@ const Application = ({}) => {
     <Layout style={{padding:"10px"}}>
       <Typography >
         <Title level={2} style={{textAlign:"center"}}>
-          Заявка {id}
+          Заявка {appId}
         </Title>
       </Typography>
       <Row gutter={20} style={{height:"100%"}}>
@@ -95,7 +100,7 @@ const Application = ({}) => {
           </Descriptions>
           <Divider></Divider>
         </Col>
-        <Col justify="center" align="middle" span={8} style={{borderLeft:"1px solid #0000002c"}}>
+        <Col  span={8} style={{borderLeft:"1px solid #0000002c"}}>
           <Typography >
             <Title level={3} style={{textAlign:"center"}}>Файлы</Title>
           </Typography> 
@@ -113,7 +118,7 @@ const Application = ({}) => {
                 uploadBytes(ref(storage, UPLOAD_PATHS.application ), info.file)
               }}
             >
-              <Button icon={<UploadOutlined/>} >Прикрепить анкету</Button>
+              <Button icon={<UploadOutlined/>} >Готовые документы:</Button>
             </Upload> 
             <Upload
               accept=".pdf, application/pdf"
@@ -128,9 +133,10 @@ const Application = ({}) => {
                 uploadBytes(ref(storage, UPLOAD_PATHS.docs), info.file)
               }}
             >
-              <Button icon={<UploadOutlined/>}>Прикрепить документы</Button>
+              <Button icon={<UploadOutlined/>}>Анкета 	&#40;консульство&#41;:</Button>
             </Upload>    
           </Space> 
+          <Chat appId={appId} user={user}/>
         </Col>
       </Row>
     </Layout>  

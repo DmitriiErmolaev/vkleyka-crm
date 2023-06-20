@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React from "react";
 import {Layout, Menu} from "antd";
 import Head from "./Head";
-import {Outlet, Link, useParams} from "react-router-dom"
+import {Outlet, Link, useMatch} from "react-router-dom"
 
 // const data = getDocs(collection(firestore, "applications"), )
 
@@ -23,10 +23,10 @@ const siderMenuItems = [
 
 const WorkPage = ()=> {
   // const [currentRouteRendered, setCurrentRouteRendered] = useState("all applications");
-  const {id} = useParams();
-
+  const match = useMatch("/");
+  
   const getRouteRendered = () => {
-    return id ? [null] : ["all applications"]
+    return match ? ["all applications"] : [null] 
   }
 
   return (

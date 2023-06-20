@@ -1,6 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Tag} from "antd";
+import SelectComponent from "./components/SelectComponent";
 
 const appStatus = {
   new: "Новые",
@@ -147,6 +148,9 @@ const columns = [
     key: 'viser',
     align: "center",
     sorter: true,
+    render: (text,record,index) => {
+        return <SelectComponent operator={record.viser} collectionType={"operators"} id={record.id} /> 
+    }
   },
 ];
 

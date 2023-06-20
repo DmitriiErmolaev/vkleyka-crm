@@ -12,7 +12,7 @@ import { Spin } from 'antd';
 
 const RoutesComponent = () => {
   const [user, loading, error] = useAuthState(auth);
-
+  console.log(user)
   if(loading) {
     return (
       <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
@@ -24,9 +24,9 @@ const RoutesComponent = () => {
   return user ?
     (
       <Routes>
-        <Route path="/" element={<WorkPage/>}>
+        <Route path="/" element={<WorkPage />}>
             <Route index element={< ApplicationsTable/>}/>
-            <Route path="application/:id" element={< Application />}/>
+            <Route path="application/:appId" element={< Application user={user}/>}/>
         </Route>
         <Route path="*" element={<Navigate to="/" replace={true}/>} />
       </Routes>
