@@ -6,7 +6,7 @@ import {collection, query, where, orderBy, addDoc, setDoc, doc, limit, getCountF
 import {firestore} from "../firebase";
 import TableComponent from "./TableComponent";
 import {appStatus} from "../table-columns-config";
-import {SelectComponent} from "./SelectComponent";
+import {SelectComponent} from "./dropdowns/SelectComponent";
 
 const APPS_REF = collection(firestore, "applications")
 const COUNTRIES_REF = collection(firestore, "countries")
@@ -34,13 +34,11 @@ const ApplicationsTable = ({}) => {
     filters.push(where("status", "==", status))
   }
   const queryForCountries = query(COUNTRIES_REF, orderBy("name"));
-  // const queryForOperators = query(OPERATORS_REF, orderBy("operatorName"));
   const queryForAppsWithoutLimit = query(APPS_REF, ...filters);
   const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));
 
   const [countriesCollSnapshot, countriesLoading, countriesError] = useCollection(queryForCountries);
   const [appsCollSnapshot, tableLoading, tableError] = useCollection(queryForAppsWithoutLimit);
-  // const [operatorsCollSnapshot, operatorsLoading, operatorsError] = useCollection(queryForOperators);
   const [tableDataBeforeChanging, setTableDataBeforeChanging] = useState(null);
 
   useEffect(()=> {
@@ -64,12 +62,6 @@ const ApplicationsTable = ({}) => {
       )
     })
   }
-  
-  // if (!operatorsLoading) {
-  //   operatorsCollSnapshot.forEach(operatorDocSnapshot => {
-
-  //   })
-  // }
   // TODO: Убрать. Временная проверка на ошибки при запросе данных таблицы
   if(!tableLoading) {
     if(tableError) {
@@ -84,71 +76,7 @@ const ApplicationsTable = ({}) => {
   
   let firstDocRef = refArray[0];
   let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
-  //INFO: реализация  кнопок-фильтров через меню-бар: полоска снизу, а кнопки не стилизуются. Стремно выглядит
-    // function handleStatusButtonСlick({ item, key, keyPath, domEvent }) {
-    //   if(key === "all") {
-    //     setStatus(null)
-    //   }
-    //   setStatus(key);
-    // }
-    //
-    // const statusMenuItems = [
-    //   {
-    //     key: "all",
-    //     label: (
-    //       <Button 
-    //         size="large" 
-    //         data-status="все" 
-    //         shape="round" 
-    //         // onClick={btnClick}
-    //       >Все</Button>
-    //     ),
-    //   },
-    //   {
-    //     key: appStatus.new,
-    //     label: (
-    //       <Button 
-    //         size="large" 
-    //         data-status="все" 
-    //         shape="round" 
-    //         // onClick={btnClick}
-    //       >{appStatus.new}</Button>
-    //     ),
-    //   },
-    //   {
-    //     key: appStatus.inWork,
-    //     label: (
-    //       <Button 
-    //         size="large" 
-    //         data-status="все" 
-    //         shape="round" 
-    //         // onClick={btnClick}
-    //       >{appStatus.inWork}</Button>
-    //     ),
-    //   },
-    //   {
-    //     key:appStatus.finished,
-    //     label: (
-    //       <Button 
-    //         size="large" 
-    //         data-status="завершено" 
-    //         style={{border:"none", backgroundColor:"inherit", boxShadow:"none"}} 
-    //         // onClick={btnClick}
-    //       >{appStatus.finished}</Button>
-    //     ),
-    //   },
-    // ]
 
-  //INFO: Реализация кнопок-фильтров через самостоятельные кнопки. Нельзя влиять на состояние :active...
-    // function btnClick(e) {
-    //   console.log(e)
-    //   const status = e.currentTarget.dataset.status;
-    //   (status === "all") ? setStatus(null) : setStatus(e.currentTarget.dataset.status)
-    // }
-
-  
-
-  // INFO: реализация кнопок как фильтры в качестве радиокнопок. Кнопки веделены после выбора. Можно выбрать только одну
   function radioChange(e) {
     setStatus(e.target.value)
   }
@@ -161,7 +89,6 @@ const ApplicationsTable = ({}) => {
           value={status} 
           onChange={radioChange} 
           size="large"
-          // buttonStyle="solid"
           style={{marginLeft:"30px"}}
         >
           <Radio value="all">Все</Radio>
@@ -169,29 +96,6 @@ const ApplicationsTable = ({}) => {
           <Radio value={appStatus.inWork}>В работе</Radio>
           <Radio value={appStatus.finished}>Завершенные</Radio>
         </Radio.Group>
-
-        {/* <Menu 
-          theme="dark"
-          mode="horizontal" 
-          items={statusMenuItems}
-          selectedKeys={[status]}
-          onClick={handleStatusButtonСlick}
-        ></Menu> */}
-
-        {/* <Row style={{marginLeft:"30px"}}>
-          <Col span={2}>
-            <Button size="large" data-status="all" shape="round" onClick={btnClick}>Все</Button>
-          </Col>
-          <Col span={2}>
-            <Button size="large" data-status={appStatus.new} shape="round" onClick={btnClick}>{appStatus.new}</Button>
-          </Col>
-          <Col span={3}>
-            <Button size="large" data-status={appStatus.inWork} shape="round" onClick={btnClick}>{appStatus.inWork}</Button>
-          </Col>
-          <Col span={3}>
-            <Button size="large" data-status={appStatus.finished} style={{border:"none", backgroundColor:"inherit", boxShadow:"none"}} onClick={btnClick}>{appStatus.finished}</Button>
-          </Col>
-        </Row> */}
         {/* <SelectComponent collectionType={"countries"}/> */}
         <Select 
           showSearch
