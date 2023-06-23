@@ -6,7 +6,7 @@ import {Select} from "antd";
 
 // имя свойства - тип коллекции, значение - путь к коллекции в firebase
 const collectionPath = {
-  "operators": "operators",
+  operators: "operators",
 }
 // ----Матрица поиска свойств из загруженных данных для операторов----
 // 1) имя свойства - соответствует такому же свойству в объекте массива options. 
@@ -15,8 +15,6 @@ let operatorsMatrix = {
   optionLabel: "operatorName",
   id: "id",
 }
-
-
 
 const OperatorsSelect = ({id, operator}) => {
   const [selectedOperator, setSelectedOperator] = useState(null);
@@ -39,13 +37,13 @@ const OperatorsSelect = ({id, operator}) => {
     setSelectedOperator(option.label)
   }
 
-  let array = [];
+  let options = [];
 
   if(!loading) {
     collSnapshot.forEach(docSnapshot => {
       const data = docSnapshot.data();
       // Скорее всего у двух и более разных селектов будут разные данные на отрисовку. Пока одинаковые.
-      array.push(
+      options.push(
         {
           label: data[operatorsMatrix.optionLabel],
           value: data[operatorsMatrix.id],
@@ -60,7 +58,7 @@ const OperatorsSelect = ({id, operator}) => {
         bordered = {false}
         value={operator || null}
         placeholder="Назначить визовика"
-        options={array} 
+        options={options} 
         style={{
           maxWidth: 160,
         }}

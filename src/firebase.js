@@ -23,4 +23,7 @@ const storage = getStorage(app)
 
 const storageReference = ref(storage)
 
-export  {app as firebase, auth, firestore, storage} 
+const role = "admin";
+
+export  {app as firebase, auth, firestore, storage, role} 
+

@@ -10,22 +10,50 @@ const {Sider, Content} = Layout;
 
 const primeLayoutStyle = {
   width:"100%", 
-  // maxWidth:"1900px",
   minHeight:"100vh",
   margin:"0 auto", 
   background:"#F8F8F8 !important" ,
 }
 
-const siderMenuItems = [
-  {key:"all applications",label:(<Link to="/">Все заявки</Link>),},
-  // {key:"start page",label:(<Link to="application">Тестовая заявка</Link>),},
-]
+const roleBasedContent = {
+  admin:{
+    siderMenuItems: [
+      {
+        key:"all applications",
+        label:(<Link to="/">Все заявки</Link>),
+      },
+      {
+        key:"operators",
+        label:(<Link to="users-manager">Acc Manage</Link>)
+      }
+    ]
+  },
+  operator:{
+    siderMenuItems: [
+      {
+        key:"all applications",
+        label:(<Link to="/">Все заявки</Link>),
+      },
+      {
+        key:"chat",
+        label:(<Link to="createOperator">Chat</Link>)
+      }
+    ]
+  }
+}
+
+// const siderMenuItems = [
+//   {key:"all applications",label:(<Link to="/">Все заявки</Link>),},
+//   // {key:"start page",label:(<Link to="application">Тестовая заявка</Link>),},
+// ]
 
 const WorkPage = ()=> {
   // const [currentRouteRendered, setCurrentRouteRendered] = useState("all applications");
   const match = useMatch("/");
+  const role = "admin";
   
   const getRouteRendered = () => {
+    // отвечает за стилизацию выбранного пункта бокового меню 
     return match ? ["all applications"] : [null] 
   }
 
@@ -47,7 +75,7 @@ const WorkPage = ()=> {
                 mode="inline" 
                 theme="dark" 
                 selectedKeys={getRouteRendered()} 
-                items={siderMenuItems} 
+                items={roleBasedContent[role].siderMenuItems} 
                 style={{backgroundColor:"transparent", color:"white", marginTop:"50px"}} 
               />
           </Sider>

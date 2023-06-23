@@ -1,7 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Tag} from "antd";
-import SelectComponent from "./components/dropdowns/SelectComponent";
+import SelectComponent from "./components/selectors/SelectComponent";
 
 const appStatus = {
   new: "Новые",

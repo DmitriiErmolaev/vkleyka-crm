@@ -48,8 +48,7 @@
         max-width:70%;
         text-align:start;
         border-radius:14px;
-        white-space: pre-wrap;
-        word-break: break-all;
+        word-break: break-word;
       }
       
       .operator {
@@ -63,7 +62,7 @@
     }
   
     .invisible-container {
-     flex-grow:1;
+     flex-grow: 1;
     }
   }
   
@@ -73,3 +72,4 @@
   }
   
 }
+
