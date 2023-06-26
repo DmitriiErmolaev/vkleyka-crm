@@ -1,11 +1,12 @@
 import React, {useState} from "react";
-import {Form, Input, Button, Checkbox, Layout, Row, Col, Table, Space, Modal} from "antd";
+import {Form, Input, Button, Checkbox, Layout, Row, Col, Table, Space, Modal, Alert, useForm} from "antd";
 import {auth} from "../firebase"
 import {firestore} from "../firebase.js"
-import {createUserWithEmailAndPassword } from "firebase/auth";
+import {beforeAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 import {useCollection } from "react-firebase-hooks/firestore";
-import {query, collection,orderBy} from "firebase/firestore";
+import {query, collection,orderBy, addDoc, doc} from "firebase/firestore";
 import {columns} from "../operators-table-config";
+import {OperatorsFirestoreDocRefs} from "../context.js";
 
 const contentInsideLayoutStyle = {
   padding: "0 60px",
@@ -15,12 +16,16 @@ const collectionPath = {
   operators: "operators",
 }
 
-// const
+const operatorsCollRef = collection(firestore, collectionPath.operators )
 
 const UsersManager = () => {
   const [isModalOpened, setIsModalOpened] = useState(false);
-  const q = query(collection(firestore, collectionPath.operators), orderBy("operatorName"))
+  const [successMessageHidden, setSuccessMessageHidden] = useState(true)
+  const [errorMessageHidden, setErrorMessageHidden] = useState(true)
+  const q = query(operatorsCollRef, orderBy("operatorName"))
   const [collSnapshot, loading, error] = useCollection(q);
+  const [buttonLoadingState, setButtonLoadingState] = useState(false);
+  const [form] = Form.useForm()
 
   const openRegisterModal = () => {
     setIsModalOpened(true);
@@ -28,17 +33,39 @@ const UsersManager = () => {
 
   const closeRegisterModal = () => {
     setIsModalOpened(false);
+    form.resetFields();
+    setSuccessMessageHidden(true);
+    setErrorMessageHidden(true);
   }
 
-  const handleSubmit = () => {
-    closeRegisterModal();
+  const handleSubmitFail = (values) => {
+    setErrorMessageHidden(false)
   }
-  let array = [];
+  const handleValuesChange = () => {
+    setSuccessMessageHidden(true);
+    setErrorMessageHidden(true);
+  }
+
+  const handleSubmit = async (values) => {
+    setButtonLoadingState(true)
+    await addDoc(operatorsCollRef, {
+      id: 5,
+      operatorName:`${values.name} ${values.surname}`,
+      phoneNumber:values.tel,
+      appCompleted: 0,
+    });
+    setButtonLoadingState(false)
+
+    setSuccessMessageHidden(false)
+  }
+
+  let dataArray = [];
+  let docRefsArray = [];
 
   if(!loading) {
     collSnapshot.forEach(operatorSnapshot => {
-      const data = operatorSnapshot.data();
-      array.push(data);
+      docRefsArray.push(operatorSnapshot.ref);
+      dataArray.push(operatorSnapshot.data());
     })
   }
   // async function  func({email, pass: password}) {
@@ -57,19 +84,31 @@ const UsersManager = () => {
             <Button type="primary" block="false" onClick={openRegisterModal}>Новый визовик</Button>
           </Col>
         </Row>
-        <Table 
-          loading="true"
-          columns={columns}
-          dataSource={array}
-        />
+        <OperatorsFirestoreDocRefs.Provider value={docRefsArray}>
+          <Table 
+            loading="true"
+            columns={columns}
+            dataSource={dataArray}
+          />
+        </OperatorsFirestoreDocRefs.Provider>
       </Space>
-      <Modal open={isModalOpened} onCancel={closeRegisterModal} footer={null}>
+      <Modal 
+        open={isModalOpened} 
+        onCancel={closeRegisterModal} 
+        footer={null}
+        maskStyle={{backgroundColor:"#0000009C"}}
+        width="38%"
+        // onOk={handleOk}
+      >
         <Form
-          // wrapperCol={{lg:{span: 20, offset:2} }}  
+          form={form}
+          // preserve={false}  // чтобы форма очищалась после закрытия модального окна.
           onFinish = {handleSubmit}
-          onFinishFailed = {(values) => console.log(values)}
+          onFinishFailed = {handleSubmitFail}
+          onValuesChange= {handleValuesChange}
         >
           <Form.Item
+            preserve="false"
             name="name"
             rules={[
               {
@@ -86,6 +125,7 @@ const UsersManager = () => {
             </Input>
           </Form.Item>
           <Form.Item
+            preserve="false"
             name="surname"
             rules={[
               {
@@ -102,6 +142,7 @@ const UsersManager = () => {
             </Input>
           </Form.Item>
           <Form.Item
+            preserve="false"
             name="tel"
             rules={[
               {
@@ -118,6 +159,7 @@ const UsersManager = () => {
             </Input>
           </Form.Item>
           <Form.Item
+            preserve="false"
             name="email"
             rules={[
               {
@@ -138,6 +180,7 @@ const UsersManager = () => {
             placeholder="e-mail"/>
           </Form.Item>
           <Form.Item 
+            preserve="false"
             name="pass"
             rules={[
               {
@@ -152,15 +195,46 @@ const UsersManager = () => {
           >
             <Input.Password size="large"  placeholder="password"/>
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" size="large" htmlType="submit">
-              Register
+          <Form.Item 
+            preserve="false"
+            name="pass"
+            rules={[
+              {
+                required: true,
+                message:"введите пароль"
+              },
+              {
+                max: 10,
+                message:"количество символов должно быть не более 10"
+              }
+          ]}
+          >
+            <Input.Password size="large"  placeholder="confirm password"/>
+          </Form.Item>
+          <Form.Item
+            wrapperCol={{offset:8}}
+            preserve="false">
+            <Button type="primary" size="large" htmlType="submit" loading={buttonLoadingState}>
+              Создать аккаунт
             </Button>
+          </Form.Item>
+          <Form.Item
+            hidden={successMessageHidden}
+          >
+            <Alert type="success" message="Success!" showIcon /> 
+          </Form.Item>
+          <Form.Item
+            hidden={errorMessageHidden}
+            preserve="false"
+
+          >
+            <Alert type="error" message="Failed!" showIcon /> 
           </Form.Item>
         </Form>
       </Modal>
     </Layout>
   )
 }
+
 export default UsersManager;
 

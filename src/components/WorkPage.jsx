@@ -1,7 +1,7 @@
 import React from "react";
 import {Layout, Menu} from "antd";
 import Head from "./Head";
-import {Outlet, Link, useMatch} from "react-router-dom"
+import {Outlet, Link, useMatch, useLocation} from "react-router-dom"
 
 // const data = getDocs(collection(firestore, "applications"), )
 
@@ -19,42 +19,44 @@ const roleBasedContent = {
   admin:{
     siderMenuItems: [
       {
-        key:"all applications",
+        key:"/",
         label:(<Link to="/">Все заявки</Link>),
       },
       {
-        key:"operators",
-        label:(<Link to="users-manager">Acc Manage</Link>)
+        key:"/users-manager",
+        label:(<Link to="users-manager">Менеджер аккаунтов</Link>)
       }
     ]
   },
   operator:{
     siderMenuItems: [
       {
-        key:"all applications",
+        key:"/",
         label:(<Link to="/">Все заявки</Link>),
       },
       {
-        key:"chat",
-        label:(<Link to="createOperator">Chat</Link>)
+        key:"/chat",
+        label:(<Link to="chat">Чат</Link>)
       }
     ]
   }
 }
 
-// const siderMenuItems = [
-//   {key:"all applications",label:(<Link to="/">Все заявки</Link>),},
-//   // {key:"start page",label:(<Link to="application">Тестовая заявка</Link>),},
-// ]
 
-const WorkPage = ()=> {
+
+
+const WorkPage = () => {
   // const [currentRouteRendered, setCurrentRouteRendered] = useState("all applications");
   const match = useMatch("/");
+  const location = useLocation()
+  console.log(location)
   const role = "admin";
+  console.log(match)
   
   const getRouteRendered = () => {
     // отвечает за стилизацию выбранного пункта бокового меню 
-    return match ? ["all applications"] : [null] 
+    const selectedKey = location.pathname;
+    return [selectedKey]
   }
 
   return (

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import {UserContext} from "../../context.js";
 import OperatorsSelect from "./OperatorsSelect.jsx";
 import CountrySelect from "./CountrySelect.jsx";
 
 const SelectComponent = ({data, collectionType}) => {
+  const user = useContext(UserContext)
   let select = null;
 
   if (collectionType === "operators") {

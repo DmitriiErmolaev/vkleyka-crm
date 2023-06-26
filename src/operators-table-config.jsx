@@ -1,7 +1,9 @@
-import {DeleteOutlined } from "@ant-design/icons";
+import DeleteOperator from "./components/DeleteOperator";
 
-const renderTrashCan = () => {
-  return <DeleteOutlined />
+
+
+const renderTrashCan = (text, record, index) => {
+  return < DeleteOperator index={index}/>
 } 
 
 export const columns = [

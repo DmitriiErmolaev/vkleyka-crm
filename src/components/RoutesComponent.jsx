@@ -12,9 +12,6 @@ import { Spin } from 'antd';
 import {ROLES} from "../auth-access.js";
 import {UserContext} from "../context.js"
 
-
-
-
 const RoutesComponent = () => {
   const [user, loading, error] = useAuthState(auth);
   const role = "admin";
@@ -54,7 +51,7 @@ const RoutesComponent = () => {
     
   if(role === ROLES.admin) {
     return  (
-      <UserContext.Provider value={{user: user}}>
+      <UserContext.Provider value={{user: user,}}>
         <Routes>
           <Route path="/" element={<WorkPage />}>
               <Route index element={< ApplicationsTable/>}/>
