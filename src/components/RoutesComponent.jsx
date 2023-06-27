@@ -14,7 +14,7 @@ import {UserContext} from "../context.js"
 
 const RoutesComponent = () => {
   const [user, loading, error] = useAuthState(auth);
-  const role = "admin";
+  const role = "operator";
 
   if(loading) {
     return (
@@ -37,7 +37,7 @@ const RoutesComponent = () => {
 
   if(role === ROLES.operator) {
     return  (
-      <UserContext.Provider value={{user: user}}>
+      <UserContext.Provider value={{user: user, role:role}}>
         <Routes>
           <Route path="/" element={<WorkPage />}>
               <Route index element={< ApplicationsTable/>}/>
@@ -51,7 +51,7 @@ const RoutesComponent = () => {
     
   if(role === ROLES.admin) {
     return  (
-      <UserContext.Provider value={{user: user,}}>
+      <UserContext.Provider value={{user: user, role:role}}>
         <Routes>
           <Route path="/" element={<WorkPage />}>
               <Route index element={< ApplicationsTable/>}/>

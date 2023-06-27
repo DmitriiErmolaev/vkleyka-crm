@@ -9,13 +9,20 @@ import {appStatus} from "../table-columns-config";
 import SelectComponent from "./selectors/SelectComponent";
 import {UserContext} from "../context.js";
 
+// const roleBasedInitialQueries = {
+//   admin:{
+//     initialQuery: 
+//   }
+// }
+
 const roleBasedContent = {
   admin: {
     collectionConstraints: "all-applications",
     
   },
   operator: {
-    collectionConstraint: "assigned-only"
+    collectionConstraint: "assigned-only",
+    initialQuery:  where("viser", "==", "Евгений Захаров"),
   }
 }
 
@@ -29,15 +36,19 @@ const ApplicationsTable = ({}) => {
   const [curTablePage, setCurTablePage] = useState();
   const [firstApplicationRef, setFirstApplicationRef] = useState();
   const [lastApplicationRef, setLastApplicationRef] = useState();
-  const {user} = useContext(UserContext);
-  const role = "operator";
+  const {role} = useContext(UserContext);
+  // console.log(user)
+  // const role = "operator";
 
 
   // const roleBasedQueryConstraints = roleBasedContent[role].collectionConstraint;
   // if (roleBasedQueryConstraints === "assigned-only") {
   //   filters.push(where())
   // }
+
   let filters = [];
+  filters.push(roleBasedContent[role].initialQuery)
+
   if(columnSorting && columnSorting.order) {
     filters.push(orderBy(columnSorting.column, columnSorting.order))
   } else {
@@ -50,7 +61,10 @@ const ApplicationsTable = ({}) => {
     filters.push(where("status", "==", status))
   }
   const queryForAppsWithoutLimit = query(APPS_REF, ...filters);
-  const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));
+
+  /* TODO: для пагинации: запрос на 10 документов коллекции
+  * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10)); 
+  */
 
   const [appsCollSnapshot, tableLoading, tableError] = useCollection(queryForAppsWithoutLimit);
   const [tableDataBeforeChanging, setTableDataBeforeChanging] = useState(null);
@@ -64,7 +78,6 @@ const ApplicationsTable = ({}) => {
   let array = [];
   let refArray = []
  
-  
   // TODO: Убрать. Временная проверка на ошибки при запросе данных таблицы
   if(!tableLoading) {
     if(tableError) {
@@ -76,9 +89,10 @@ const ApplicationsTable = ({}) => {
       })
     }
   }
-  
-  let firstDocRef = refArray[0];
-  let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
+  /* TODO: для пагинации: запоминание ссылки на 1 и 10 документы
+  * let firstDocRef = refArray[0];
+  * let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
+  */
 
   function radioChange(e) {
     setStatus(e.target.value)
@@ -105,10 +119,12 @@ const ApplicationsTable = ({}) => {
         />
       </Space>
       <TableComponent 
-        firstDocRef = {firstDocRef}
-        lastDocRef = {lastDocRef}
-        setFirstApplicationRef = {setFirstApplicationRef}
-        setLastApplicationRef = {setLastApplicationRef}
+        role = {role}
+        // TODO: для пагинации.
+        // firstDocRef = {firstDocRef}
+        // lastDocRef = {lastDocRef}
+        // setFirstApplicationRef = {setFirstApplicationRef}
+        // setLastApplicationRef = {setLastApplicationRef}
         setCurTablePage = {setCurTablePage}
         queryForAppsWithoutLimit = {queryForAppsWithoutLimit}
         tableDataBeforeChanging={tableDataBeforeChanging} 

@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import {Table, Spin} from "antd";
-import {columns} from "../table-columns-config";
+import {getOperatorColumnsConfig, getAdminColumnsConfig} from "../table-columns-config";
 import {getCountFromServer, collection, query} from "firebase/firestore";
 import {firestore} from "../firebase";
 import {TABLE_PAGE_ITEMS_NUMBER} from "./ApplicationsTable"
@@ -19,8 +19,29 @@ const paginationDoc = {
   showTotal: total,
 }
 
-const TableComponent = ({dirstDocRef, lastDocRef,setFirstApplicationRef, setLastApplicationRef, tableLoading, array, handleTableChange, setColumnSorting, tableDataBeforeChanging, queryForAppsWithoutLimit, setCurTablePage}) => {
-  // console.log(appsCollectionSize)
+const TableComponent = ({
+  dirstDocRef, 
+  lastDocRef,
+  setFirstApplicationRef, 
+  setLastApplicationRef, 
+  tableLoading, 
+  array, 
+  handleTableChange, 
+  setColumnSorting, 
+  tableDataBeforeChanging, 
+  queryForAppsWithoutLimit, 
+  setCurTablePage, 
+  role,
+}) => {
+
+  let columns = []
+  if(role === "operator") {
+    columns = getOperatorColumnsConfig()
+  }
+  if(role === "admin") {
+    columns = getAdminColumnsConfig()
+  }
+  
   const [columnsSettings, setColumnsSettings] = useState(columns)
   const [paginationSettings, setPaginationSettings] = useState(paginationDoc)
   // const [totalApps, setTotalApps] = useState();
@@ -36,13 +57,11 @@ const TableComponent = ({dirstDocRef, lastDocRef,setFirstApplicationRef, setLast
   // }
 
   function handleTableChange(pagination, filters, sorter, {action}){
-    console.log(action)
     if(action === "paginate") {
-
+      // TODO: для пагинации.
       // setCurTablePage(pagination.current)
       // setFirstApplicationRef(dirstDocRef)
       // setLastApplicationRef(lastDocRef)
-      // console.log(pagination)
     } else {
       let sortOrder = "asc";
       if(sorter.order === "descend") {
@@ -72,10 +91,11 @@ const TableComponent = ({dirstDocRef, lastDocRef,setFirstApplicationRef, setLast
   if (tableLoading) {
     return (
       <Table 
+        size="middle"
         loading={<Spin size="large"></Spin>}
         dataSource={tableDataBeforeChanging} 
         columns={columnsSettings} 
-        sticky 
+        // sticky 
         pagination={paginationSettings} 
         onChange={handleTableChange} 
         rowKey={(record) => record.id}
@@ -85,6 +105,7 @@ const TableComponent = ({dirstDocRef, lastDocRef,setFirstApplicationRef, setLast
 
   return (
     <Table 
+      size="small"
       dataSource={array} 
       columns={columnsSettings} 
       sticky 

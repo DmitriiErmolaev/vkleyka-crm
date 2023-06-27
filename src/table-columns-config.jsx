@@ -3,6 +3,12 @@ import {Link} from "react-router-dom";
 import {Tag} from "antd";
 import SelectComponent from "./components/selectors/SelectComponent";
 
+const roles = {
+  admin: "admin",
+  operator: "operator",
+  all: "all"
+}
+
 const appStatus = {
   new: "Новые",
   inWork: "В работе",
@@ -30,54 +36,44 @@ const createTag = (text) => {
   return <Tag bordered="false" color={tagColor}>{text}</Tag>
 }
 
-const columns = [
-  {
+const id_object = {
+  role: "all",
+  config: {
     title: 'ID',
     dataIndex: 'id',
     key: 'id',
     align: "center",
-    // sorter:(a, b) => {return a.id - b.id},
     render: (text, record, index) => {
       return <Link to={`/application/${text}`} state={{id:text}} style={{color:"#0EA5E9", fontWeight:"800"}}>{text}</Link>
     }
-  },
-  {
+  }
+}
+const data_object = {
+  role: "all",
+  config: {
     title: 'Date',
     dataIndex: 'date',
     key: 'date',
     align: "center",
     sorter: true,
-    // sortIcon: ({sortOrder}) => ReactNode
-    // defaultSortOrder:"descend",
-    // sorter: (a,b) => {
-    //   if(a.date > b.date){
-    //     return 1;
-    //   } else if (a.date < b.date) {
-    //     return -1;
-    //   } else {
-    //     return 0;
-    //   }
-    // }
-  },
-  {
+  }
+  
+}
+const applicant_object = {
+  role: "all",
+  config: {
     title: 'Applicant',
     dataIndex: 'applicant',
     key: 'applicant',
     align: "center",
     sorter:true,
-    // sorter: (a,b) => {
-    //   const name1 = a.applicant.toLowerCase();
-    //   const name2 = b.applicant.toLowerCase();
-    //   if( name1 > name2) {
-    //     return 1;
-    //   } else if ( name1 < name2) {
-    //     return -1;
-    //   } else {
-    //     return 0;
-    //   }
-    // }
-  },
-  {
+  }
+ 
+}
+
+const status_object = {
+  role: "all",
+  config: {
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
@@ -85,64 +81,24 @@ const columns = [
     render: (text)=> {
       return createTag(text)
     },
-    // onFilter: (value, dataItem) => dataItem.status.includes(value),
-    // sorter:true,
-    // sorter: (a,b) => {
-    //   let aNum;
-    //   let bNum;
-    //   if (a.status == "новое") {
-    //     aNum = 1
-    //   } else if (a.status == "в работе") {
-    //     aNum = 2
-    //   } else {
-    //     aNum = 3
-    //   }
-    //   if (b.status == "новое") {
-    //     bNum = 1
-    //   } else if (b.status == "в работе") {
-    //     bNum = 2
-    //   } else {
-    //     bNum = 3
-    //   }
-    //   return aNum - bNum;
-    // },
-    // filters:[
-    //   {
-    //     text: "новое",
-    //     value: "новое",
-    //   },
-    //   {
-    //     text: "в работе",
-    //     value: "в работе",
-    //   },
-    //   {
-    //     text: "завершено",
-    //     value: "завершено",
-    //   },
-    //   {
-    //     text: "отменено",
-    //     value: "отменено",
-    //   },
-    // ],
-  },
-  {
+  }
+  
+}
+
+const country_object = {
+  role: "all",
+  config: {
     title: 'Country',
     dataIndex: 'country',
     key: 'country',
     align: "center",
-    // sorter: (a,b) => {
-    //   const name1 = a.country.toLowerCase();
-    //   const name2 = b.country.toLowerCase();
-    //   if( name1 > name2) {
-    //     return 1;
-    //   } else if ( name1 < name2) {
-    //     return -1;
-    //   } else {
-    //     return 0;
-    //   }
-    // }
-  },
-  {
+  }
+  
+}
+
+const viser_object = {
+  role: "admin",
+  config: {
     title: 'Viser',
     dataIndex: 'viser',
     key: 'viser',
@@ -151,9 +107,93 @@ const columns = [
     render: (text,record,index) => {
         return <SelectComponent collectionType={"operators"} data={record}/> 
     }
-  },
-];
+  }
+  
+}
+// массив общий для всех колонок, т.к. важен порядок в их отображении 
+const allObjects = [
+  id_object,
+  data_object,
+  applicant_object,
+  status_object, 
+  country_object,
+  viser_object,
+]
+
+// в перспективе ролей будет больше, поэтому проверка на каждую роль отдельно
+const getOperatorColumnsConfig = () => {
+  return allObjects.reduce((acc, colConfig) => {
+    if(colConfig.role === roles.all || colConfig.role === roles.operator) {
+      acc.push(colConfig.config)
+      return acc
+    }
+    return acc
+  }, [])
+}
+
+const getAdminColumnsConfig = () => {
+  return allObjects.reduce((acc, colConfig) => {
+    if(colConfig.role === roles.all || colConfig.role === roles.admin) {
+      acc.push(colConfig.config);
+      return acc
+    }
+    return acc
+  }, [])
+}
+
+
+// const columns = [
+//   {
+//     title: 'ID',
+//     dataIndex: 'id',
+//     key: 'id',
+//     align: "center",
+//     render: (text, record, index) => {
+//       return <Link to={`/application/${text}`} state={{id:text}} style={{color:"#0EA5E9", fontWeight:"800"}}>{text}</Link>
+//     }
+//   },
+//   {
+//     title: 'Date',
+//     dataIndex: 'date',
+//     key: 'date',
+//     align: "center",
+//     sorter: true,
+//   },
+//   {
+//     title: 'Applicant',
+//     dataIndex: 'applicant',
+//     key: 'applicant',
+//     align: "center",
+//     sorter:true,
+//   },
+//   {
+//     title: 'Status',
+//     dataIndex: 'status',
+//     key: 'status',
+//     align: "center",
+//     render: (text)=> {
+//       return createTag(text)
+//     },
+//   },
+//   {
+//     title: 'Country',
+//     dataIndex: 'country',
+//     key: 'country',
+//     align: "center",
+    
+//   },
+//   {
+//     title: 'Viser',
+//     dataIndex: 'viser',
+//     key: 'viser',
+//     align: "center",
+//     sorter: true,
+//     render: (text,record,index) => {
+//         return <SelectComponent collectionType={"operators"} data={record}/> 
+//     }
+//   },
+// ];
 
 
 
-export {columns, appStatus}
+export {getOperatorColumnsConfig, getAdminColumnsConfig, appStatus}

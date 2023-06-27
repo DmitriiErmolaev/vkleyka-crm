@@ -1,10 +1,8 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Layout, Menu} from "antd";
 import Head from "./Head";
-import {Outlet, Link, useMatch, useLocation} from "react-router-dom"
-
-// const data = getDocs(collection(firestore, "applications"), )
-
+import {UserContext} from "../context.js";
+import {Outlet, Link, useLocation} from "react-router-dom"
 
 const {Sider, Content} = Layout;
 
@@ -42,17 +40,12 @@ const roleBasedContent = {
   }
 }
 
-
-
-
 const WorkPage = () => {
-  // const [currentRouteRendered, setCurrentRouteRendered] = useState("all applications");
-  const match = useMatch("/");
+  const {role} = useContext(UserContext)
+  console.log(role)
   const location = useLocation()
-  console.log(location)
-  const role = "admin";
-  console.log(match)
-  
+  // const role = "admin";
+
   const getRouteRendered = () => {
     // отвечает за стилизацию выбранного пункта бокового меню 
     const selectedKey = location.pathname;
