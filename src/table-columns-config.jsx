@@ -9,31 +9,58 @@ const roles = {
   all: "all"
 }
 
-const appStatus = {
-  new: "Новые",
-  inWork: "В работе",
-  finished: "Завершенные",
-  cancelled: "Отмененные",
-}
+const appStatus = [
+  // "1/3": "Новые",
+  // "2/3": "В работе",
+  // "3/3": "Завершенные",
+  // "4/3": "Отмененные",
+   {
+    dbProp:"1/3",
+    textValue:"Новые",
+    tagColor: "blue",
+  },
+  {
+    dbProp:"2/3",
+    textValue:"В работе",
+    tagColor: "yellow",
+  },
+  {
+    dbProp:"3/3",
+    textValue:"Завершенные",
+    tagColor: "green",
+  }, 
+  {
+    dbProp:"4/3",
+    textValue:"Отмененные",
+    tagColor: "red",
+  }, 
+]
 
 const createTag = (text) => {
-  let tagColor;
-
-  switch(text) {
-    case (appStatus.inWork):
-      tagColor = "yellow";
-      break;
-    case (appStatus.finished):
-      tagColor = "green";
-      break;
-    case (appStatus.cancelled):
-      tagColor = "red"
-      break;
-    default:
-      tagColor = "blue"
+  // let tagColor;
+  let tag;
+  for (let elem of appStatus) {
+    if(elem.dbProp === text) {
+      tag = <Tag bordered="false" color={elem.tagColor}>{elem.textValue}</Tag>
+    }
   }
+  return tag
 
-  return <Tag bordered="false" color={tagColor}>{text}</Tag>
+  // switch(text) {
+  //   case (appStatus.inWork.dbProp):
+  //     tagColor = "yellow";
+  //     break;
+  //   case (appStatus.finished.dbProp):
+  //     tagColor = "green";
+  //     break;
+  //   case (appStatus.cancelled.dbProp):
+  //     tagColor = "red"
+  //     break;
+  //   default:
+  //     tagColor = "blue"
+  // }
+
+  // return <Tag bordered="false" color={tagColor}>{text}</Tag>
 }
 
 const id_object = {
@@ -48,6 +75,7 @@ const id_object = {
     }
   }
 }
+
 const data_object = {
   role: "all",
   config: {
@@ -57,8 +85,8 @@ const data_object = {
     align: "center",
     sorter: true,
   }
-  
 }
+
 const applicant_object = {
   role: "all",
   config: {
@@ -68,7 +96,6 @@ const applicant_object = {
     align: "center",
     sorter:true,
   }
- 
 }
 
 const status_object = {
@@ -79,6 +106,7 @@ const status_object = {
     key: 'status',
     align: "center",
     render: (text)=> {
+      console.log(text)
       return createTag(text)
     },
   }
@@ -93,7 +121,6 @@ const country_object = {
     key: 'country',
     align: "center",
   }
-  
 }
 
 const viser_object = {

@@ -6,14 +6,13 @@ import {getStorage, ref} from "firebase/storage"
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyANbrjb9mwO5FeWI0i7Z39cnB1sZ0CgW8c",
-  authDomain: "visa-app-6715b.firebaseapp.com",
-  projectId: "visa-app-6715b",
-  storageBucket: "visa-app-6715b.appspot.com",
-  messagingSenderId: "1036308338996",
-  appId: "1:1036308338996:web:cdc33b05f2efbe415bad61",
-  measurementId: "G-V30T1YW8HJ",
-  storageBucket: "gs://visa-app-6715b.appspot.com"
+  apiKey: "AIzaSyDChq_tDI936uUYMSnrqCuAso5I85JC55c",
+  authDomain: "vkleykakz.firebaseapp.com",
+  projectId: "vkleykakz",
+  storageBucket: "vkleykakz.appspot.com",
+  messagingSenderId: "586834879283",
+  appId: "1:586834879283:web:ec622f286ccc7f3fb5d446",
+  measurementId: "G-J8DQLMKF5G"
 };
 
 const app = initializeApp(firebaseConfig);

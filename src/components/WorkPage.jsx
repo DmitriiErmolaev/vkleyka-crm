@@ -42,12 +42,10 @@ const roleBasedContent = {
 
 const WorkPage = () => {
   const {role} = useContext(UserContext)
-  console.log(role)
   const location = useLocation()
-  // const role = "admin";
-
+  
+  // отвечает за стилизацию выбранного пункта бокового меню 
   const getRouteRendered = () => {
-    // отвечает за стилизацию выбранного пункта бокового меню 
     const selectedKey = location.pathname;
     return [selectedKey]
   }

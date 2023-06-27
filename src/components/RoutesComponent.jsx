@@ -14,7 +14,7 @@ import {UserContext} from "../context.js"
 
 const RoutesComponent = () => {
   const [user, loading, error] = useAuthState(auth);
-  const role = "operator";
+  const role = "admin";
 
   if(loading) {
     return (
