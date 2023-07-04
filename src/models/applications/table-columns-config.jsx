@@ -52,8 +52,15 @@ const id_object = {
     key: 'id',
     align: "center",
     render: (text, record, index) => {
-      return <Link to={`/application/${text}`} state={{id:text}} style={{color:"#0EA5E9", fontWeight:"800"}}>{text}</Link>
-    }
+      return (
+        <Link 
+          to={`/application/${record.fullDocId}`} 
+          style={{color:"#0EA5E9", fontWeight:"800"}}
+        >
+          {text}
+        </Link>
+      )
+    },
   }
 }
 

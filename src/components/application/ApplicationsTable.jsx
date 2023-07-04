@@ -79,14 +79,19 @@ const ApplicationsTable = ({admins}) => {
   }
   
   return (
-    <Layout style={{height:"calc(100vh - 101px)"}}>
+    <Layout 
+      style={{
+        // height:"calc(100vh - 101px)", 
+        padding:"30px"
+      }}
+    >
       <Space direction="vertical" size="large">
         <Radio.Group 
           optionType="button" 
           value={selectedStatus} 
           onChange={radioChange} 
           size="large"
-          style={{marginLeft:"30px"}}
+          // style={{marginTop:"10px"}}
         >
           <Radio value="allStatuses">Все</Radio>
           <Radio value={allStatuses[0].dbProp}>{allStatuses[0].textValue}</Radio>

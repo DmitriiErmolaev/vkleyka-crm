@@ -58,7 +58,6 @@ const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
         value={selectedCountry.label}
         options={options}
         style={{
-          marginLeft:"30px",
           width: 180,
         }}
         size="large"

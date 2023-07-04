@@ -19,12 +19,12 @@ const Aside = () => {
   return (
     <Sider 
       style={{
-        zIndex:"1", 
-        position:"fixed", 
-        top:"81px", 
+        // zIndex:"1", 
+        // position:"fixed", 
+        // top:"81px", 
         borderRadius:"0 20px 0 0", 
         backgroundColor:"#767680", 
-        height:"calc(200vh - 81px)"
+        // height:"calc(200vh - 81px)"
       }}
     >
       <Menu 

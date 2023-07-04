@@ -20,7 +20,11 @@ const WorkPage = () => {
         <Head />
         <Layout hasSider>
           <Aside />
-          <Content style={{marginLeft:"200px", backgroundColor:"#F8F8F8"}}>
+          <Content 
+            style={{
+              // marginLeft:"200px", 
+              backgroundColor:"#F8F8F8"
+            }}>
             <Outlet/>
           </Content>
         </Layout>
