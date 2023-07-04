@@ -3,7 +3,7 @@ import {Layout}  from "antd";
 // import AuthForm from "./AuthForm";
 // import RegisterForm from "./RegisterForm";
 import {Outlet} from "react-router-dom";
-import AuthForm from "./AuthForm";
+import AuthForm from "../components/auth/AuthForm";
 
 const {Content} = Layout;
 

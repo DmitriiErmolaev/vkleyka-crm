@@ -1,7 +1,7 @@
 import React from "react";
 import {Layout, Menu, Row, Col, Button} from "antd";
 import {signOut} from "firebase/auth";
-import {auth} from "../firebase";
+import {auth} from "../../models/firebase";
 const {Header} = Layout;
 
 const headerContainerStyle = 

@@ -1,10 +1,10 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {useCollection} from "react-firebase-hooks/firestore";
-import {firestore} from "../firebase.js";
+import {firestore} from "../../models/firebase.js";
 import {collection, query, orderBy, addDoc, serverTimestamp} from "firebase/firestore"
 import {Spin, Input, Button, Space } from "antd";
 import {SendOutlined} from "@ant-design/icons"
-import "../assets/chat.scss";
+import "../../assets/chat.scss";
 
 const Chat = ({appId, user}) => {
   const collectionRef = collection(firestore, `/applications/${appId}/application/1/operator-chat`);

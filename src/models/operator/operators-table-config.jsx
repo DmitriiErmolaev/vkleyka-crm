@@ -1,15 +1,13 @@
-import DeleteOperator from "./components/DeleteOperator";
-
-
+import DeleteOperator from "../../components/operator/DeleteOperator";
 
 const renderTrashCan = (text, record, index) => {
-  return < DeleteOperator index={index}/>
+  return <DeleteOperator index={index}/>
 } 
 
 export const columns = [
   {
     key: "operatorName",
-    dataIndex: "operatorName",
+    dataIndex: "name",
     title: "Имя, Фамилия",
   },
   {

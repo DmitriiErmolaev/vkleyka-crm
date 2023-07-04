@@ -1,12 +1,12 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import {collection} from "firebase/firestore"
 import {uploadBytes, ref} from "firebase/storage"
 import {useCollection} from "react-firebase-hooks/firestore"
 import {useParams} from "react-router-dom";
-import  {firestore, storage} from "../firebase"
+import {firestore, storage} from "../../models/firebase"
 import { UploadOutlined } from '@ant-design/icons';
 import {Layout, Button,Divider,  Upload, Typography, Descriptions, Row,Col, Space, Spin} from "antd";
-import Chat from "./Chat";
+import Chat from "../chat/Chat";
 const { Title } = Typography;
 
 // TODO: изменить пути на динамические для каждого заявителя

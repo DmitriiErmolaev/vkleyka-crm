@@ -1,8 +1,8 @@
 import React, {useState,useEffect} from 'react';
 import {Table, Spin} from "antd";
-import {getOperatorColumnsConfig, getAdminColumnsConfig} from "../table-columns-config";
+import {getOperatorColumnsConfig, getAdminColumnsConfig , getColumnsConfig} from "../../models/applications/table-columns-config";
 import {getCountFromServer, collection, query} from "firebase/firestore";
-import {firestore} from "../firebase";
+import {firestore} from "../../models/firebase";
 import {TABLE_PAGE_ITEMS_NUMBER} from "./ApplicationsTable"
 
 const total = (total, range)=>{
@@ -20,28 +20,20 @@ const paginationDoc = {
 }
 
 const TableComponent = ({
-  dirstDocRef, 
+  firstDocRef, 
   lastDocRef,
   setFirstApplicationRef, 
   setLastApplicationRef, 
+  setCurTablePage,
   tableLoading, 
   array, 
-  handleTableChange, 
-  setColumnSorting, 
+  setSelectedColumn, 
   tableDataBeforeChanging, 
-  queryForAppsWithoutLimit, 
-  setCurTablePage, 
   role,
 }) => {
 
-  let columns = []
-  if(role === "operator") {
-    columns = getOperatorColumnsConfig()
-  }
-  if(role === "admin") {
-    columns = getAdminColumnsConfig()
-  }
-  
+  let columns = getColumnsConfig(role) || [];
+    
   const [columnsSettings, setColumnsSettings] = useState(columns)
   const [paginationSettings, setPaginationSettings] = useState(paginationDoc)
   // const [totalApps, setTotalApps] = useState();
@@ -71,7 +63,7 @@ const TableComponent = ({
         sortOrder = null
       }
 
-      setColumnSorting({
+      setSelectedColumn({
           column: sorter.columnKey, 
           order: sortOrder
       })
@@ -89,10 +81,11 @@ const TableComponent = ({
   }
 
   if (tableLoading) {
+     
     return (
       <Table 
-        size="middle"
-        loading={<Spin size="large"></Spin>}
+        size="small"
+        loading
         dataSource={tableDataBeforeChanging} 
         columns={columnsSettings} 
         // sticky 
@@ -108,7 +101,7 @@ const TableComponent = ({
       size="small"
       dataSource={array} 
       columns={columnsSettings} 
-      sticky 
+      // sticky 
       pagination={paginationSettings} 
       onChange={handleTableChange} 
       rowKey={(record) => record.id}

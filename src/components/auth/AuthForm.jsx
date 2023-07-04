@@ -2,7 +2,7 @@ import React from "react";
 import {useNavigate} from "react-router-dom";
 import {Form, Input, Button, Checkbox, Layout, Space} from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../firebase";
+import {auth} from "../../models/firebase";
 
 const contentInsideLayoutStyle = {
   width:"60%", 
@@ -15,7 +15,7 @@ const contentInsideLayoutStyle = {
 }
 
 const onFinish = async ({email,pass:password}) => {
-  let userCredential = await signInWithEmailAndPassword(auth, email, password);
+  await signInWithEmailAndPassword(auth, email, password);
 };
 
 // const onFinishFailed = (errorInfo) => {
@@ -104,7 +104,6 @@ const AuthForm = () => {
               Register
             </Button>
           </Space>
-          
         </Form.Item>
       </Form>
     </Layout>
