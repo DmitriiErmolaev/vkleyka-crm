@@ -2,20 +2,21 @@ import React, {useState, useEffect, useContext} from "react";
 import {Layout, Space, Radio} from "antd";
 import {useCollection,useDocument} from "react-firebase-hooks/firestore";
 import TableComponent from "./TableComponent";
-import {allStatuses} from "../../models/applications/table-columns-config";
+import {testStatuses} from "../../models/status/status";
 import { getFilters, getDataForTable} from "../../models/applications/table-data-processing";
 import {roleBasedContent} from "../../models/role-based-rules";
 import SelectComponent from "../selectors/SelectComponent";
 import {UserContext} from "../../models/context.js";
 import {getUsersQuery} from "../../models/applications/applicants"
-import {getAppsRef} from "../../models/applications/applications"
+import {getAppsCollRef} from "../../models/applications/applications"
 import {getAdminsRef} from "../../models/operator/operators"
-import {getAllCountriesRef} from "../../models/countries"
-import {getFieldFromDocSnapshot, getDataFromCollSnapshot, getQueryWithConstraints} from "../../models/data-processing";
+import {getAllCountriesRef} from "../../models/countries/countries"
+import {getSingleFieldFromDocSnapshot, getDataFromCollSnapshot, getQueryWithConstraints} from "../../models/data-processing";
+import { ApplicationsContext } from "../../models/context.js";
 
 const ALL_COUNTRIES_REF = getAllCountriesRef();
 const USERS_QUERY = getUsersQuery();
-const APPS_REF = getAppsRef();
+const APPS_REF = getAppsCollRef();
 
 const TABLE_PAGE_ITEMS_NUMBER = 10;
 
@@ -45,13 +46,14 @@ const ApplicationsTable = ({admins}) => {
       Сохраняет массив с данными таблицы, чтобы использовать их таблицей пока новые данные грузятся 
       Для предотвращение прыгания таблицы а так же лучшего визуального восприятия смены данных 
     */
-    if(array.length !== 0 ) {
-      setTableDataBeforeChanging(array);
+    if(arrangedTableData.length !== 0 ) {
+      setTableDataBeforeChanging(arrangedTableData);
     }
   }, [appsCollSnapshot])
 
   let countries = [];
-  let array = [];
+  let arrangedTableData = [];
+  let applications = [];
   // let refArray = [];
   
   // TODO: Убрать. Временная проверка на ошибки при запросе данных таблицы
@@ -61,10 +63,11 @@ const ApplicationsTable = ({admins}) => {
       console.log(countriesError)
       console.log(usersError)
     } else {
-      const applications = getDataFromCollSnapshot(appsCollSnapshot);
+      applications = getDataFromCollSnapshot(appsCollSnapshot);
       const applicants = getDataFromCollSnapshot(usersCollSnapshot);
-      countries = getFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
-      array = getDataForTable(applications,applicants,countries);
+      countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
+      arrangedTableData = getDataForTable(applications,applicants,countries);
+
       // refArray = getDocsRefs(appsCollSnapshot);
     }
   }
@@ -94,9 +97,9 @@ const ApplicationsTable = ({admins}) => {
           // style={{marginTop:"10px"}}
         >
           <Radio value="allStatuses">Все</Radio>
-          <Radio value={allStatuses[0].dbProp}>{allStatuses[0].textValue}</Radio>
-          <Radio value={allStatuses[1].dbProp}>{allStatuses[1].textValue}</Radio>
-          <Radio value={allStatuses[2].dbProp}>{allStatuses[2].textValue}</Radio>
+          <Radio value={testStatuses['1/3'].dbProp}>{testStatuses['1/3'].buttonFilterValue}</Radio>
+          <Radio value={testStatuses['2/3'].dbProp}>{testStatuses['2/3'].buttonFilterValue}</Radio>
+          <Radio value={testStatuses['3/3'].dbProp}>{testStatuses['3/3'].buttonFilterValue}</Radio>
         </Radio.Group>
         <SelectComponent 
           collectionType={"countries"} 
@@ -109,19 +112,19 @@ const ApplicationsTable = ({admins}) => {
           }
         />
       </Space>
-      <TableComponent 
-        role = {role}
-        // TODO: для пагинации.
-        // firstDocRef = {firstDocRef}
-        // lastDocRef = {lastDocRef}
-        // setFirstApplicationRef = {setFirstApplicationRef}
-        // setLastApplicationRef = {setLastApplicationRef}
-        // setCurTablePage = {setCurTablePage}
-        tableDataBeforeChanging={tableDataBeforeChanging} 
-        array={array} 
-        setSelectedColumn={setSelectedColumn} 
-        tableLoading={tableLoading}
-      />
+        <TableComponent 
+          role = {role}
+          // TODO: для пагинации.
+          // firstDocRef = {firstDocRef}
+          // lastDocRef = {lastDocRef}
+          // setFirstApplicationRef = {setFirstApplicationRef}
+          // setLastApplicationRef = {setLastApplicationRef}
+          // setCurTablePage = {setCurTablePage}
+          tableDataBeforeChanging={tableDataBeforeChanging} 
+          arrangedTableData={arrangedTableData} 
+          setSelectedColumn={setSelectedColumn} 
+          tableLoading={tableLoading}
+        />
     </Layout>
   )
 }

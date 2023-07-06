@@ -6,42 +6,14 @@ import SelectComponent from "../../components/selectors/SelectComponent";
 import { firestore } from "../firebase";
 import {GLOBAL_ROLES, roleBasedContent} from "../role-based-rules";
 import { getAppRefById } from "./applications";
+import { testStatuses } from "../status/status";
 
 const admin = GLOBAL_ROLES.admin;
 const operator = GLOBAL_ROLES.operator;
 const all = "all";
 
-export const allStatuses = [
-   {
-    dbProp:"1/3", // отображение статуса в БД
-    textValue:"Новые", // тест статуса на кнопках сортировки и в тэгах таблицы.
-    tagColor: "blue", // цвета тега статуса
-  },
-  {
-    dbProp:"2/3",
-    textValue:"В работе",
-    tagColor: "yellow",
-  },
-  {
-    dbProp:"3/3",
-    textValue:"Завершенные",
-    tagColor: "green",
-  }, 
-  {
-    dbProp:"4/3",
-    textValue:"Отмененные",
-    tagColor: "red",
-  }, 
-]
-
 const createTag = (text) => {
-  let tag;
-  for (let status of allStatuses) {
-    if(status.dbProp === text) {
-      tag = <Tag bordered="false" color={status.tagColor}>{status.textValue}</Tag>;
-    }
-  }
-  return tag;
+  return <Tag bordered="false" color={testStatuses[text].tagColor}>{testStatuses[text].tagText}</Tag>;
 }
 
 const id_object = {
@@ -56,6 +28,7 @@ const id_object = {
         <Link 
           to={`/application/${record.fullDocId}`} 
           style={{color:"#0EA5E9", fontWeight:"800"}}
+          state={{countryFlag: record.countryFlag, countryNameRu: record.country}}
         >
           {text}
         </Link>

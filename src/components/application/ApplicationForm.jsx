@@ -1,13 +1,16 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {collection} from "firebase/firestore"
 import {uploadBytes, ref} from "firebase/storage"
 import {useDocument} from "react-firebase-hooks/firestore"
-import {useParams} from "react-router-dom";
+import {useParams, useLocation} from "react-router-dom";
 import {firestore, storage} from "../../models/firebase"
 import { UploadOutlined } from '@ant-design/icons';
-import {Layout, Button,Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin} from "antd";
+import {Layout, Button,Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin, Progress, Select } from "antd";
 import Chat from "../chat/Chat";
+import SelectComponent from "../selectors/SelectComponent";
 import { getAppRefById } from "../../models/applications/applications";
+import { getAllFieldsFromDocSnapshot } from "../../models/data-processing";
+import { testStatuses } from "../../models/status/status";
 const { Title } = Typography;
 
 // TODO: изменить пути на динамические для каждого заявителя
@@ -15,6 +18,13 @@ const UPLOAD_PATHS = {
   application: "form/application.pdf",
   docs: "docs/docs.pdf",
 }
+
+const visaType = {
+  tourist: "Туристическая",
+  student: "Студенческая",
+  work: "Рабочая",
+}
+
 
 const DESCRIPTION_FIELDS_VAR_1 = ['Ответственный визовик','ID заявителя', 'Login', 'Password', 'E-mail', 'Tel', ]
 const DESCRIPTION_FIELDS_VAR_2 = ['Name','Surname','ИНН', 'Gender', "Datebirth",]
@@ -36,33 +46,55 @@ const makeDescriptionList = (obj, descriptionFields) => {
   })
 }
 
-const Application = ({user}) => {
+const ApplicationForm = ({user}) => {
   const {appId} = useParams();
-
-  const [collectionSnapshot, loading, error] = useDocument(getAppRefById(appId));
+  // из state.countryFlag берем путь к флагу страны. Позднее
+  // из state.countryNameRu берем русское название страны. Сейчас.
+  const {state} = useLocation() 
+  const [progressPercent, setProgressPercent] = useState()
+  const [progressColor, setProgressColor] = useState()
+  const [curApplicationDocSnapshot, curAppDocSnapLoading, curAppDocSnapError] = useDocument(getAppRefById(appId));
   // const [docsFile, setDocsFile] = useState(null);
   // const [applicationFile, setApplicationFile] = useState(null);
  
-  if ( loading ) {
+  useEffect(() => {
+    if(curApplicationDocSnapshot && Object.keys(appDoc).length > 0) {
+      setProgressPercent(testStatuses[curAppStatus].progressPercent)
+      setProgressColor(testStatuses[curAppStatus].progressBarColor)
+    }
+  })
+  
+  if ( curAppDocSnapLoading ) {
     return (
       <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
         <Spin size="large"/>
       </div>
     )
   }
-  const array = []
- 
-  collectionSnapshot.forEach(docSnapshot => {
-    array.push(docSnapshot.data());
-  })
-
-  const [docVar1, docVar2, docVar3] = array
   
+  const appDoc = getAllFieldsFromDocSnapshot(curApplicationDocSnapshot)
+  const cardTitle = `${state.countryNameRu}-${visaType[appDoc.type]}`
+  const curAppStatus = appDoc.preparedInformation.preparationStatus;
+  console.log(typeof curAppStatus)
+
   return (
     <Layout style={{height:"calc(100vh - 64px)", padding:"10px"}}>
       <Row gutter={20} style={{height:"100% "}}>
         <Col span={12} style={{height:"100%", overflowY:"auto"}}>
-          <Card></Card>
+          <Card
+            bodyStyle={{padding:"50px 27px", backgroundColor:"#182A67"}}
+            size="small"
+            title={cardTitle}
+          >
+            <Progress 
+              percent = {progressPercent}
+              strokeLinecap = "square"
+              size = {["418px",41]}
+              strokeColor = {progressColor}
+              trailColor = "#fff"
+              format = {() => <SelectComponent data={{curAppStatus, appDocId:appDoc.documentID}} collectionType="statuses"/>}
+            />
+          </Card>
           <Typography >
             <Title level={4} style={{textAlign:"center"}}>
               Заявка {appId}
@@ -100,7 +132,7 @@ const Application = ({user}) => {
                 uploadBytes(ref(storage, UPLOAD_PATHS.application ), info.file)
               }}
             >
-              <Button icon={<UploadOutlined/>} >Готовые документы:</Button>
+              <Button icon={<UploadOutlined/>}>Готовые документы:</Button>
             </Upload> 
             <Upload
               accept=".pdf, application/pdf"
@@ -117,53 +149,11 @@ const Application = ({user}) => {
             >
               <Button icon={<UploadOutlined/>}>Анкета 	&#40;консульство&#41;:</Button>
             </Upload>
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
-            <p>текст</p>    
           </Space> 
-          
         </Col>
       </Row>
     </Layout>  
   )
 }
 
-export default Application;
+export default ApplicationForm;

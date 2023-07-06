@@ -3,14 +3,15 @@ import {browserLocalPersistence, getAuth, initializeAuth} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import {getStorage, ref} from "firebase/storage"
 
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDChq_tDI936uUYMSnrqCuAso5I85JC55c",
-  authDomain: "vkleykakz.firebaseapp.com",
-  projectId: "vkleykakz",
-  storageBucket: "vkleykakz.appspot.com",
-  messagingSenderId: "586834879283",
-  appId: "1:586834879283:web:ec622f286ccc7f3fb5d446",
-  measurementId: "G-J8DQLMKF5G"
+  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,  
+  authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,  
+  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,  
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,  
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINGSENDERID,  
+  appId: process.env.REACT_APP_FIREBASE_APPID,  
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID,  
 };
 
 const app = initializeApp(firebaseConfig);
@@ -19,6 +20,7 @@ const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {
   persistence: browserLocalPersistence,
 })
+
 const firestore = getFirestore(app)
 const storage = getStorage(app)
 

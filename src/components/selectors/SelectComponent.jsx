@@ -1,15 +1,17 @@
 import React,{useContext} from 'react';
 import OperatorsSelect from "./OperatorsSelect.jsx";
 import CountrySelect from "./CountrySelect.jsx";
-
+import StatusesSelect from "./StatusesSelect.jsx";
 const SelectComponent = ({data, collectionType}) => {
-  
   let select = null;
-
-  if (collectionType === "operators") {
+  
+  if (collectionType === 'statuses') {
+    select = <StatusesSelect curStatus={data.curAppStatus} appDocId={data.appDocId}/>
+  }
+  if (collectionType === 'operators') {
     select = <OperatorsSelect docRef={data.ref} assignedTo={data.assignedTo}/>
   }
-  if (collectionType === "countries") {
+  if (collectionType === 'countries') {
     select = <CountrySelect setSelectedCountry={data.setSelectedCountry} selectedCountry={data.selectedCountry} countries={data.countries}/>
   }
 

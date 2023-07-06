@@ -3,7 +3,6 @@ import {Layout} from "antd";
 import {Outlet} from "react-router-dom";
 import Head from "../components/layout/Head";
 import Aside from "../components/layout/Aside";
-
 const {Content} = Layout;
 
 const primeLayoutStyle = {
@@ -25,7 +24,7 @@ const WorkPage = () => {
               // marginLeft:"200px", 
               backgroundColor:"#F8F8F8"
             }}>
-            <Outlet/>
+            <Outlet />
           </Content>
         </Layout>
       </Layout>

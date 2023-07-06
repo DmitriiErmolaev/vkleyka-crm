@@ -101,7 +101,7 @@ export const fieldRules = {
         let isUpperCase = /[A-Z]+/.test(value);
         let isLowerCase = /[a-z]+/.test(value);
         let isSpecialSymbol = /[!"$&'()*+,-.:;=[\]\\^_`{|}~]+/.test(value);
-        let kirillicSymbol = /[а-яё]+/.test(value);
+        let kirillicSymbol = /[а-яёА-ЯЁ]+/.test(value);
         let isDigit = /[\d]+/.test(value);
         let isRestrictedSymbol = /[?#<>%@/\s]+/.test(value)
         if(kirillicSymbol) {

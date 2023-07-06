@@ -1,5 +1,6 @@
 import {where} from "firebase/firestore";
 import { updateDoc } from "firebase/firestore";
+import { getCountryFlag } from "../countries/countries";
 
 const getCorrectMonth = (month) => {
   if(month < 10) {
@@ -38,7 +39,6 @@ export const getUserName = (users, uid) => {
   return user.name
 }
 
-
 export const getFullCountryName = (countries, countryCode) => {
   const findedCountry = countries.find(country => {
     return countryCode === country.country_code;
@@ -55,6 +55,7 @@ export const getDataForTable = (applications, applicants, countries) => {
     
     accum.push(
       {
+        countryFlag: getCountryFlag(countries, application.country_code),
         fullDocId: application.documentID,
         id: getApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),

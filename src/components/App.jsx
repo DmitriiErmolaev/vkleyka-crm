@@ -12,7 +12,7 @@ import Operators from "./operator/Operators";
 import {auth} from "../models/firebase";
 import {UserContext, AdminsContext} from "../models/context.js"
 import { getAdminsRef } from "../models/operator/operators";
-import { getFieldFromDocSnapshot } from "../models/data-processing";
+import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
 import { findRole } from "../models/operator/operators-data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
 const ADMINS_REF = getAdminsRef();
@@ -45,7 +45,7 @@ const RoutesComponent = () => {
   let role = null;
   let adminsData = [];
   if(!adminsLoading) {
-    adminsData = getFieldFromDocSnapshot(adminsDocSnapshot, "admins");
+    adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
     role = findRole(adminsData, user);
   }
 

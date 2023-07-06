@@ -5,7 +5,7 @@ import {columns} from "../../models/operator/operators-table-config";
 import {AdminsContext} from "../../models/context.js";
 import {getAdminsRef} from "../../models/operator/operators";
 import {createNewOperator} from "../../models/operator/operators-data-processing";
-import {getFieldFromDocSnapshot} from "../../models/data-processing";
+import {getSingleFieldFromDocSnapshot} from "../../models/data-processing";
 import Popup from "./Popup";
 
 const ADMINS_REF = getAdminsRef();
@@ -52,7 +52,7 @@ const Operators = () => {
   let adminsData = [];
 
   if(!adminsLoading) {
-    adminsData = getFieldFromDocSnapshot(adminsDocSnapshot, "admins");
+    adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
   }
 
   return (

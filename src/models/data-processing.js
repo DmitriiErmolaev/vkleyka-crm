@@ -1,21 +1,25 @@
 import {query} from "firebase/firestore";
 import { GLOBAL_ROLES } from "./role-based-rules";
 import { operatorOptionMatrix } from "./operator/operators";
-
+import { updateDoc } from "firebase/firestore";
 // ===== получают данные из снапшотов ===== 
-export const getFieldFromDocSnapshot = (docSnapshot, fieldName) => {
-  const filedValue = docSnapshot.get(fieldName);
-  return filedValue;
+export const getSingleFieldFromDocSnapshot = (docSnapshot, fieldName) => {
+  return docSnapshot.get(fieldName);
 }
 
-export const getDataFromCollSnapshot = (CollSnap) => {
-  let users = []
-  CollSnap.forEach(DocSnap => {
-    const data = DocSnap.data();
-    users.push(data);
-  })
-  return users;
+export const getAllFieldsFromDocSnapshot = (docSnapshot) => {
+  return docSnapshot.data();
 }
+
+export const getDataFromCollSnapshot = (collSnap) => {
+  let collData = []
+  collSnap.forEach(DocSnap => {
+    const docData = DocSnap.data();
+    collData.push(docData);
+  })
+  return collData;
+}
+
 
 export const getQueryWithConstraints = (ref,constraints) => {
   return query(ref, ...constraints)
@@ -47,4 +51,8 @@ export const getSelectOptions = (data, selectType) => {
   if(selectType === "countriesSelect") {
 
   }
+}
+
+export const updateDocField = async (ref, path, data) => {
+  await updateDoc(ref, {[path]: data})
 }

@@ -26,7 +26,7 @@ const TableComponent = ({
   setLastApplicationRef, 
   setCurTablePage,
   tableLoading, 
-  array, 
+  arrangedTableData, 
   setSelectedColumn, 
   tableDataBeforeChanging, 
   role,
@@ -99,7 +99,7 @@ const TableComponent = ({
   return (
     <Table 
       size="small"
-      dataSource={array} 
+      dataSource={arrangedTableData} 
       columns={columnsSettings} 
       // sticky 
       pagination={paginationSettings} 
