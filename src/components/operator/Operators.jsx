@@ -15,17 +15,17 @@ const contentInsideLayoutStyle = {
 }
 
 const Operators = () => {
-  const [adminsState, setAdminsState] = useState([]);
+  // const [adminsState, setAdminsState] = useState([]);
   const [successMessageHidden, setSuccessMessageHidden] = useState(true);
   const [isModalOpened, setIsModalOpened] = useState(false);
 
   const [adminsDocSnapshot, adminsLoading, adminsError] = useDocument(ADMINS_REF);
 
-  useEffect(() => {
-    if(adminsData.length !== 0) {
-      setAdminsState(adminsData);
-    }
-  },[adminsDocSnapshot])
+  // useEffect(() => {
+  //   if(adminsData.length !== 0) {
+  //     setAdminsState(adminsData);
+  //   }
+  // },[adminsDocSnapshot])
           
   // const hideNotification = () => {
   //   if(!successMessageHidden) {
@@ -54,7 +54,7 @@ const Operators = () => {
   if(!adminsLoading) {
     adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
   }
-
+  
   return (
     <Layout 
       style={contentInsideLayoutStyle}
@@ -65,15 +65,15 @@ const Operators = () => {
             <Button type="primary" block="false" onClick={openRegisterModal}>Новый визовик</Button>
           </Col>
         </Row>
-        <AdminsContext.Provider value={adminsState}>
+        <AdminsContext.Provider value={adminsData}>
           <Table 
             // loading={<Spin size="large"></Spin>}
             columns={columns}
-            dataSource={adminsState}
+            dataSource={adminsData}
           />
         </AdminsContext.Provider>
       </Space>
-      <Popup isModalOpened={isModalOpened} closeRegisterModal={closeRegisterModal} adminsState={adminsState}/>
+      <Popup isModalOpened={isModalOpened} closeRegisterModal={closeRegisterModal} adminsData={adminsData}/>
     </Layout>
   )
 }

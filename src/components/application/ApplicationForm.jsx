@@ -8,10 +8,11 @@ import { UploadOutlined } from '@ant-design/icons';
 import {Layout, Button,Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin, Progress, Select } from "antd";
 import Chat from "../chat/Chat";
 import SelectComponent from "../selectors/SelectComponent";
+import CardComponent from "../card/CardComponent";
 import { getAppRefById } from "../../models/applications/applications";
 import { getAllFieldsFromDocSnapshot } from "../../models/data-processing";
 import { testStatuses } from "../../models/status/status";
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 // TODO: изменить пути на динамические для каждого заявителя
 const UPLOAD_PATHS = {
@@ -50,19 +51,14 @@ const ApplicationForm = ({user}) => {
   const {appId} = useParams();
   // из state.countryFlag берем путь к флагу страны. Позднее
   // из state.countryNameRu берем русское название страны. Сейчас.
-  const {state} = useLocation() 
-  const [progressPercent, setProgressPercent] = useState()
-  const [progressColor, setProgressColor] = useState()
-  const [curApplicationDocSnapshot, curAppDocSnapLoading, curAppDocSnapError] = useDocument(getAppRefById(appId));
+  const {state} = useLocation() ;
+
+  const APPLICATION_REF = getAppRefById(appId);
+  const [curApplicationDocSnapshot, curAppDocSnapLoading, curAppDocSnapError] = useDocument(APPLICATION_REF);
   // const [docsFile, setDocsFile] = useState(null);
   // const [applicationFile, setApplicationFile] = useState(null);
  
-  useEffect(() => {
-    if(curApplicationDocSnapshot && Object.keys(appDoc).length > 0) {
-      setProgressPercent(testStatuses[curAppStatus].progressPercent)
-      setProgressColor(testStatuses[curAppStatus].progressBarColor)
-    }
-  })
+ 
   
   if ( curAppDocSnapLoading ) {
     return (
@@ -78,25 +74,18 @@ const ApplicationForm = ({user}) => {
   console.log(typeof curAppStatus)
 
   return (
-    <Layout style={{height:"calc(100vh - 64px)", padding:"10px"}}>
+    <Layout style={{height:"calc(100vh - 64px)", padding:"0px 10px 10px"}}>
       <Row gutter={20} style={{height:"100% "}}>
         <Col span={12} style={{height:"100%", overflowY:"auto"}}>
-          <Card
-            bodyStyle={{padding:"50px 27px", backgroundColor:"#182A67"}}
-            size="small"
-            title={cardTitle}
-          >
-            <Progress 
-              percent = {progressPercent}
-              strokeLinecap = "square"
-              size = {["418px",41]}
-              strokeColor = {progressColor}
-              trailColor = "#fff"
-              format = {() => <SelectComponent data={{curAppStatus, appDocId:appDoc.documentID}} collectionType="statuses"/>}
-            />
-          </Card>
+          <CardComponent 
+            cardTitle={cardTitle}
+            curAppStatus={curAppStatus}
+            appDocId={appDoc.documentID}
+            assignedTo={appDoc.preparedInformation.assignedTo}
+            appRef={APPLICATION_REF}
+          />
           <Typography >
-            <Title level={4} style={{textAlign:"center"}}>
+            <Title level={4} style={{textAlign:"center"}} type="success">
               Заявка {appId}
             </Title>
           </Typography>

@@ -21,6 +21,7 @@ export const roleBasedContent = {
     collectionConstraints: "all-applications",
     initialQueryConstraints: null,
     columnsIncluded: ["all", "admin"],
+    cardOperatorAssigmentDisplayProperty: "flex"
   },
   operator:{
     siderMenuItems: [
@@ -36,6 +37,7 @@ export const roleBasedContent = {
     collectionConstraint: "assigned-only",
     initialQueryConstraints: where("preparedInformation.assignedTo", "==", "Гаухар"),
     columnsIncluded: ["all", "operator"],
+    cardOperatorAssigmentDisplayProperty: "none"
   }
 }
 

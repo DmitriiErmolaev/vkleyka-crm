@@ -5,19 +5,16 @@ import {fieldRules} from "../../models/operator/field-validation-rules.js";
 import {createDbOperatorObject} from "../../models/operator/operators-data-processing.js"
 import {auth} from "../../models/firebase";
 import { getAdminsRef } from '../../models/operator/operators.js';
+import { beforeAuthStateChanged } from 'firebase/auth';
+import { createNewUser } from '../../models/operator/operators-data-processing.js';
 
 const ADMINS_REF = getAdminsRef();  
 
-const NewOperatorForm = ({closeRegisterModal, adminsState, isFormCancelled, setIsFormCancelled}) => {
+const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIsFormCancelled}) => {
+  console.log(adminsData)
   const [form] = Form.useForm();
   const [buttonLoadingState, setButtonLoadingState] = useState(false);
   const [errorMessageHidden, setErrorMessageHidden] = useState(true);
-  const [
-    createUserWithEmailAndPassword, 
-    userCred, 
-    createUserLoading, 
-    createUserEror
-  ] = useCreateUserWithEmailAndPassword(auth);
 
   const resetFormFileds = () => {
     form.resetFields();
@@ -30,15 +27,19 @@ const NewOperatorForm = ({closeRegisterModal, adminsState, isFormCancelled, setI
     }
   })
 
-  const handleSubmit = (values) => {
-    createUserWithEmailAndPassword(values.email, values.pass)
-      .then((res)=> {
-        createDbOperatorObject(adminsState, ADMINS_REF, values, res.user.uid);
-        setButtonLoadingState(false);
-        closeRegisterModal();
-        resetFormFileds();
-      })
+  const handleSubmit = async (values) => {
+    try {
       setButtonLoadingState(true);
+      await createNewUser( values, adminsData)
+      // createDbOperatorObject(adminsData, ADMINS_REF, values, newUser.uid)
+    } catch(er) {
+      console.log(er) 
+    } finally {
+      setButtonLoadingState(false);
+      closeRegisterModal();
+      resetFormFileds();
+    }
+    
   }
 
   const handleSubmitFail = (values, errorFields, outOfDate) => {

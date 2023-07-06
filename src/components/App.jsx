@@ -52,13 +52,15 @@ const RoutesComponent = () => {
   if(role === GLOBAL_ROLES.operator) {
     return  (
       <UserContext.Provider value={{user: user, role: role}}>
-        <Routes>
-          <Route path="/" element={<WorkPage />}>
-              <Route index element={< ApplicationsTable/>}/>
-              <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace={true}/>}/>
-        </Routes>
+        <AdminsContext.Provider value={{admins: adminsData}}>
+          <Routes>
+            <Route path="/" element={<WorkPage />}>
+                <Route index element={< ApplicationsTable/>}/>
+                <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace={true}/>}/>
+          </Routes>
+        </AdminsContext.Provider >
       </UserContext.Provider>
     )
   }

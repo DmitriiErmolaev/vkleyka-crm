@@ -3,7 +3,7 @@ import NewOperatorForm from "./NewOperatorForm";
 import {Modal} from "antd";
 
 
-const Popup = ({isModalOpened, closeRegisterModal, adminsState}) => {
+const Popup = ({isModalOpened, closeRegisterModal, adminsData}) => {
   const [isFormCancelled, setIsFormCancelled] = useState(false);
 
   const cancelForm = () => {
@@ -19,7 +19,7 @@ const Popup = ({isModalOpened, closeRegisterModal, adminsState}) => {
       maskStyle={{backgroundColor:"#0000009C"}}
       width="38%"
     >
-      <NewOperatorForm closeRegisterModal={closeRegisterModal} adminsState={adminsState} isFormCancelled={isFormCancelled} setIsFormCancelled={setIsFormCancelled}/>
+      <NewOperatorForm closeRegisterModal={closeRegisterModal} adminsData={adminsData} isFormCancelled={isFormCancelled} setIsFormCancelled={setIsFormCancelled}/>
     </Modal>
   );
 };
