@@ -12,11 +12,18 @@ export const getAllFieldsFromDocSnapshot = (docSnapshot) => {
 }
 
 export const getDataFromCollSnapshot = (collSnap) => {
+  if (!collSnap) {
+    return
+  }
+  console.log(collSnap)
   let collData = []
-  collSnap.forEach(DocSnap => {
-    const docData = DocSnap.data();
+  collSnap.forEach(docSnap => {
+    console.log(docSnap)
+    const docData = docSnap.data();
+    console.log(docSnap.data())
     collData.push(docData);
   })
+  console.log(collData)
   return collData;
 }
 
@@ -55,4 +62,9 @@ export const getSelectOptions = (data, selectType) => {
 
 export const updateDocField = async (ref, path, data) => {
   await updateDoc(ref, {[path]: data})
+  console.log("загрузка завершена")
+}
+
+export const getPercent = (cur, total) => {
+  return Math.trunc(cur/total * 100);
 }

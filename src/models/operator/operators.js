@@ -1,6 +1,10 @@
 import {firestore} from "../firebase";
 import {doc} from "firebase/firestore";
-import {PATHS} from "../paths.js";
+
+// массив всех админов содержит и админов и оперторов(визовиков)
+export const adminsPath = {
+  admins: "admins/all-admins",
+}
 
 // ----Матрица поиска свойств из загруженных данных для операторов----
 // 1) имя свойства - соответствует такому же свойству в объекте массива options для антовского селектора
@@ -11,6 +15,6 @@ export const operatorOptionMatrix = {
 }
 
 export const getAdminsRef = () => {
-  return doc(firestore, PATHS.admins);
+  return doc(firestore, adminsPath.admins);
 }
 

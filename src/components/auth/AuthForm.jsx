@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Form, Input, Button, Checkbox, Layout, Space} from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "../../models/firebase";
+import { fieldRules } from "../../models/operator/register-validation-rules";
 
 const contentInsideLayoutStyle = {
   width:"60%", 
@@ -14,7 +15,9 @@ const contentInsideLayoutStyle = {
   boxShadow:"3px 3px 6px 2px #0000002c",
 }
 
-const onFinish = async ({email,pass:password}) => {
+const onFinish = async ({email, pass:password}) => {
+  const lowerCaseEmail = email.toLowerCase();
+  console.log(lowerCaseEmail)
   await signInWithEmailAndPassword(auth, email, password);
 };
 
@@ -50,16 +53,7 @@ const AuthForm = () => {
         <Form.Item
           label="email"
           name="email"
-          rules={[
-            {
-              required: true,
-              message: 'Please input your username!',
-            },
-            {
-              type: "email",
-              message: "неверный формат"
-            }
-          ]}
+          rules={fieldRules.email}
         >
           <Input />
         </Form.Item>
@@ -69,12 +63,7 @@ const AuthForm = () => {
           colon={true}
           label="password"
           name="pass"
-          rules={[
-            {
-              required: true,
-              message: 'Please input your password!',
-            },
-          ]}
+          rules={fieldRules.pass}
         >
           <Input.Password />
         </Form.Item>

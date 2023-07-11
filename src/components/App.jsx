@@ -9,12 +9,14 @@ import AuthForm from "./auth/AuthForm";
 import ApplicationsTable from "./application/ApplicationsTable";
 import ApplicationForm from "./application/ApplicationForm";
 import Operators from "./operator/Operators";
+import Error from "./error/Error";
 import {auth} from "../models/firebase";
 import {UserContext, AdminsContext} from "../models/context.js"
 import { getAdminsRef } from "../models/operator/operators";
 import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
 import { findRole } from "../models/operator/operators-data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
+
 const ADMINS_REF = getAdminsRef();
 
 const RoutesComponent = () => {
@@ -23,13 +25,14 @@ const RoutesComponent = () => {
 
   console.log("Firebase-auth слушатель: ", user);
 
-  if(loading) {
+  if(loading || adminsLoading) {
     return (
       <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
         <Spin size="large"/>
       </div>
     )
   }
+
 
   if(!user) {
     return (
@@ -46,6 +49,8 @@ const RoutesComponent = () => {
   let adminsData = [];
   if(!adminsLoading) {
     adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
+    console.log(adminsData)
+    console.log(user)
     role = findRole(adminsData, user);
   }
 

@@ -1,13 +1,15 @@
 import React, {useState, useEffect, useContext} from "react";
 import {Layout, Space, Radio} from "antd";
+import { where } from "firebase/firestore";
 import {useCollection,useDocument} from "react-firebase-hooks/firestore";
 import TableComponent from "./TableComponent";
 import {testStatuses} from "../../models/status/status";
 import { getFilters, getDataForTable} from "../../models/applications/table-data-processing";
+import { findAuthorizedOperatorName } from "../../models/operator/operators-data-processing";
 import {roleBasedContent} from "../../models/role-based-rules";
 import SelectComponent from "../selectors/SelectComponent";
-import {UserContext} from "../../models/context.js";
-import {getUsersQuery} from "../../models/applications/applicants"
+import {UserContext, AdminsContext} from "../../models/context.js";
+import {getUsersQuery} from "../../models/applicants/applicants"
 import {getAppsCollRef} from "../../models/applications/applications"
 import {getAdminsRef} from "../../models/operator/operators"
 import {getAllCountriesRef} from "../../models/countries/countries"
@@ -20,8 +22,9 @@ const APPS_REF = getAppsCollRef();
 
 const TABLE_PAGE_ITEMS_NUMBER = 10;
 
-const ApplicationsTable = ({admins}) => {
-  const {role} = useContext(UserContext);
+const ApplicationsTable = () => {
+  const {role, user} = useContext(UserContext);
+  const {admins} = useContext(AdminsContext)
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(USERS_QUERY);
   const [selectedCountry, setSelectedCountry] = useState({value:null, label:null});
@@ -31,7 +34,11 @@ const ApplicationsTable = ({admins}) => {
   const [firstApplicationRef, setFirstApplicationRef] = useState();
   const [lastApplicationRef, setLastApplicationRef] = useState();
   
-  let filters = getFilters(selectedCountry,selectedStatus,selectedColumn,roleBasedContent[role].initialQueryConstraints );
+
+  // TODO: обернуть в одну функцию - getInitialConstraint/getRoleBasedConstraint
+  const authorizedOperatorName = findAuthorizedOperatorName(admins, user)
+  const initialConstraint = (role === "operator") ?  where("preparedInformation.assignedTo", "==", authorizedOperatorName) : null;
+  let filters = getFilters(selectedCountry,selectedStatus,selectedColumn, initialConstraint );
 
   /* TODO: для пагинации: запрос на 10 документов коллекции
   * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10)); 
@@ -43,7 +50,7 @@ const ApplicationsTable = ({admins}) => {
 
   useEffect(()=> {
     /*
-      Сохраняет массив с данными таблицы, чтобы использовать их таблицей пока новые данные грузятся 
+      Сохраняет массив с данными таблицы, чтобы они отрисовывались пока новые данные грузятся при пагинации. 
       Для предотвращение прыгания таблицы а так же лучшего визуального восприятия смены данных 
     */
     if(arrangedTableData.length !== 0 ) {
@@ -64,14 +71,16 @@ const ApplicationsTable = ({admins}) => {
       console.log(usersError)
     } else {
       applications = getDataFromCollSnapshot(appsCollSnapshot);
+      console.log(applications)
+
       const applicants = getDataFromCollSnapshot(usersCollSnapshot);
       countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
       arrangedTableData = getDataForTable(applications,applicants,countries);
-
-      // refArray = getDocsRefs(appsCollSnapshot);
+      console.log(arrangedTableData)
+      // refArray = getDocsRefs(appsCollSnapshot);  
     }
   }
-
+  console.log(getDataFromCollSnapshot(appsCollSnapshot))
   /* TODO: для пагинации: запоминание ссылки на 1 и 10 документы
   * let firstDocRef = refArray[0];
   * let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
@@ -112,19 +121,19 @@ const ApplicationsTable = ({admins}) => {
           }
         />
       </Space>
-        <TableComponent 
-          role = {role}
-          // TODO: для пагинации.
-          // firstDocRef = {firstDocRef}
-          // lastDocRef = {lastDocRef}
-          // setFirstApplicationRef = {setFirstApplicationRef}
-          // setLastApplicationRef = {setLastApplicationRef}
-          // setCurTablePage = {setCurTablePage}
-          tableDataBeforeChanging={tableDataBeforeChanging} 
-          arrangedTableData={arrangedTableData} 
-          setSelectedColumn={setSelectedColumn} 
-          tableLoading={tableLoading}
-        />
+      <TableComponent 
+        role = {role}
+        // TODO: для пагинации.
+        // firstDocRef = {firstDocRef}
+        // lastDocRef = {lastDocRef}
+        // setFirstApplicationRef = {setFirstApplicationRef}
+        // setLastApplicationRef = {setLastApplicationRef}
+        // setCurTablePage = {setCurTablePage}
+        tableDataBeforeChanging={tableDataBeforeChanging} 
+        arrangedTableData={arrangedTableData} 
+        setSelectedColumn={setSelectedColumn} 
+        tableLoading={tableLoading}
+      />
     </Layout>
   )
 }

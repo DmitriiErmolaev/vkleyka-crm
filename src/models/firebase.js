@@ -24,7 +24,13 @@ const auth = initializeAuth(app, {
 const firestore = getFirestore(app)
 const storage = getStorage(app)
 
-const storageReference = ref(storage)
+export const getRootStorageRef = () => {
+  return ref(storage);
+}
+
+export const getFileRef = (path) => {
+  return ref(storage, path)
+}
 
 const role = "admin";
 

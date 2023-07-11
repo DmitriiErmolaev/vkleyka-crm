@@ -35,7 +35,6 @@ export const roleBasedContent = {
       },
     ],
     collectionConstraint: "assigned-only",
-    initialQueryConstraints: where("preparedInformation.assignedTo", "==", "Гаухар"),
     columnsIncluded: ["all", "operator"],
     cardOperatorAssigmentDisplayProperty: "none"
   }

@@ -1,45 +1,17 @@
-import React, {useState, useEffect} from "react";
-import {Form, Input, Button, Checkbox, Layout, Row, Col, Table, Space, Modal, Alert, useForm, Spin} from "antd";
-import {useDocument} from "react-firebase-hooks/firestore";
+import React, {useState, useContext} from "react";
+import { Button,  Layout, Row, Col, Table, Space} from "antd";
 import {columns} from "../../models/operator/operators-table-config";
 import {AdminsContext} from "../../models/context.js";
-import {getAdminsRef} from "../../models/operator/operators";
-import {createNewOperator} from "../../models/operator/operators-data-processing";
-import {getSingleFieldFromDocSnapshot} from "../../models/data-processing";
+import { getOnlyOperators } from "../../models/operator/operators-data-processing";
 import Popup from "./Popup";
-
-const ADMINS_REF = getAdminsRef();
 
 const contentInsideLayoutStyle = {
   padding: "0 60px",
 }
 
 const Operators = () => {
-  // const [adminsState, setAdminsState] = useState([]);
-  const [successMessageHidden, setSuccessMessageHidden] = useState(true);
+  const {admins} = useContext(AdminsContext);
   const [isModalOpened, setIsModalOpened] = useState(false);
-
-  const [adminsDocSnapshot, adminsLoading, adminsError] = useDocument(ADMINS_REF);
-
-  // useEffect(() => {
-  //   if(adminsData.length !== 0) {
-  //     setAdminsState(adminsData);
-  //   }
-  // },[adminsDocSnapshot])
-          
-  // const hideNotification = () => {
-  //   if(!successMessageHidden) {
-  //     setSuccessMessageHidden(true);
-  //   } 
-
-  //   if(!errorMessageHidden) {
-  //     setErrorMessageHidden(true);
-  //   }
-  // }
-
-  // const handleValuesChange = () => {
-  //   hideNotification();
-  // }
 
   const closeRegisterModal = () => {
     setIsModalOpened(false);
@@ -48,13 +20,9 @@ const Operators = () => {
   const openRegisterModal = () => {
     setIsModalOpened(true);
   }
-      
-  let adminsData = [];
-
-  if(!adminsLoading) {
-    adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
-  }
   
+  const onlyOperators = getOnlyOperators(admins);
+
   return (
     <Layout 
       style={contentInsideLayoutStyle}
@@ -65,15 +33,16 @@ const Operators = () => {
             <Button type="primary" block="false" onClick={openRegisterModal}>Новый визовик</Button>
           </Col>
         </Row>
-        <AdminsContext.Provider value={adminsData}>
           <Table 
             // loading={<Spin size="large"></Spin>}
             columns={columns}
-            dataSource={adminsData}
+            dataSource={onlyOperators}
           />
-        </AdminsContext.Provider>
       </Space>
-      <Popup isModalOpened={isModalOpened} closeRegisterModal={closeRegisterModal} adminsData={adminsData}/>
+      <Popup 
+        isModalOpened={isModalOpened} 
+        closeRegisterModal={closeRegisterModal} 
+      />
     </Layout>
   )
 }

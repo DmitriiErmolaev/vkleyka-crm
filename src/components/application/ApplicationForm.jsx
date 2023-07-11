@@ -4,7 +4,6 @@ import {uploadBytes, ref} from "firebase/storage"
 import {useDocument} from "react-firebase-hooks/firestore"
 import {useParams, useLocation} from "react-router-dom";
 import {firestore, storage} from "../../models/firebase"
-import { UploadOutlined } from '@ant-design/icons';
 import {Layout, Button,Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin, Progress, Select } from "antd";
 import Chat from "../chat/Chat";
 import SelectComponent from "../selectors/SelectComponent";
@@ -12,13 +11,8 @@ import CardComponent from "../card/CardComponent";
 import { getAppRefById } from "../../models/applications/applications";
 import { getAllFieldsFromDocSnapshot } from "../../models/data-processing";
 import { testStatuses } from "../../models/status/status";
+import UploadSection from "./UploadSection";
 const { Title, Paragraph } = Typography;
-
-// TODO: изменить пути на динамические для каждого заявителя
-const UPLOAD_PATHS = {
-  application: "form/application.pdf",
-  docs: "docs/docs.pdf",
-}
 
 const visaType = {
   tourist: "Туристическая",
@@ -49,10 +43,10 @@ const makeDescriptionList = (obj, descriptionFields) => {
 
 const ApplicationForm = ({user}) => {
   const {appId} = useParams();
-  // из state.countryFlag берем путь к флагу страны. Позднее
-  // из state.countryNameRu берем русское название страны. Сейчас.
+  // из state.countryFlag берем путь к флагу страны.
+  // из state.countryNameRu берем русское название страны.
   const {state} = useLocation() ;
-
+  console.log(state.countryFlag)
   const APPLICATION_REF = getAppRefById(appId);
   const [curApplicationDocSnapshot, curAppDocSnapLoading, curAppDocSnapError] = useDocument(APPLICATION_REF);
   // const [docsFile, setDocsFile] = useState(null);
@@ -78,6 +72,7 @@ const ApplicationForm = ({user}) => {
       <Row gutter={20} style={{height:"100% "}}>
         <Col span={12} style={{height:"100%", overflowY:"auto"}}>
           <CardComponent 
+            countryFlag = {state.countryFlag}
             cardTitle={cardTitle}
             curAppStatus={curAppStatus}
             appDocId={appDoc.documentID}
@@ -104,41 +99,7 @@ const ApplicationForm = ({user}) => {
         </Col>
         <Col  span={12} style={{height:"100%", overflowY:"auto", borderLeft:"1px solid #0000002c"}}>
           <Chat appId={appId} user={user}/>
-          <Typography >
-            <Title level={3} style={{textAlign:"center"}}>Файлы</Title>
-          </Typography> 
-          <Space style={{flexDirection:"column"}}>
-            <Upload 
-              accept=".pdf, application/pdf"
-              beforeUpload={() => false} 
-              onChange={(info ) => {
-                // TODO: блокировать загрузку на фронт, выдать пользователю сообщение. 
-                // Проверка предотвращает загрузку неверного файла в firebase
-                if (info.file.type !== "application/pdf") {
-                  console.log("неверный формат");
-                  return
-                }
-                uploadBytes(ref(storage, UPLOAD_PATHS.application ), info.file)
-              }}
-            >
-              <Button icon={<UploadOutlined/>}>Готовые документы:</Button>
-            </Upload> 
-            <Upload
-              accept=".pdf, application/pdf"
-              beforeUpload={() => false} 
-              onChange={(info ) => {
-                // TODO: блокировать загрузку на фронт, выдать пользователю сообщение. 
-                // Проверка предотвращает загрузку неверного файла в firebase, но не на фронт
-                if (info.file.type !== "application/pdf") {
-                  console.log("неверный формат");
-                  return
-                }
-                uploadBytes(ref(storage, UPLOAD_PATHS.docs), info.file)
-              }}
-            >
-              <Button icon={<UploadOutlined/>}>Анкета 	&#40;консульство&#41;:</Button>
-            </Upload>
-          </Space> 
+          <UploadSection appId={appId} uploadedDocs={appDoc.preparedInformation.documents}/>
         </Col>
       </Row>
     </Layout>  

@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React from 'react';
 import OperatorsSelect from "./OperatorsSelect.jsx";
 import CountrySelect from "./CountrySelect.jsx";
 import StatusesSelect from "./StatusesSelect.jsx";

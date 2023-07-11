@@ -47,6 +47,9 @@ export const getFullCountryName = (countries, countryCode) => {
 }
 
 export const getDataForTable = (applications, applicants, countries) => {
+  console.log(applications)
+  console.log(applicants)
+  console.log(countries)
   return applications.reduce((accum, application) => {
     if(!application.paymentSuccessful) {
       //временно: чтобы не отображать в таблице неоплаченные заявки.
@@ -75,7 +78,7 @@ export const setApplicationOperator = async (ref, fileName, value) => {
 
 export const getFilters = (country, status, column, initialQueryConstraints) => {
   let filters = [];
-
+  console.log(initialQueryConstraints)
   filters.push(initialQueryConstraints)
   
   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/

@@ -1,20 +1,15 @@
-import React, {useState, useEffect} from 'react';
-import {Form, Input, Button, Layout,  Alert, useForm, Spin} from "antd";
-import {useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
-import {fieldRules} from "../../models/operator/field-validation-rules.js";
-import {createDbOperatorObject} from "../../models/operator/operators-data-processing.js"
-import {auth} from "../../models/firebase";
-import { getAdminsRef } from '../../models/operator/operators.js';
-import { beforeAuthStateChanged } from 'firebase/auth';
+import React, {useState, useEffect, useContext} from 'react';
+import {Form, Input, Button, Layout,  Alert, useForm} from "antd";
+import {fieldRules} from "../../models/operator/register-validation-rules.js";
 import { createNewUser } from '../../models/operator/operators-data-processing.js';
+import { AdminsContext } from '../../models/context.js';
 
-const ADMINS_REF = getAdminsRef();  
-
-const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIsFormCancelled}) => {
-  console.log(adminsData)
+const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelled}) => {
+  const [errorMessage, setErrorMessage] = useState("Error!")
   const [form] = Form.useForm();
   const [buttonLoadingState, setButtonLoadingState] = useState(false);
   const [errorMessageHidden, setErrorMessageHidden] = useState(true);
+  const {admins} = useContext(AdminsContext)
 
   const resetFormFileds = () => {
     form.resetFields();
@@ -23,6 +18,7 @@ const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIs
   useEffect(()=> {
     if(isFormCancelled) {
       resetFormFileds();
+      setErrorMessageHidden(true)
       setIsFormCancelled(false);
     }
   })
@@ -30,10 +26,11 @@ const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIs
   const handleSubmit = async (values) => {
     try {
       setButtonLoadingState(true);
-      await createNewUser( values, adminsData)
-      // createDbOperatorObject(adminsData, ADMINS_REF, values, newUser.uid)
+      await createNewUser( values, admins)
     } catch(er) {
-      console.log(er) 
+      setButtonLoadingState(false);
+      setErrorMessage(er.message)
+      setErrorMessageHidden(false)
     } finally {
       setButtonLoadingState(false);
       closeRegisterModal();
@@ -44,6 +41,8 @@ const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIs
 
   const handleSubmitFail = (values, errorFields, outOfDate) => {
     console.log(values, errorFields, outOfDate)
+    console.log(typeof setErrorMessage)
+    setErrorMessage("Введены неверные данные. Пожалуйста проверьте корректность данных!")
     setErrorMessageHidden(false)
   }
 
@@ -91,7 +90,7 @@ const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIs
         >
           <Input
             size="large" 
-            placeholder="Номер телефона с кодом страны"
+            placeholder="Номер телефона с кодом страны (+123456789)"
             allowClear="true"
           >
           </Input>
@@ -139,7 +138,8 @@ const NewOperatorForm = ({closeRegisterModal, adminsData, isFormCancelled, setIs
         >
           <Alert 
             type="error" 
-            message="Введены неверные данные. Пожалуйста проверьте корректность данных!" 
+            // message="Введены неверные данные. Пожалуйста проверьте корректность данных!" 
+            message={errorMessage}
             showIcon 
           /> 
         </Form.Item>

@@ -1,7 +1,8 @@
 import DeleteOperator from "../../components/operator/DeleteOperator";
 
 const renderTrashCan = (text, record, index) => {
-  return <DeleteOperator index={index}/>
+  console.log(record)
+  return <DeleteOperator id={record.id}/>
 } 
 
 export const columns = [
@@ -21,9 +22,19 @@ export const columns = [
     title: "Телефон",
   },
   {
-    key: "appCompleted",
-    dataIndex: "appCompleted",
-    title: "Обработанные беседы",
+    key: "appsNew",
+    dataIndex: "appsNew",
+    title: "Новые",
+  },
+  {
+    key: "appsInProgress",
+    dataIndex: "appsInProgress",
+    title: "В процессе",
+  },
+  {
+    key: "appsFinished",
+    dataIndex: "appsFinished",
+    title: "Завершенные",
   },
   {
     key: "delete",
