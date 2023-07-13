@@ -12,8 +12,10 @@ const admin = GLOBAL_ROLES.admin;
 const operator = GLOBAL_ROLES.operator;
 const all = "all";
 
-const createTag = (text) => {
-  return <Tag bordered="false" color={testStatuses[text].tagColor}>{testStatuses[text].tagText}</Tag>;
+const createTag = (status) => {
+  console.log(typeof status)
+  console.log(status)
+  return <Tag bordered="false" color={testStatuses[status].tagColor}>{testStatuses[status].tagText}</Tag>;
 }
 
 const id_object = {
@@ -66,8 +68,8 @@ const status_object = {
     dataIndex: 'status',
     key: 'status',
     align: "center",
-    render: (text)=> {
-      return createTag(text)
+    render: (status)=> {
+      return createTag(status)
     },
   }
 }

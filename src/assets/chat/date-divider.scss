@@ -1,0 +1,18 @@
+.date-divider{
+  margin: 24px 0;
+  padding:0 5px;
+  display: flex;
+  justify-content: center;
+
+  .date-container {
+    height: 28px;
+    padding: 4px 12px;
+    background-color: #767680;
+    border-radius: 12px;
+
+    .date-text {
+      color: #fff;
+      font: 400 16px Inter, sans-serif;
+    }
+  }
+}

@@ -15,15 +15,11 @@ export const getDataFromCollSnapshot = (collSnap) => {
   if (!collSnap) {
     return
   }
-  console.log(collSnap)
   let collData = []
   collSnap.forEach(docSnap => {
-    console.log(docSnap)
     const docData = docSnap.data();
-    console.log(docSnap.data())
     collData.push(docData);
   })
-  console.log(collData)
   return collData;
 }
 

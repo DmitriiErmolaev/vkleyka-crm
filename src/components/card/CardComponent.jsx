@@ -25,7 +25,7 @@ const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assigned
   },[])
 
   useEffect(() => {
-    if(curAppStatus) {
+    if(curAppStatus || curAppStatus === 0) {
       setProgressPercent(testStatuses[curAppStatus].progressPercent);
       setProgressColor(testStatuses[curAppStatus].progressBarColor);
     }

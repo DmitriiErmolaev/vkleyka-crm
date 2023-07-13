@@ -49,8 +49,6 @@ const RoutesComponent = () => {
   let adminsData = [];
   if(!adminsLoading) {
     adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
-    console.log(adminsData)
-    console.log(user)
     role = findRole(adminsData, user);
   }
 

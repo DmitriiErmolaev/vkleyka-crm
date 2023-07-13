@@ -2,11 +2,8 @@ import {where} from "firebase/firestore";
 import { updateDoc } from "firebase/firestore";
 import { getCountryFlag } from "../countries/countries";
 
-const getCorrectMonth = (month) => {
-  if(month < 10) {
-    return `0${month + 1}`;
-  }
-  return month + 1;
+const addZero = (num) => {
+  return (num < 10) ? `0${num}` : num;
 }
 
 const getShortYear = (year) => {
@@ -19,14 +16,13 @@ export const getApplicationId = (docId) => {
   return id
 }
 
-export const getApplicationCreationDate = (createdAt) => {
+export const getApplicationCreationDate = (s) => {
   // TODO: проверить какую дату получают пользователи из других временных зон
-  const ms = createdAt.seconds * 1000;
-  let fullDate = new Date(ms);
-  const date = fullDate.getDate();
-  const correctMonth = getCorrectMonth(fullDate.getMonth());
-  const shortYear = getShortYear(fullDate.getFullYear());
-  return `${date}/${correctMonth}/${shortYear}`;
+  const date = new Date(s * 1000);
+  const day = addZero(date.getDate());
+  const correctMonth = addZero(date.getMonth() + 1);
+  const shortYear = getShortYear(date.getFullYear());
+  return `${day}/${correctMonth}/${shortYear}`;
 }
 
 export const getUserName = (users, uid) => {
@@ -50,18 +46,21 @@ export const getDataForTable = (applications, applicants, countries) => {
   console.log(applications)
   console.log(applicants)
   console.log(countries)
+  console.log(applications.length)
   return applications.reduce((accum, application) => {
-    if(!application.paymentSuccessful) {
+
+    if( !application.paymentSuccessful) {
       //временно: чтобы не отображать в таблице неоплаченные заявки.
+      console.log(application.paymentSuccessful)
       return accum;
-    }
-    
+    } 
+    console.log("сколько раз?")
     accum.push(
       {
         countryFlag: getCountryFlag(countries, application.country_code),
         fullDocId: application.documentID,
         id: getApplicationId(application.documentID),
-        date: getApplicationCreationDate(application.createdAt),
+        date: getApplicationCreationDate(application.createdAt.seconds),
         applicant: getUserName(applicants, application.UID), 
         status: application.preparedInformation.preparationStatus,
         country: getFullCountryName(countries, application.country_code),
@@ -91,7 +90,7 @@ export const getFilters = (country, status, column, initialQueryConstraints) => 
   if(country.value) {
     filters.push(where("country_code", "==", country.value));
   }
-  if(status && status !== "allStatuses") {
+  if((status && status !== "allStatuses") || status === 0) {
     filters.push(where("preparedInformation.preparationStatus", "==", status))
   }
 

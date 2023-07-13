@@ -3,7 +3,7 @@ import {Layout, Space, Radio} from "antd";
 import { where } from "firebase/firestore";
 import {useCollection,useDocument} from "react-firebase-hooks/firestore";
 import TableComponent from "./TableComponent";
-import {testStatuses} from "../../models/status/status";
+import {testStatuses, buttonFilterSettings} from "../../models/status/status";
 import { getFilters, getDataForTable} from "../../models/applications/table-data-processing";
 import { findAuthorizedOperatorName } from "../../models/operator/operators-data-processing";
 import {roleBasedContent} from "../../models/role-based-rules";
@@ -34,7 +34,7 @@ const ApplicationsTable = () => {
   const [firstApplicationRef, setFirstApplicationRef] = useState();
   const [lastApplicationRef, setLastApplicationRef] = useState();
   
-
+  console.log(buttonFilterSettings.new.text)
   // TODO: обернуть в одну функцию - getInitialConstraint/getRoleBasedConstraint
   const authorizedOperatorName = findAuthorizedOperatorName(admins, user)
   const initialConstraint = (role === "operator") ?  where("preparedInformation.assignedTo", "==", authorizedOperatorName) : null;
@@ -106,9 +106,9 @@ const ApplicationsTable = () => {
           // style={{marginTop:"10px"}}
         >
           <Radio value="allStatuses">Все</Radio>
-          <Radio value={testStatuses['1/3'].dbProp}>{testStatuses['1/3'].buttonFilterValue}</Radio>
-          <Radio value={testStatuses['2/3'].dbProp}>{testStatuses['2/3'].buttonFilterValue}</Radio>
-          <Radio value={testStatuses['3/3'].dbProp}>{testStatuses['3/3'].buttonFilterValue}</Radio>
+          <Radio value={buttonFilterSettings.new.value}>{buttonFilterSettings.new.text}</Radio>
+          <Radio value={buttonFilterSettings.inProgress.value}>{buttonFilterSettings.inProgress.text}</Radio>
+          <Radio value={buttonFilterSettings.finished.value}>{buttonFilterSettings.finished.text}</Radio>
         </Radio.Group>
         <SelectComponent 
           collectionType={"countries"} 

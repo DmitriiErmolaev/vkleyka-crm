@@ -35,27 +35,39 @@ const notificationMessages = {
 }
 
 
-
 const UploadSection = ({appId, uploadedDocs}) => {
-  const  curApplicationFileExtraProps = 
-  {
-    name: uploadedDocs[0].name, 
-    status:"done"
+  const makeInitialFilesExtraProps = () => {
+    // Для первого отображения уже загруженных документов. После загрузки нового файла отображаться
+    if(uploadedDocs.length === 0) {
+      return {};
+    } 
+
+    let curApplicationFileExtraProps = {};
+    let curAppointmentFileExtraProps = {};
+    uploadedDocs.forEach( uploadedDoc => {
+      if(uploadedDoc.key === "application"){
+        curApplicationFileExtraProps = {
+          name: uploadedDocs[0].name, 
+          status:"done",
+        }
+      }
+      if(uploadedDoc.key === "appointment"){
+        curAppointmentFileExtraProps = {
+          name: uploadedDocs[1].name, 
+          status:"done",
+        }
+      }
+    })
+ 
+    return  {
+      application: [curApplicationFileExtraProps], 
+      appointment: [curAppointmentFileExtraProps],
+    }
   }
   
+ 
 
-  const curAppointmentFileExtraProps = 
-  {
-    name: uploadedDocs[1].name, 
-    status:"done"
-  }
-  
-  const FilesExtraPropsState = {
-    application: [curApplicationFileExtraProps], 
-    appointment: [curAppointmentFileExtraProps],
-  }
-
-  const [fileList, setFileList] = useState(FilesExtraPropsState);
+  const [fileList, setFileList] = useState(makeInitialFilesExtraProps);
   const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false)
   const [clickedButton, setClickedButton] = useState(null);
   const [api, contextHolder] = notification.useNotification()
@@ -102,10 +114,12 @@ const UploadSection = ({appId, uploadedDocs}) => {
         uploadPath: uploadResult.snapshot.metadata.fullPath, 
         fileName: newFileName,
       }
-
-      const updatedUploadedDocsInfo = getUploadedDocsInfo(uploadedDocs, options )
       
-      await updateDocField(APPLICATION_REF, "preparedInformation.documents", updatedUploadedDocsInfo);
+      const uploadedDocsInfo = getUploadedDocsInfo(uploadedDocs, options )
+     
+      console.log(uploadedDocsInfo)
+      await updateDocField(APPLICATION_REF, "preparedInformation.documents", uploadedDocsInfo)
+      
 
       const newFileExtraProps = getNewFileExtraProps(newFileName, "done");
       setFileList((prev) => {
@@ -115,7 +129,6 @@ const UploadSection = ({appId, uploadedDocs}) => {
       setClickedButton(null)
       setUploadButtonIsDisabled(false) 
       // используемые методы: setDataToDownloadFile, updateDocField.
-      
     })
   }
 

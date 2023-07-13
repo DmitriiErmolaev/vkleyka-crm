@@ -12,6 +12,7 @@ import { getAppRefById } from "../../models/applications/applications";
 import { getAllFieldsFromDocSnapshot } from "../../models/data-processing";
 import { testStatuses } from "../../models/status/status";
 import UploadSection from "./UploadSection";
+import Questionnaire from "./Questionnaire";
 const { Title, Paragraph } = Typography;
 
 const visaType = {
@@ -41,7 +42,7 @@ const makeDescriptionList = (obj, descriptionFields) => {
   })
 }
 
-const ApplicationForm = ({user}) => {
+const ApplicationForm = () => {
   const {appId} = useParams();
   // из state.countryFlag берем путь к флагу страны.
   // из state.countryNameRu берем русское название страны.
@@ -63,6 +64,8 @@ const ApplicationForm = ({user}) => {
   }
   
   const appDoc = getAllFieldsFromDocSnapshot(curApplicationDocSnapshot)
+ 
+
   const cardTitle = `${state.countryNameRu}-${visaType[appDoc.type]}`
   const curAppStatus = appDoc.preparedInformation.preparationStatus;
   console.log(typeof curAppStatus)
@@ -84,6 +87,7 @@ const ApplicationForm = ({user}) => {
               Заявка {appId}
             </Title>
           </Typography>
+          <Questionnaire questionnary={appDoc.questionnary.answers}/>
           {/* <Descriptions labelStyle={{width:"150px", textAlign:"center", fontWeight:"700", padding:"5px", }} size="small" bordered column={2} title="Personal info" >
             {makeDescriptionList(docVar1, DESCRIPTION_FIELDS_VAR_1)}
           </Descriptions> 
@@ -98,7 +102,7 @@ const ApplicationForm = ({user}) => {
           <Divider></Divider> */}
         </Col>
         <Col  span={12} style={{height:"100%", overflowY:"auto", borderLeft:"1px solid #0000002c"}}>
-          <Chat appId={appId} user={user}/>
+          <Chat appId={appId} applicantId={appDoc.UID}/>
           <UploadSection appId={appId} uploadedDocs={appDoc.preparedInformation.documents}/>
         </Col>
       </Row>
