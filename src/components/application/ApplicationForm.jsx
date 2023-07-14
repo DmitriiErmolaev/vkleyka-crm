@@ -4,7 +4,7 @@ import {uploadBytes, ref} from "firebase/storage"
 import {useDocument} from "react-firebase-hooks/firestore"
 import {useParams, useLocation} from "react-router-dom";
 import {firestore, storage} from "../../models/firebase"
-import {Layout, Button,Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin, Progress, Select } from "antd";
+import {Layout, Button, Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin, Progress, Select } from "antd";
 import Chat from "../chat/Chat";
 import SelectComponent from "../selectors/SelectComponent";
 import CardComponent from "../card/CardComponent";
