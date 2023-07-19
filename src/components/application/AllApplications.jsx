@@ -22,7 +22,7 @@ const APPS_REF = getAppsCollRef();
 
 const TABLE_PAGE_ITEMS_NUMBER = 10;
 
-const ApplicationsTable = () => {
+const AllApplications = () => {
   const {role, user} = useContext(UserContext);
   const {admins} = useContext(AdminsContext)
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
@@ -75,7 +75,7 @@ const ApplicationsTable = () => {
 
       const applicants = getDataFromCollSnapshot(usersCollSnapshot);
       countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
-      arrangedTableData = getDataForTable(applications,applicants,countries);
+      arrangedTableData = getDataForTable(applications, applicants, countries);
       console.log(arrangedTableData)
       // refArray = getDocsRefs(appsCollSnapshot);  
     }
@@ -138,4 +138,4 @@ const ApplicationsTable = () => {
   )
 }
 
-export default ApplicationsTable;
+export default AllApplications;

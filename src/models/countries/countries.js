@@ -26,8 +26,10 @@ export const getAllCountriesRef = () => {
 
 // получение пути хранения флага в firebase storage. 
 export const getCountryFlag = (countries, countryCode) => {
+  console.log("ищем флаг")
   const findedCountry = countries.find(country => {
     return countryCode === country.country_code;
   })
+  console.log(findedCountry.flag)
   return findedCountry.flag
 }

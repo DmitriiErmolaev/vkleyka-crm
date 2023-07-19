@@ -1,14 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import { getFlagUrl } from '../../models/applications/applications';
-import { getFileRef } from '../../models/firebase';
-
+import React from 'react';
 
 const CardTitle = ({data}) => {
-
-
   return (
     <div 
-    style={{ display: "flex", alignItems:"center"}}
+      style={{ display: "flex", alignItems:"center"}}
     >
       <img 
         src={data.flagUrl} 
@@ -17,7 +12,6 @@ const CardTitle = ({data}) => {
       />
       {data.cardTitle}
     </div>
-    
   )
 };
 

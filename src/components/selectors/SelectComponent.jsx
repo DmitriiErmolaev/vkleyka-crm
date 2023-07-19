@@ -2,6 +2,7 @@ import React from 'react';
 import OperatorsSelect from "./OperatorsSelect.jsx";
 import CountrySelect from "./CountrySelect.jsx";
 import StatusesSelect from "./StatusesSelect.jsx";
+import QuestionnaireSelect from './QuestionnaireSelect.jsx';
 const SelectComponent = ({data, collectionType}) => {
   let select = null;
   
@@ -13,6 +14,9 @@ const SelectComponent = ({data, collectionType}) => {
   }
   if (collectionType === 'countries') {
     select = <CountrySelect setSelectedCountry={data.setSelectedCountry} selectedCountry={data.selectedCountry} countries={data.countries}/>
+  }
+  if (collectionType === 'questionnaire') {
+    select = <QuestionnaireSelect response={data.response} isEdit={data.isEdit}/>
   }
 
   return select

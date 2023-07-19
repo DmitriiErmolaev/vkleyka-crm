@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {collection} from "firebase/firestore"
 import {uploadBytes, ref} from "firebase/storage"
+import { EditOutlined } from "@ant-design/icons";
 import {useDocument} from "react-firebase-hooks/firestore"
 import {useParams, useLocation} from "react-router-dom";
 import {firestore, storage} from "../../models/firebase"
@@ -21,33 +22,12 @@ const visaType = {
   work: "Рабочая",
 }
 
-
-const DESCRIPTION_FIELDS_VAR_1 = ['Ответственный визовик','ID заявителя', 'Login', 'Password', 'E-mail', 'Tel', ]
-const DESCRIPTION_FIELDS_VAR_2 = ['Name','Surname','ИНН', 'Gender', "Datebirth",]
-const DESCRIPTION_FIELDS_VAR_3 = [ 'Паспорт', 'Дата выдачи', 'Окончание действия', 'Кем выдан', "Факт. домашний адрес", 'Юр. домашний адрес', 'Семейный статус', 'Страна гражданства', 'Страна рождения', 'Город рождения', ]
-
-const makeDescriptionList = (obj, descriptionFields) => {
-  // TODO: Данную проверку удалить перед релизом.
-  if (obj === undefined) {
-    return descriptionFields.map(key => {
-      return <Descriptions.Item label={key}>-</Descriptions.Item>
-    })
-  }
-  
-  return descriptionFields.map(key => {
-    if(key === "Ответственный визовик" ){
-      return <Descriptions.Item label={key} span={2} labelStyle={{color:"rgb(75, 216, 86)"}}>{obj.viser}</Descriptions.Item>
-    }
-    return <Descriptions.Item label={key}>{obj[key]}</Descriptions.Item>
-  })
-}
-
 const ApplicationForm = () => {
   const {appId} = useParams();
   // из state.countryFlag берем путь к флагу страны.
   // из state.countryNameRu берем русское название страны.
+  // из state.personalInfo берем объект пользовательских данных заявителя.
   const {state} = useLocation() ;
-  console.log(state.countryFlag)
   const APPLICATION_REF = getAppRefById(appId);
   const [curApplicationDocSnapshot, curAppDocSnapLoading, curAppDocSnapError] = useDocument(APPLICATION_REF);
   // const [docsFile, setDocsFile] = useState(null);
@@ -68,7 +48,6 @@ const ApplicationForm = () => {
 
   const cardTitle = `${state.countryNameRu}-${visaType[appDoc.type]}`
   const curAppStatus = appDoc.preparedInformation.preparationStatus;
-  console.log(typeof curAppStatus)
 
   return (
     <Layout style={{height:"calc(100vh - 64px)", padding:"0px 10px 10px"}}>
@@ -82,24 +61,7 @@ const ApplicationForm = () => {
             assignedTo={appDoc.preparedInformation.assignedTo}
             appRef={APPLICATION_REF}
           />
-          <Typography >
-            <Title level={4} style={{textAlign:"center"}} type="success">
-              Заявка {appId}
-            </Title>
-          </Typography>
-          <Questionnaire questionnary={appDoc.questionnary.answers}/>
-          {/* <Descriptions labelStyle={{width:"150px", textAlign:"center", fontWeight:"700", padding:"5px", }} size="small" bordered column={2} title="Personal info" >
-            {makeDescriptionList(docVar1, DESCRIPTION_FIELDS_VAR_1)}
-          </Descriptions> 
-          <Divider></Divider>
-          <Descriptions contentStyle={{alignItems:"center"}}  labelStyle={{width:"100px", textAlign:"center", padding:"5px"}} size="middle" title="Person" column={1} >
-            {makeDescriptionList(docVar2, DESCRIPTION_FIELDS_VAR_2)}
-          </Descriptions>
-          <Divider></Divider>
-          <Descriptions column={1}  labelStyle={{width:"150px", padding:"5px", textAlign:"center"}} title="Passport & Adress" bordered>
-            {makeDescriptionList(docVar3, DESCRIPTION_FIELDS_VAR_3)}
-          </Descriptions>
-          <Divider></Divider> */}
+          <Questionnaire questionnaire={appDoc.questionnary.answers} passports={appDoc.passports} appRef={APPLICATION_REF} appId={appId}/>
         </Col>
         <Col  span={12} style={{height:"100%", overflowY:"auto", borderLeft:"1px solid #0000002c"}}>
           <Chat appId={appId} applicantId={appDoc.UID}/>

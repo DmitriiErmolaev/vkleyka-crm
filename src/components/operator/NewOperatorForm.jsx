@@ -1,15 +1,28 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {Form, Input, Button, Layout,  Alert, useForm} from "antd";
-import {fieldRules} from "../../models/operator/register-validation-rules.js";
+import {fieldRules} from "../../models/operator/register-validation.js";
 import { createNewUser } from '../../models/operator/operators-data-processing.js';
 import { AdminsContext } from '../../models/context.js';
+
+const initialFeedbackStatus = {
+  name: "validating", 
+  surname: "validating",
+  tel: "validating",
+  phone: "validating", 
+  email: "validating",
+  pass: "validating",
+  confirm: "validating",
+}
 
 const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelled}) => {
   const [errorMessage, setErrorMessage] = useState("Error!")
   const [form] = Form.useForm();
+  const [feedBackStatus, setFeedbackStatus] = useState(initialFeedbackStatus) 
   const [buttonLoadingState, setButtonLoadingState] = useState(false);
   const [errorMessageHidden, setErrorMessageHidden] = useState(true);
   const {admins} = useContext(AdminsContext)
+
+  
 
   const resetFormFileds = () => {
     form.resetFields();
@@ -57,11 +70,13 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         onFinish = {handleSubmit}
         onFinishFailed = {handleSubmitFail}
         onValuesChange= {handleValuesChange}
+        // validateTrigger={["onChange","onBlur","onSubmit"]}
       >
         <Form.Item
           hasFeedback="true"
           name="name"
           rules={fieldRules.operatorName}
+          validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
             size="large" 
@@ -74,6 +89,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           hasFeedback="true"
           name="surname"
           rules={fieldRules.surname}
+          validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
             size="large" 
@@ -85,7 +101,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         <Form.Item
           hasFeedback="true"
           name="tel"
-          validateTrigger={["onChange","onBlur"]}
+          validateTrigger={["onChange","onSubmit", ]}
           rules={fieldRules.tel}
         >
           <Input
@@ -99,6 +115,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           hasFeedback="true"
           name="email"
           rules={fieldRules.email}
+          validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
           size="large" 
@@ -108,7 +125,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         <Form.Item 
           hasFeedback="true"
           name="pass"
-          validateTrigger={["onChange", "onBlur", "onSubmit"]}
+          validateTrigger={["onChange", "onBlur"]}
           rules={fieldRules.password}
         >
           <Input.Password size="large"  placeholder="password"/>
@@ -118,6 +135,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           name="confirm"
           dependencies={["pass"]}
           rules={fieldRules.passConfirm}
+          validateTrigger={["onChange", "onSubmit"]}
         >
           <Input.Password size="large"  placeholder="Повторите пароль"/>
         </Form.Item>

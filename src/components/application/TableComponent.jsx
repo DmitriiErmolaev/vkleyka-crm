@@ -3,7 +3,7 @@ import {Table, Spin} from "antd";
 import {getOperatorColumnsConfig, getAdminColumnsConfig , getColumnsConfig} from "../../models/applications/table-columns-config";
 import {getCountFromServer, collection, query} from "firebase/firestore";
 import {firestore} from "../../models/firebase";
-import {TABLE_PAGE_ITEMS_NUMBER} from "./ApplicationsTable"
+import {TABLE_PAGE_ITEMS_NUMBER} from "./AllApplications"
 
 const total = (total, range)=>{
   let first = `${range[0]} - ${range[1]}`

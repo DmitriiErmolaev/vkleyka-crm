@@ -2,17 +2,17 @@ export const fieldRules = {
   email: [
     {
       required: true,
-      message: 'Please input your username!',
+      message: 'Пожалуйста, введите email!',
     },
     {
       type: "email",
-      message: "неверный формат"
+      message: "Некорректный email!"
     }
   ], 
   pass: [
     {
       required: true,
-      message: 'Please input your password!',
+      message: 'Пожалуйста, введите пароль!',
     },
   ]
 }

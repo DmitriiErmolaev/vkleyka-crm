@@ -15,17 +15,7 @@ export const getAppRefById = (docId) => {
   return doc(firestore, `applications/${docId}`)
 }
 
-export const setDataToDownloadFile = (uploadResult, uploadedDocs, docName  ) => {
-  if (uploadedDocs.length > 0) {
-  //сюда случай перезаписи информации о документе 
-  }
-  let obj = {
-    link: uploadResult.metadata.fullPath,
-    name: docName
-  } 
-}
-
-export const getFlagUrl = async (flagRef) => {
+export const getFileUrl = async (flagRef) => {
 // надо как то сохранять этот файл, и потом уже брать из скаченных.
   console.log(flagRef);
   const flagBlob = await getBlob(flagRef);

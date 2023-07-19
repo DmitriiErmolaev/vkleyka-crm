@@ -1,0 +1,24 @@
+.editButton {
+  transition: transform 0.1s;
+  &:hover {
+    cursor:pointer;
+  }
+  &:active {
+    transform:scale(0.85);
+  }
+}
+
+.person__title {
+  color:#0F6CA5;
+  font: 500 20px Jost, sans-serif;
+}
+
+.person__applicants-num {
+  margin-left:20px;
+  color:#000000;
+  font: 400 16px Jost, sans-serif;
+}
+.person-info__question {
+  color: #A5A5A5;
+  font: 400 14px Jost, sans-serif;
+}

@@ -25,15 +25,18 @@ export const getApplicationCreationDate = (s) => {
   return `${day}/${correctMonth}/${shortYear}`;
 }
 
-export const getUserName = (users, uid) => {
-  console.log(users)
-  console.log(uid)
-  const user = users.find(user => {
+export const getUserPersonalInfo = (users, uid) => {
+  return users.find(user => {
     return user.UID === uid
   })
-  console.log(user)
+}
+
+export const getUserName = (users, uid) => {
+  const user = getUserPersonalInfo(users, uid)
   return user.name
 }
+
+
 
 export const getFullCountryName = (countries, countryCode) => {
   const findedCountry = countries.find(country => {
@@ -43,10 +46,6 @@ export const getFullCountryName = (countries, countryCode) => {
 }
 
 export const getDataForTable = (applications, applicants, countries) => {
-  console.log(applications)
-  console.log(applicants)
-  console.log(countries)
-  console.log(applications.length)
   return applications.reduce((accum, application) => {
 
     if( !application.paymentSuccessful) {

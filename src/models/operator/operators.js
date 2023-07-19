@@ -11,7 +11,7 @@ export const adminsPath = {
 // 2) Значение - свойство хранящее нужную нам информацию в объекте скаченных данных.  
 export const operatorOptionMatrix = {
   optionLabel: "name",
-  id: "key",
+  optionValue: "key",
 }
 
 export const getAdminsRef = () => {

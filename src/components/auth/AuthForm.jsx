@@ -3,7 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {Form, Input, Button, Checkbox, Layout, Space} from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "../../models/firebase";
-import { fieldRules } from "../../models/operator/register-validation-rules";
+import { fieldRules } from "../../models/operator/register-validation";
 
 const contentInsideLayoutStyle = {
   width:"60%", 
@@ -76,7 +76,9 @@ const AuthForm = () => {
             span: 16,
           }}
         >
-          <Checkbox>Remember me</Checkbox>
+          <Checkbox>
+            Remember me
+          </Checkbox>
         </Form.Item>
 
         <Form.Item
@@ -88,9 +90,6 @@ const AuthForm = () => {
           <Space size="large">
             <Button type="primary" htmlType="submit">
               Submit
-            </Button>
-            <Button type="primary" onClick={()=> navigate("/login/register")}>
-              Register
             </Button>
           </Space>
         </Form.Item>

@@ -45,7 +45,7 @@ export const getSelectOptions = (data, selectType) => {
       accum.push(
         {
           label: admin[operatorOptionMatrix.optionLabel],
-          value: admin[operatorOptionMatrix.id],
+          value: admin[operatorOptionMatrix.optionValue],
         }
       )
       return accum

@@ -6,7 +6,7 @@ import {Spin} from 'antd';
 import EntryPage from "../pages/EntryPage"
 import WorkPage from "../pages/WorkPage"
 import AuthForm from "./auth/AuthForm";
-import ApplicationsTable from "./application/ApplicationsTable";
+import AllApplications from "./application/AllApplications";
 import ApplicationForm from "./application/ApplicationForm";
 import Operators from "./operator/Operators";
 import Error from "./error/Error";
@@ -58,7 +58,7 @@ const RoutesComponent = () => {
         <AdminsContext.Provider value={{admins: adminsData}}>
           <Routes>
             <Route path="/" element={<WorkPage />}>
-                <Route index element={< ApplicationsTable/>}/>
+                <Route index element={< AllApplications/>}/>
                 <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
             </Route>
             <Route path="*" element={<Navigate to="/" replace={true}/>}/>
@@ -74,7 +74,7 @@ const RoutesComponent = () => {
         <AdminsContext.Provider value={{admins: adminsData}}>
           <Routes>
             <Route path="/" element={<WorkPage />}>
-                <Route index element={< ApplicationsTable />}/>
+                <Route index element={< AllApplications />}/>
                 <Route path="users-manager" element={< Operators/>}/>
                 <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
             </Route>
