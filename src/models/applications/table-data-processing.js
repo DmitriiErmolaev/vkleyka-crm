@@ -50,10 +50,8 @@ export const getDataForTable = (applications, applicants, countries) => {
 
     if( !application.paymentSuccessful) {
       //временно: чтобы не отображать в таблице неоплаченные заявки.
-      console.log(application.paymentSuccessful)
       return accum;
     } 
-    console.log("сколько раз?")
     accum.push(
       {
         countryFlag: getCountryFlag(countries, application.country_code),
@@ -76,7 +74,6 @@ export const setApplicationOperator = async (ref, fileName, value) => {
 
 export const getFilters = (country, status, column, initialQueryConstraints) => {
   let filters = [];
-  console.log(initialQueryConstraints)
   filters.push(initialQueryConstraints)
   
   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/

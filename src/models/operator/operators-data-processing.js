@@ -45,7 +45,6 @@ export const findRole = (admins, authorizedUser) => {
   const findedUser = admins.find((admin) => {
     return admin.email === authorizedUser.email;
   })
-  console.log(findedUser)
   return findedUser.role;
 }
 
@@ -53,7 +52,6 @@ export const findAuthorizedOperatorName = (admins, authorizedUser) => {
   const findedUser = admins.find((admin) => {
     return admin.id === authorizedUser.uid;
   })
-  console.log(findedUser)
   return findedUser.name;
 }
 
@@ -77,7 +75,6 @@ export const createNewAuth = (email, pass) => {
       
       createUserWithEmailAndPassword(auth, email, pass)
         .catch((e) => {
-          console.log(e)
           if(e.message === "auth/login-blocked"){
             //it's ok
           } 

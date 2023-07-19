@@ -58,7 +58,6 @@ export const getSelectOptions = (data, selectType) => {
 
 export const updateDocField = async (ref, path, data) => {
   await updateDoc(ref, {[path]: data})
-  console.log("загрузка завершена")
 }
 
 export const getPercent = (cur, total) => {

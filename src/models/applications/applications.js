@@ -17,9 +17,6 @@ export const getAppRefById = (docId) => {
 
 export const getFileUrl = async (flagRef) => {
 // надо как то сохранять этот файл, и потом уже брать из скаченных.
-  console.log(flagRef);
   const flagBlob = await getBlob(flagRef);
-  console.log(flagBlob);
-
   return URL.createObjectURL(flagBlob);
 }

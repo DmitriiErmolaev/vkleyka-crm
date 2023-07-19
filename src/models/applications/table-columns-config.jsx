@@ -13,8 +13,6 @@ const operator = GLOBAL_ROLES.operator;
 const all = "all";
 
 const createTag = (status) => {
-  console.log(typeof status)
-  console.log(status)
   return <Tag bordered="false" color={testStatuses[status].tagColor}>{testStatuses[status].tagText}</Tag>;
 }
 

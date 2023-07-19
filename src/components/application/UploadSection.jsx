@@ -65,8 +65,6 @@ const UploadSection = ({appId, uploadedDocs}) => {
     }
   }
   
- 
-
   const [fileList, setFileList] = useState(makeInitialFilesExtraProps);
   const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false)
   const [clickedButton, setClickedButton] = useState(null);
@@ -108,7 +106,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
       })
     }, error => {
       // TODO: обработать ошибки.
-    }, async (complete) => {
+    }, async () => {
       const options = {
         docType: clickedButton, 
         uploadPath: uploadResult.snapshot.metadata.fullPath, 
@@ -116,19 +114,15 @@ const UploadSection = ({appId, uploadedDocs}) => {
       }
       
       const uploadedDocsInfo = getUploadedDocsInfo(uploadedDocs, options )
-     
-      console.log(uploadedDocsInfo)
       await updateDocField(APPLICATION_REF, "preparedInformation.documents", uploadedDocsInfo)
-      
-
       const newFileExtraProps = getNewFileExtraProps(newFileName, "done");
+
       setFileList((prev) => {
         return {...prev, [clickedButton]: [newFileExtraProps]}
       })
       openNotification("success")
       setClickedButton(null)
       setUploadButtonIsDisabled(false) 
-      // используемые методы: setDataToDownloadFile, updateDocField.
     })
   }
 

@@ -34,7 +34,6 @@ const AllApplications = () => {
   const [firstApplicationRef, setFirstApplicationRef] = useState();
   const [lastApplicationRef, setLastApplicationRef] = useState();
   
-  console.log(buttonFilterSettings.new.text)
   // TODO: обернуть в одну функцию - getInitialConstraint/getRoleBasedConstraint
   const authorizedOperatorName = findAuthorizedOperatorName(admins, user)
   const initialConstraint = (role === "operator") ?  where("preparedInformation.assignedTo", "==", authorizedOperatorName) : null;
@@ -71,16 +70,13 @@ const AllApplications = () => {
       console.log(usersError)
     } else {
       applications = getDataFromCollSnapshot(appsCollSnapshot);
-      console.log(applications)
-
       const applicants = getDataFromCollSnapshot(usersCollSnapshot);
       countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
       arrangedTableData = getDataForTable(applications, applicants, countries);
-      console.log(arrangedTableData)
       // refArray = getDocsRefs(appsCollSnapshot);  
     }
   }
-  console.log(getDataFromCollSnapshot(appsCollSnapshot))
+  
   /* TODO: для пагинации: запоминание ссылки на 1 и 10 документы
   * let firstDocRef = refArray[0];
   * let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];

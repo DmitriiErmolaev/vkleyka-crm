@@ -81,7 +81,6 @@ const TableComponent = ({
   }
 
   if (tableLoading) {
-     
     return (
       <Table 
         size="small"

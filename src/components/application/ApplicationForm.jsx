@@ -1,20 +1,13 @@
-import React, {useState, useEffect} from "react";
-import {collection} from "firebase/firestore"
-import {uploadBytes, ref} from "firebase/storage"
-import { EditOutlined } from "@ant-design/icons";
+import React from "react";
 import {useDocument} from "react-firebase-hooks/firestore"
 import {useParams, useLocation} from "react-router-dom";
-import {firestore, storage} from "../../models/firebase"
-import {Layout, Button, Divider, Card,  Upload, Typography, Descriptions, Row,Col, Space, Spin, Progress, Select } from "antd";
+import {Layout, Typography,  Row,Col, Spin} from "antd";
 import Chat from "../chat/Chat";
-import SelectComponent from "../selectors/SelectComponent";
 import CardComponent from "../card/CardComponent";
 import { getAppRefById } from "../../models/applications/applications";
 import { getAllFieldsFromDocSnapshot } from "../../models/data-processing";
-import { testStatuses } from "../../models/status/status";
 import UploadSection from "./UploadSection";
 import Questionnaire from "./Questionnaire";
-const { Title, Paragraph } = Typography;
 
 const visaType = {
   tourist: "Туристическая",
@@ -32,8 +25,6 @@ const ApplicationForm = () => {
   const [curApplicationDocSnapshot, curAppDocSnapLoading, curAppDocSnapError] = useDocument(APPLICATION_REF);
   // const [docsFile, setDocsFile] = useState(null);
   // const [applicationFile, setApplicationFile] = useState(null);
- 
- 
   
   if ( curAppDocSnapLoading ) {
     return (

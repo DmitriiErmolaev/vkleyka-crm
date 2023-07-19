@@ -1,5 +1,4 @@
 import {Link} from "react-router-dom";
-import {where} from "firebase/firestore";
 
 export const GLOBAL_ROLES = {
   admin: "admin",
