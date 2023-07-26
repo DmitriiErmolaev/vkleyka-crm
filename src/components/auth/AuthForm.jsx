@@ -3,6 +3,7 @@ import {Form, Input, Button, Checkbox, Layout, Space, Alert} from "antd";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "../../models/firebase";
 import { fieldRules } from "../../models/operator/register-validation";
+import { AuthErrorCodes } from "firebase/auth";
 
 const contentInsideLayoutStyle = {
   flexDirection:"row",
@@ -11,37 +12,42 @@ const contentInsideLayoutStyle = {
   margin:"100px auto 0", 
   backgroundColor:"#F8F8F8", 
   justifyContent:"center", 
-  // alignItems:"center",  
   boxShadow:"3px 3px 6px 2px #0000002c",
 }
 
-
-
 // const onFinishFailed = (errorInfo) => {
-//   console.log('Failed:', errorInfo);
+//   console.log('Failed:', errorInfo);  // NOTE: для валидации
 // };
 
 const AuthForm = () => {
   const [authError, setAuthError] = useState(null)
+  const [signInLoading, setSignInLoading] = useState(false)
   
   const onFinish = async ({email, pass:password}) => {
     try {
+      setSignInLoading(true)
       await signInWithEmailAndPassword(auth, email, password);
     } catch (e) {
       console.log(e)
-      if(e.code === "auth/invalid-email" || e.code === "auth/wrong-password") {
+      if(e.code === AuthErrorCodes.INVALID_EMAIL || e.code === AuthErrorCodes.INVALID_PASSWORD) {
         setAuthError("Введен неверный email или пароль")
         return
       }
-      if(e.code === "auth/user-not-found") {
+      if(e.code === AuthErrorCodes.USER_DELETED) {
         setAuthError("Данный аккаунт не зарегистрирован")
         return
       } 
-      if(e.code === "auth/too-many-requests") {
+      if(e.code === AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER) {
         setAuthError("Доступ к аккаунту временно прекращен. Попробуйте снова через несколько минут")
         return
       }
+      if(e.code === AuthErrorCodes.NETWORK_REQUEST_FAILED) {
+        setAuthError("Отсутствует соединение с интернетом")
+        return
+      }
       setAuthError("Ошибка авторизации")
+    } finally {
+      setSignInLoading(false)
     }
   };
 
@@ -67,11 +73,12 @@ const AuthForm = () => {
             remember: true,
           }}
           onFinish={onFinish}
-          // onFinishFailed={onFinishFailed}
+          // onFinishFailed={onFinishFailed} // NOTE: для пагинации
           onValuesChange={() => setAuthError(null)}
           autoComplete="off"
         >
           <Form.Item
+            colon={true}
             label="E-mail"
             name="email"
             rules={fieldRules.email}
@@ -80,11 +87,10 @@ const AuthForm = () => {
           </Form.Item>
 
           <Form.Item
-            // hasFeedback={true}
             colon={true}
             label="Пароль"
             name="pass"
-            rules={fieldRules.pass}
+            rules={fieldRules.password}
           >
             <Input.Password />
           </Form.Item>
@@ -109,7 +115,7 @@ const AuthForm = () => {
             }}
           >
             <Space size="large">
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={signInLoading}>
                 Войти
               </Button>
             </Space>

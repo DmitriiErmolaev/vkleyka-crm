@@ -1,8 +1,7 @@
 import {initializeApp}  from "firebase/app";
-import {browserLocalPersistence, getAuth, initializeAuth} from "firebase/auth";
+import {browserLocalPersistence, initializeAuth} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import {getStorage, ref} from "firebase/storage"
-
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_APIKEY,  
@@ -15,9 +14,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
 
 const auth = initializeAuth(app, {
+  // TODO: запоминать авторизованного пользователя, или нет
   persistence: browserLocalPersistence,
 })
 
@@ -32,7 +31,4 @@ export const getFileRef = (path) => {
   return ref(storage, path)
 }
 
-const role = "admin";
-
-export  {app as firebase, auth, firestore, storage, role} 
-
+export  {app as firebase, auth, firestore, storage} 

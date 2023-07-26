@@ -34,7 +34,7 @@ const Operators = () => {
           </Col>
         </Row>
           <Table 
-            // loading={<Spin size="large"></Spin>}
+            // loading={<Spin size="large"></Spin>} // NOTE; для спиннера загрузки
             columns={columns}
             dataSource={onlyOperators}
           />

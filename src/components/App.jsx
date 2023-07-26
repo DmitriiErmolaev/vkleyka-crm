@@ -1,7 +1,7 @@
-import React, {useContext} from "react"
+import React from "react"
 import {useAuthState} from "react-firebase-hooks/auth";
 import {useDocument} from "react-firebase-hooks/firestore";
-import {createBrowserRouter, createRoutesFromElements,Routes, Route, Navigate} from "react-router-dom";
+import {Routes, Route, Navigate} from "react-router-dom";
 import {Spin} from 'antd';
 import EntryPage from "../pages/EntryPage"
 import WorkPage from "../pages/WorkPage"
@@ -17,13 +17,10 @@ import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
 import { findRole } from "../models/operator/operators-data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
 
-const ADMINS_REF = getAdminsRef();
-
 const RoutesComponent = () => {
   const [user, loading, error] = useAuthState(auth);
-  const [adminsDocSnapshot, adminsLoading, adminsError] = useDocument(ADMINS_REF);
-
-  console.log("Firebase-auth слушатель: ", user);
+  const ADMINS_REF = getAdminsRef();
+  const [adminsDocSnapshot, adminsLoading, adminsError] = useDocument(ADMINS_REF)
 
   if(loading || adminsLoading) {
     return (
@@ -33,7 +30,10 @@ const RoutesComponent = () => {
     )
   }
 
-
+  if (error || adminsError) {
+    return <Error error={error || adminsError}/>
+  }
+ 
   if(!user) {
     return (
       <Routes>
@@ -47,6 +47,7 @@ const RoutesComponent = () => {
 
   let role = null;
   let adminsData = [];
+
   if(!adminsLoading) {
     adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
     role = findRole(adminsData, user);
@@ -58,8 +59,8 @@ const RoutesComponent = () => {
         <AdminsContext.Provider value={{admins: adminsData}}>
           <Routes>
             <Route path="/" element={<WorkPage />}>
-                <Route index element={< AllApplications/>}/>
-                <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
+              <Route index element={< AllApplications/>}/>
+              <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
             </Route>
             <Route path="*" element={<Navigate to="/" replace={true}/>}/>
           </Routes>
@@ -74,9 +75,9 @@ const RoutesComponent = () => {
         <AdminsContext.Provider value={{admins: adminsData}}>
           <Routes>
             <Route path="/" element={<WorkPage />}>
-                <Route index element={< AllApplications />}/>
-                <Route path="users-manager" element={< Operators/>}/>
-                <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
+              <Route index element={< AllApplications />}/>
+              <Route path="users-manager" element={< Operators/>}/>
+              <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
             </Route>
             <Route path="*" element={<Navigate to="/" replace={true}/>}/>
           </Routes>

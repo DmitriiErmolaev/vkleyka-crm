@@ -1,6 +1,6 @@
 import DeleteOperator from "../../components/operator/DeleteOperator";
 
-const renderTrashCan = (text, record, index) => {
+const renderTrashCan = (_text, record, _index) => {
   return <DeleteOperator id={record.id}/>
 } 
 

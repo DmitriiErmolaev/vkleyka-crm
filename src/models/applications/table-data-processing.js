@@ -1,6 +1,5 @@
 import {where} from "firebase/firestore";
 import { updateDoc } from "firebase/firestore";
-import { getCountryFlag } from "../countries/countries";
 
 const addZero = (num) => {
   return (num < 10) ? `0${num}` : num;
@@ -36,8 +35,6 @@ export const getUserName = (users, uid) => {
   return user.name
 }
 
-
-
 export const getFullCountryName = (countries, countryCode) => {
   const findedCountry = countries.find(country => {
     return countryCode === country.country_code;
@@ -49,12 +46,11 @@ export const getDataForTable = (applications, applicants, countries) => {
   return applications.reduce((accum, application) => {
 
     if( !application.paymentSuccessful) {
-      //временно: чтобы не отображать в таблице неоплаченные заявки.
+      // NOTE: временно: чтобы не отображать в таблице неоплаченные заявки.
       return accum;
     } 
     accum.push(
       {
-        countryFlag: getCountryFlag(countries, application.country_code),
         fullDocId: application.documentID,
         id: getApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt.seconds),
@@ -89,6 +85,5 @@ export const getFilters = (country, status, column, initialQueryConstraints) => 
   if((status && status !== "allStatuses") || status === 0) {
     filters.push(where("preparedInformation.preparationStatus", "==", status))
   }
-
   return filters;
 }

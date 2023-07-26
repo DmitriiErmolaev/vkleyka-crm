@@ -6,22 +6,7 @@ import { getAdminsRef } from "./operators";
 
 const ADMINS_REF = getAdminsRef();  
 
-export const createDbOperatorObject = async (admins, ref, newOperatorFormValues, newUser ) => {
-  const updatedAdmins = [...admins, {
-    key: newUser.uid,
-    id: newUser.uid,
-    name: `${newOperatorFormValues.name} ${newOperatorFormValues.surname}`,
-    role: GLOBAL_ROLES.operator,
-    phoneNumber: newOperatorFormValues.tel,
-    email: newUser.email,
-    appsNew: 0,
-    appsInProgress: 0,
-    appsFinished: 0,
-  }]
-  await updateDoc(ref,{admins: updatedAdmins } );
-}
-
-export const deleteOperator = async (admins, ref,  id) => {
+export const deleteOperator = async (admins, ref, id) => {
   const updatedAdmins = admins.filter((admin)=> {
     if(admin.id === id ){
       return false;
@@ -58,32 +43,43 @@ export const findAuthorizedOperatorName = (admins, authorizedUser) => {
 export const createNewUser = async (values, admins) => {
   try {
     const newUser = await createNewAuth(values.email, values.pass);
-    createDbOperatorObject(admins, ADMINS_REF, values,newUser )
+    createDbOperatorObject(admins, ADMINS_REF, values, newUser )
   } catch(e) {
+    console.log(e)
     throw e
   }
-  
 }
 
-export const createNewAuth = (email, pass) => {
-  try {
-    return new Promise((resolve,reject) => {
-      const unsubscribe = beforeAuthStateChanged(auth,  (newUser) => {
-        resolve(newUser);
-        throw new Error("выброс ошибки блокирует автоматическую авторизацию нового пользвоателя")
-      })
-      
-      createUserWithEmailAndPassword(auth, email, pass)
-        .catch((e) => {
-          if(e.message === "auth/login-blocked"){
-            //it's ok
-          } 
-          if(e.message === "auth/email-already-in-use") {
-            throw e
-          }
-        }).finally(unsubscribe)
+const createNewAuth = (email, pass) => {
+  return new Promise((resolve,reject) => {
+    const unsubscribe = beforeAuthStateChanged(auth,  (newUser) => {
+      resolve(newUser);
+      throw new Error("выброс ошибки блокирует автоматическую авторизацию нового пользвоателя")
     })
-  } catch(e) {
-    throw e
-  } 
+    
+    createUserWithEmailAndPassword(auth, email, pass)
+      .catch((e) => {
+        console.log(e.code)
+        if(e.message === "auth/login-blocked"){
+          //it's ok. Блокируется автоматическая авторизация под новым аккаунтом.
+        } else {
+          reject(e) 
+        }
+      }).finally(unsubscribe)
+  })
+}
+
+const createDbOperatorObject = async (admins, ref, newOperatorFormValues, newUser ) => {
+  const updatedAdmins = [...admins, {
+    key: newUser.uid,
+    id: newUser.uid,
+    name: `${newOperatorFormValues.name} ${newOperatorFormValues.surname}`,
+    role: GLOBAL_ROLES.operator,
+    phoneNumber: newOperatorFormValues.tel,
+    email: newUser.email,
+    appsNew: 0,
+    appsInProgress: 0,
+    appsFinished: 0,
+  }]
+  await updateDoc(ref,{admins: updatedAdmins } );
 }

@@ -9,15 +9,13 @@ const StatusesSelect = ({curStatus, appDocId}) => {
   const handleSelect = async (value, option) => {
     const appDocRef = getAppRefById(appDocId)
     await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
+    // TODO: нотификация, что визовик сменился
   }
 
   return (
     <Select 
-      // TODO: при сужении экрана - селектор прыгает под прогресс бар, 
-      // т.к. располагается видимо в ::after прогресс бара, который адаптирован со смещением под прогресс бар
       value={testStatuses[curStatus].selectLabel}
       dropdownStyle={{
-        // width:"382px", // ширина дропдауна, соответствующая фактической ширине прогрессбара
         borderRadius:"0" 
       }}
       placement="bottomRight" 

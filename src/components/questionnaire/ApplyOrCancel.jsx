@@ -1,7 +1,7 @@
 import React from 'react';
 import {Layout, Space, Button} from "antd";
 const ApplyOrCancel = ({isEdit, applyChanges, cancelChanges }) => {
-  
+  // TODO: приклеевшуюся к нижнему экрану кнопки.
   return isEdit ? (
     <Layout
       style={{

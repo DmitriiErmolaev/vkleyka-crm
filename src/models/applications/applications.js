@@ -1,6 +1,5 @@
 import {collection, doc} from "firebase/firestore";
 import {firestore} from "../firebase.js";
-import { updateDoc } from "firebase/firestore";
 import { getBlob } from 'firebase/storage';
 
 export const applicationsPath = {
@@ -16,7 +15,11 @@ export const getAppRefById = (docId) => {
 }
 
 export const getFileUrl = async (flagRef) => {
-// надо как то сохранять этот файл, и потом уже брать из скаченных.
-  const flagBlob = await getBlob(flagRef);
-  return URL.createObjectURL(flagBlob);
+// TODO: надо как то сохранять этот файл, и потом уже брать из скаченных.
+  try {
+    const flagBlob = await getBlob(flagRef);
+    return URL.createObjectURL(flagBlob)
+  } catch (error) {
+    console.log(error)
+  }
 }

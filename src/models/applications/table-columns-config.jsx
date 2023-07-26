@@ -1,15 +1,12 @@
 import React from "react";
-import { doc } from "firebase/firestore";
 import {Link} from "react-router-dom";
 import {Tag} from "antd";
 import SelectComponent from "../../components/selectors/SelectComponent";
-import { firestore } from "../firebase";
 import {GLOBAL_ROLES, roleBasedContent} from "../role-based-rules";
 import { getAppRefById } from "./applications";
 import { testStatuses } from "../status/status";
 
 const admin = GLOBAL_ROLES.admin;
-const operator = GLOBAL_ROLES.operator;
 const all = "all";
 
 const createTag = (status) => {
@@ -23,12 +20,11 @@ const id_object = {
     dataIndex: 'id',
     key: 'id',
     align: "center",
-    render: (text, record, index) => {
+    render: (text, record, _) => {
       return (
         <Link 
           to={`/application/${record.fullDocId}`} 
           style={{color:"#0EA5E9", fontWeight:"800"}}
-          state={{countryFlag: record.countryFlag, countryNameRu: record.country}}
         >
           {text}
         </Link>
@@ -90,7 +86,7 @@ const viser_object = {
     key: 'assignedTo',
     align: "center",
     sorter: true,
-    render: (text,record,index) => {
+    render: (_test, record, _index) => {
         const ref = getAppRefById(record.fullDocId);
         const assignedTo = record.assignedTo;
         return <SelectComponent collectionType={"operators"} data={{ref, assignedTo }}/> 

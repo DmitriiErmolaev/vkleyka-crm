@@ -1,4 +1,3 @@
-
 export const storageDocumentsPath = {
   visaDocuments: "documents"
 }
@@ -10,45 +9,39 @@ export const docKeys = {
   application: "application",
 }
 
-export function getNewFileExtraProps (fileName, uploadingStatus, uploadingPercent) {
+export function getNewFileExtraProps (fileName, uploadingStatus, id, uploadingPercent) {
   const props = {
     name: fileName,
-    status: uploadingStatus  
+    status: uploadingStatus,
+    uid: id,
   }
 
   return uploadingPercent ?  {...props, percent: uploadingPercent,} : props;
 }
 
-
-export const getUploadedDocsInfo = (curUploadedDocsInfo, options) => {
-
+export const getNewUploadedDocs = (curUploadedDocs, options) => {
   const {docType, uploadPath, fileName} = options;
-  if(curUploadedDocsInfo.length === 0) {
-    return [{key: docType, link:uploadPath, name: fileName}]
-  }
-  let isDocUploadedAlready = false;
 
-  const newUploadedDocsInfo = curUploadedDocsInfo.map((document) => {
-    if(document.key === docKeys[docType]){
-      // прежний путь будет перезаписан. 
-      isDocUploadedAlready = true
-      return {...document, link: uploadPath, name: fileName }
-    }
-    return document;
-  })
-  console.log(newUploadedDocsInfo)
-  if( !isDocUploadedAlready) {
-    newUploadedDocsInfo.push({key: docType, link:uploadPath, name: fileName})
-    return newUploadedDocsInfo;
+  if(uploadPath === null) { // при удалении
+    return curUploadedDocs.filter(doc => {
+      return doc.key !== docKeys[docType];
+    })
+  }
+  const newDocToUpload = {key: docType, link:uploadPath, name: fileName}
+
+  if(curUploadedDocs.length === 0) { // при первой загрузке документа
+    return [newDocToUpload];
+  }
+
+  const alreadyUploadedDocIndex = curUploadedDocs.findIndex((doc => {
+    return doc.key === docType;
+  }))
+
+  if(alreadyUploadedDocIndex !== -1) {
+    const newUploadedDocs = [...curUploadedDocs];
+    newUploadedDocs[alreadyUploadedDocIndex] = newDocToUpload;
+    return newUploadedDocs
   } else {
-    return newUploadedDocsInfo;
+    return [...curUploadedDocs, newDocToUpload]
   }
 }
-
-// export const getFileExtraProps =  (uploadedDocName) => {
-//   if()
-//   return {
-//       name: uploadedDocName, 
-//       status:"done"
-//   }
-// }

@@ -1,15 +1,10 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {useCollection} from "react-firebase-hooks/firestore";
-import {collection,query, orderBy, updateDoc, doc} from "firebase/firestore";
-import {firestore} from "../../models/firebase.js";
 import {Select} from "antd";
 import { AdminsContext } from '../../models/context.js';
-import { GLOBAL_ROLES } from '../../models/role-based-rules.js';
 import { setApplicationOperator } from '../../models/applications/table-data-processing.js';
-import { operatorOptionMatrix } from '../../models/operator/operators.js';
 import { getSelectOptions } from '../../models/data-processing.js';
 
-const OperatorsSelect = ({docRef, assignedTo}) => {
+const OperatorsSelect = ({docRef, assignedTo, transparent=true}) => {
   const {admins} = useContext(AdminsContext)
   const [selectedOperator, setSelectedOperator] = useState(null);
 
@@ -18,17 +13,18 @@ const OperatorsSelect = ({docRef, assignedTo}) => {
       setApplicationOperator(docRef, "preparedInformation.assignedTo", selectedOperator)
       setSelectedOperator(null)
     }
-  }, [selectedOperator])
+  }, [selectedOperator, docRef])
 
-  const handleSelect = (value, option) => {
+  const handleSelect = (_, option) => {
     setSelectedOperator(option.label)
   }
+  
   const options = getSelectOptions(admins, "operatorsSelect");
   
   return (
     <div>
       <Select 
-        bordered = {false}
+        bordered = {!transparent}
         value={assignedTo || null}
         placeholder="Назначить визовика"
         options={options} 

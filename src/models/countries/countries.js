@@ -1,11 +1,10 @@
 import {doc} from "firebase/firestore";
 import {firestore} from "../firebase.js";
 
-
 export const countriesPath = {
   countries: "countries-mini/all-countries",
 }
-
+// матрица для поиска имен свойств в объекте данных.
 const countryMatrix = {
   optionLabel: "name_ru",
   optionValue: "country_code",

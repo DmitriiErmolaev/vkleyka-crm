@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import { Radio } from 'antd';
 
-const Choice = ({choice}) => {
+const TypeChoiceAnswer = ({choice}) => {
+  // тут планируется вложенность. Так что не все так просто здесь в response будет. Наверно как и в дроп дауне.
   const [selectedRadio, setSelectedRadio] = useState(null);
 
   const handleChange = (e) => {
@@ -16,4 +17,4 @@ const Choice = ({choice}) => {
   );
 };
 
-export default Choice;
+export default TypeChoiceAnswer;

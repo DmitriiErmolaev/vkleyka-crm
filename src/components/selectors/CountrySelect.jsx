@@ -2,10 +2,6 @@ import React from 'react';
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {Select} from "antd";
 import { getCountriesOptions } from '../../models/countries/countries';
-import {useCollection} from "react-firebase-hooks/firestore";
-import {collection, query, orderBy} from "firebase/firestore";
-import {firestore} from "../../models/firebase";
-
 
 const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
   const filterOption = (inputValue, option) => {

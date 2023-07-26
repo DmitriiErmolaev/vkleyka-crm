@@ -21,7 +21,6 @@ const WorkPage = () => {
           <Aside />
           <Content 
             style={{
-              // marginLeft:"200px", 
               backgroundColor:"#F8F8F8"
             }}>
             <Outlet />

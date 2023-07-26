@@ -1,9 +1,6 @@
-import React, {useState,useEffect} from 'react';
-import {Table, Spin} from "antd";
-import {getOperatorColumnsConfig, getAdminColumnsConfig , getColumnsConfig} from "../../models/applications/table-columns-config";
-import {getCountFromServer, collection, query} from "firebase/firestore";
-import {firestore} from "../../models/firebase";
-import {TABLE_PAGE_ITEMS_NUMBER} from "./AllApplications"
+import React, {useState} from 'react';
+import {Table} from "antd";
+import {getColumnsConfig} from "../../models/applications/table-columns-config";
 
 const total = (total, range)=>{
   let first = `${range[0]} - ${range[1]}`
@@ -12,7 +9,7 @@ const total = (total, range)=>{
 }
 
 const paginationDoc = {
-  // current: 1,
+  // current: 1, // NOTE: для пагинации
   defaultCurrent: 1,
   defaultPageSize: 10, 
   position: ["bottomCenter ", "topCenter "],
@@ -20,11 +17,11 @@ const paginationDoc = {
 }
 
 const TableComponent = ({
-  firstDocRef, 
-  lastDocRef,
-  setFirstApplicationRef, 
-  setLastApplicationRef, 
-  setCurTablePage,
+  // firstDocRef, 
+  // lastDocRef,
+  // setFirstApplicationRef, // NOTE: для пагинации
+  // setLastApplicationRef, 
+  // setCurTablePage,
   tableLoading, 
   arrangedTableData, 
   setSelectedColumn, 
@@ -36,22 +33,22 @@ const TableComponent = ({
     
   const [columnsSettings, setColumnsSettings] = useState(columns)
   const [paginationSettings, setPaginationSettings] = useState(paginationDoc)
-  // const [totalApps, setTotalApps] = useState();
+  // const [totalApps, setTotalApps] = useState(); // NOTE: для пагинации
 
   // useEffect(()=>{
-  //   getTotalApps()
+  //   getTotalApps() // NOTE: для пагинации
   // },[])
 
   // const getTotalApps = async () => {
   //   const aggregSnapshot = await getCountFromServer(queryForAppsWithoutLimit);
-  //   setPaginationSettings({...paginationSettings, "total": aggregSnapshot.data().count});
+  //   setPaginationSettings({...paginationSettings, "total": aggregSnapshot.data().count}); // NOTE: для пагинации
   //   console.log(aggregSnapshot.data()) 
   // }
 
   function handleTableChange(pagination, filters, sorter, {action}){
     if(action === "paginate") {
       // TODO: для пагинации.
-      // setCurTablePage(pagination.current)
+      // setCurTablePage(pagination.current) // NOTE: для пагинации
       // setFirstApplicationRef(dirstDocRef)
       // setLastApplicationRef(lastDocRef)
     } else {
@@ -87,7 +84,6 @@ const TableComponent = ({
         loading
         dataSource={tableDataBeforeChanging} 
         columns={columnsSettings} 
-        // sticky 
         pagination={paginationSettings} 
         onChange={handleTableChange} 
         rowKey={(record) => record.id}
@@ -100,7 +96,6 @@ const TableComponent = ({
       size="small"
       dataSource={arrangedTableData} 
       columns={columnsSettings} 
-      // sticky 
       pagination={paginationSettings} 
       onChange={handleTableChange} 
       rowKey={(record) => record.id}

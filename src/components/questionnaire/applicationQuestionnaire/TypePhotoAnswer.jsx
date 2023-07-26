@@ -1,19 +1,20 @@
 import React, {useState, useEffect} from 'react';
 import { Image, Alert } from 'antd';
-import { getFileRef } from '../../models/firebase';
-import { getFileUrl } from '../../models/applications/applications';
+import { getFileRef } from '../../../models/firebase';
+import { getFileUrl } from '../../../models/applications/applications';
 
-const ImageComponent = ({path}) => {
+const TypePhotoAnswer = ({questionData}) => {
   const [imgUrl, setImgUrl] = useState(null);  
+  const path = questionData.response;
 
   useEffect(() => {
+    // TODO: передать imgUrl сразу в инфо карту. А пока нет данных - показать скелетон.
     if(!path) {
       return;
     }
-
+    // в эффекте можно объявить функцию и тут же вызвать
     const fentchData = async () => {
       const imgUrl = await getFileUrl(getFileRef(path));
-      console.log(imgUrl)
       setImgUrl(imgUrl)
     }
 
@@ -32,4 +33,4 @@ const ImageComponent = ({path}) => {
   );
 };
 
-export default ImageComponent;
+export default TypePhotoAnswer;

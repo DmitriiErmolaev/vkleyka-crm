@@ -45,26 +45,27 @@ const memoizedCreationDate = () => {
 export const getChatMessages = (messages) => {
   // пустой контейнер, который заполнит диалоговое окно, пока нет новых сообщений.
   let result = [
-    <li className="invisible-container">
+    <li key={"invisible-container"} className="invisible-container">
       <div className="invisible-message"></div>
     </li>,
   ];
 
   const isDateNew = memoizedCreationDate();
 
-  messages.forEach( message => {
+  messages.forEach( (message) => {
     const messageCreationDate = getMessageCreationDate(message.time.seconds);
     const messageCreationTime = getMessageCreationTime(message.time.seconds);
     const classNameForMessage = getClassNameForMessage(message.sender);
 
     if(isDateNew(messageCreationDate)) {
       result.push(
-        <DateDivider date={messageCreationDate} />
+        <DateDivider key={messageCreationDate} date={messageCreationDate} />
       )
     } 
    
     result.push(
       <Message 
+        key={message.key}
         styleClass={classNameForMessage} 
         messageContent={message.content} 
         time={messageCreationTime} 

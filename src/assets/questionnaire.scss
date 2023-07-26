@@ -1,8 +1,10 @@
 .editButton {
   transition: transform 0.1s;
+
   &:hover {
     cursor:pointer;
   }
+
   &:active {
     transform:scale(0.85);
   }
@@ -18,7 +20,14 @@
   color:#000000;
   font: 400 16px Jost, sans-serif;
 }
+
 .person-info__question {
   color: #A5A5A5;
   font: 400 14px Jost, sans-serif;
+}
+.nested {
+  
+}
+.questionnary-item__container {
+  margin-bottom:10px;
 }

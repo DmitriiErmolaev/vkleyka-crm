@@ -1,3 +1,4 @@
+// TODO: рефакторить. Вынести библиотеку из корня.
 export const library = {
   validationErrorMessages: {
     requiredField: "Поле должно быть заполнено",

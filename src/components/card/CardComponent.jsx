@@ -11,16 +11,15 @@ import { getFileUrl } from '../../models/applications/applications';
 const {Title} = Typography;
 
 const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assignedTo, appRef}) => {
-  console.log(countryFlag)
   const [progressPercent, setProgressPercent] = useState();
   const [progressColor, setProgressColor] = useState();
   const {role} = useContext(UserContext)
   const [flagUrl, setFlagUrl] = useState(null)
-
+  const flagRef = getFileRef(countryFlag);
 
   useEffect(() => {
+    // TODO: сделать загрузку флага до отображения всей карты. 
     getFileUrl(flagRef).then(res => {
-      console.log(res)
       setFlagUrl(res)
     })
   },[])
@@ -30,21 +29,17 @@ const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assigned
       setProgressPercent(testStatuses[curAppStatus].progressPercent);
       setProgressColor(testStatuses[curAppStatus].progressBarColor);
     }
-  })
+  },[curAppStatus])
 
   if (flagUrl === null) {
     // TODO: показать скелетон или спиннер на всей карте.
   }
 
-  const flagRef = getFileRef(countryFlag);
-
-
   return (
     <Layout style={{marginBottom:"10px"}}>
       <Card
-        headStyle={{padding:"42px 27px 0",backgroundColor:"#182A67",font:"500 20px Jost, sans-serif", color:"#fff", borderRadius:"0"}}
-        bodyStyle={{padding:"44px 27px 22px", backgroundColor:"#182A67",borderRadius:"0"}}
-        // size="small"
+        headStyle={{padding:"42px 27px 0", backgroundColor:"#182A67", font:"500 20px Jost, sans-serif", color:"#fff", borderRadius:"0"}}
+        bodyStyle={{padding:"44px 27px 22px", backgroundColor:"#182A67", borderRadius:"0"}}
         title={<CardTitle data={{cardTitle: cardTitle, flagUrl: flagUrl}}/>}
       >
         <Progress 
@@ -59,13 +54,14 @@ const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assigned
           }}
           format = {() => <SelectComponent data={{curAppStatus, appDocId:appDocId}} collectionType="statuses"/>}
         />
+        {/*Рефакторить отдельным компонентом который принимает параметр и в результате рнедерит или нет */}
         <Layout style={{backgroundColor:"inherit", display:roleBasedContent[role].cardOperatorAssigmentDisplayProperty}}>
           <Typography >
             <Title style={{color:"#fff"}} level={4}>
               Отв-ный
             </Title>
           </Typography>
-          <SelectComponent data={{ref:appRef, assignedTo:assignedTo}} collectionType="operators"/>
+          <SelectComponent data={{ref:appRef, assignedTo:assignedTo, transparent: false}} collectionType="operators"/>
         </Layout>
       </Card>
     </Layout>

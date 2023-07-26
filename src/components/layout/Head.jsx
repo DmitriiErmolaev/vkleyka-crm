@@ -16,32 +16,29 @@ const topMenuItems =
   {key:"profile", label:(<a href="#">Профиль</a>),},
 ]
 
-const Head = ({})=> {
+const Head = ()=> {
   return (
-      <Header 
-        style={headerStyle} 
-      >
-        <div className="logo" style={{width:"150px", height:"100%"}}></div>
-        <Row justify="end" style={{width:"calc(100% - 150px)"}}>
-          {/* <Col span={12}></Col> */}
-          <Col span={8} >
-            <Menu 
-              theme="light" 
-              style={{
-                // backgroundColor:"#F8F8F8", 
-                justifyContent:"center", 
-                // borderBottom:"none", 
-                marginLeft: "auto"
-              }} 
-              items={topMenuItems} 
-              mode="horizontal"
-            />
-          </Col>
-          <Col span={1} style={{}}>
-            <Button type="primary" onClick={() => signOut(auth) }>Выйти</Button>
-          </Col>
-        </Row>
-      </Header>
+    <Header 
+      style={headerStyle} 
+    >
+      <div className="logo" style={{width:"150px", height:"100%"}}></div>
+      <Row justify="end" style={{width:"calc(100% - 150px)"}}>
+        <Col span={8} >
+          <Menu 
+            theme="light" 
+            style={{
+              justifyContent:"center", 
+              marginLeft: "auto"
+            }} 
+            items={topMenuItems} 
+            mode="horizontal"
+          />
+        </Col>
+        <Col span={1} style={{}}>
+          <Button type="primary" onClick={() => signOut(auth)}>Выйти</Button>
+        </Col>
+      </Row>
+    </Header>
   )
 }
 

@@ -1,9 +1,8 @@
 import {firestore} from "../firebase";
 import {doc} from "firebase/firestore";
 
-// массив всех админов содержит и админов и оперторов(визовиков)
 export const adminsPath = {
-  admins: "admins/all-admins",
+  admins: "admins/all-admins", // массив всех админов содержит и админов и оперторов(визовиков)
 }
 
 // ----Матрица поиска свойств из загруженных данных для операторов----
@@ -17,4 +16,3 @@ export const operatorOptionMatrix = {
 export const getAdminsRef = () => {
   return doc(firestore, adminsPath.admins);
 }
-

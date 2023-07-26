@@ -8,6 +8,8 @@ import "../../assets/chat/chat.scss";
 import { findAuthorizedOperatorName } from '../../models/operator/operators-data-processing.js';
 import { AdminsContext, UserContext} from '../../models/context.js';
 import { getChatMessages, createNewMessageObject } from '../../models/chat/chat-data-processing.js';
+import { nanoid } from 'nanoid';
+import Error from '../error/Error.jsx';
 
 const Chat = ({ applicantId }) => {
   const {user} = useContext(UserContext)
@@ -33,6 +35,9 @@ const Chat = ({ applicantId }) => {
     )
   }
 
+  if(chatError) {
+    return <Error error={chatError}/>
+  }
 
   const handleChange = (e)=> {
     setText(e.currentTarget.value);
@@ -54,7 +59,9 @@ const Chat = ({ applicantId }) => {
     // ошибка. Т.к. должен вывестись только 1 чат. Пока я так это понимаю.
   }
 
-  const messages = getSingleFieldFromDocSnapshot(chatCollSnapshot.docs[0], "messages");
+  const messages = getSingleFieldFromDocSnapshot(chatCollSnapshot.docs[0], "messages").map(message => {
+    return {...message, key: nanoid()}
+  })
   const chatMessages = getChatMessages(messages);
 
   return (

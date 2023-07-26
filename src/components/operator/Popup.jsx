@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import NewOperatorForm from "./NewOperatorForm";
 import {Modal} from "antd";
 
-
 const Popup = ({isModalOpened, closeRegisterModal}) => {
   const [isFormCancelled, setIsFormCancelled] = useState(false);
 

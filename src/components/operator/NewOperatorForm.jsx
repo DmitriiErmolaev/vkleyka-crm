@@ -1,30 +1,29 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Form, Input, Button, Layout,  Alert, useForm} from "antd";
+import {Form, Input, Button, Layout,  Alert} from "antd";
 import {fieldRules} from "../../models/operator/register-validation.js";
 import { createNewUser } from '../../models/operator/operators-data-processing.js';
 import { AdminsContext } from '../../models/context.js';
+import { AuthErrorCodes } from 'firebase/auth';
 
-const initialFeedbackStatus = {
-  name: "validating", 
-  surname: "validating",
-  tel: "validating",
-  phone: "validating", 
-  email: "validating",
-  pass: "validating",
-  confirm: "validating",
-}
+// const initialFeedbackStatus = {
+//   name: "validating", 
+//   surname: "validating",
+//   tel: "validating",           // для управляемой сигнализации валидации
+//   phone: "validating", 
+//   email: "validating",
+//   pass: "validating",
+//   confirm: "validating",
+// }
 
 const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelled}) => {
   const [errorMessage, setErrorMessage] = useState("Error!")
   const [form] = Form.useForm();
-  const [feedBackStatus, setFeedbackStatus] = useState(initialFeedbackStatus) 
+  // const [feedBackStatus, setFeedbackStatus] = useState(initialFeedbackStatus) // для управляемой сигнализации валидации поля. Пока не разобрался.
   const [buttonLoadingState, setButtonLoadingState] = useState(false);
   const [errorMessageHidden, setErrorMessageHidden] = useState(true);
   const {admins} = useContext(AdminsContext)
 
-  
-
-  const resetFormFileds = () => {
+  function resetFormFileds() {
     form.resetFields();
   }
 
@@ -34,27 +33,28 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
       setErrorMessageHidden(true)
       setIsFormCancelled(false);
     }
-  })
+  },[])
 
   const handleSubmit = async (values) => {
     try {
       setButtonLoadingState(true);
       await createNewUser( values, admins)
-    } catch(er) {
-      setButtonLoadingState(false);
-      setErrorMessage(er.message)
-      setErrorMessageHidden(false)
-    } finally {
       setButtonLoadingState(false);
       closeRegisterModal();
       resetFormFileds();
-    }
-    
+    } catch(e) {
+      console.log(e)
+      if(e.code === AuthErrorCodes.EMAIL_EXISTS) {
+        setErrorMessage('Введенный email уже зарегистрирован!')
+      } else {
+        setErrorMessage(e.message)
+      }
+      setErrorMessageHidden(false)
+      setButtonLoadingState(false);
+    } 
   }
 
   const handleSubmitFail = (values, errorFields, outOfDate) => {
-    console.log(values, errorFields, outOfDate)
-    console.log(typeof setErrorMessage)
     setErrorMessage("Введены неверные данные. Пожалуйста проверьте корректность данных!")
     setErrorMessageHidden(false)
   }
@@ -66,11 +66,10 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
   return (
     <Layout style={{margin:"15px", backgroundColor:"inherit"}}>
       <Form
-        form={form}
+        form = {form}
         onFinish = {handleSubmit}
         onFinishFailed = {handleSubmitFail}
         onValuesChange= {handleValuesChange}
-        // validateTrigger={["onChange","onBlur","onSubmit"]}
       >
         <Form.Item
           hasFeedback="true"
@@ -156,7 +155,6 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         >
           <Alert 
             type="error" 
-            // message="Введены неверные данные. Пожалуйста проверьте корректность данных!" 
             message={errorMessage}
             showIcon 
           /> 
