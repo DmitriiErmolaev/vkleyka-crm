@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {Card, Progress, Typography, Layout} from 'antd';
 import SelectComponent from '../selectors/SelectComponent';
 import { testStatuses } from '../../models/status/status';
-import { UserContext } from '../../models/context';
+import { ProgramContext } from '../../models/context';
 import { roleBasedContent } from '../../models/role-based-rules';
 import CardTitle from './CardTitle';
 import { getFileRef } from '../../models/firebase';
@@ -13,7 +13,7 @@ const {Title} = Typography;
 const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assignedTo, appRef}) => {
   const [progressPercent, setProgressPercent] = useState();
   const [progressColor, setProgressColor] = useState();
-  const {role} = useContext(UserContext)
+  const {role} = useContext(ProgramContext)
   const [flagUrl, setFlagUrl] = useState(null)
   const flagRef = getFileRef(countryFlag);
 

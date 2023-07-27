@@ -1,20 +1,29 @@
-import React,{useState} from 'react';
+import React,{useState, useContext} from 'react';
 import { Collapse, Layout, Typography} from 'antd';
 import { EditOutlined } from "@ant-design/icons";
 import QuestionnaireItem from './QuestionnaireItem';
 import ApplyOrCancel from '../ApplyOrCancel';
 import { getCollapseItems, updateQuestionnaireAnswers } from '../../../models/applications/questionnaire/questionnaire';
+import { ProgramContext } from '../../../models/context';
+import { openNotification } from '../../../models/notification/notification';
 const {Title} = Typography;
 
 const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   const [isEdit, setIsEdit] = useState(false);
   const [currentPanelOpened, setCurrentPanelOpened] = useState([]);
   const [answersToUpdate, setAnswersToUpdate] = useState([]);
+  const {api} = useContext(ProgramContext)
+
   const applyChanges = async (e) => {
-    await updateQuestionnaireAnswers(appRef, questionnaire, answersToUpdate)
-    setAnswersToUpdate([]);
-    setIsEdit(false)
-    // TODO: нотификация
+    try {
+      // функция, проверяющая answersToUpdate на заполенность всех обязательных вопросов
+      await updateQuestionnaireAnswers(appRef, questionnaire, answersToUpdate)
+      openNotification(api, "success", 'questionnaireUpdated')
+      setAnswersToUpdate([]);
+      setIsEdit(false)
+    } catch (e) {
+      openNotification(api, "error", 'questionnaireUpdated')
+    }
   }
 
   const cancelChanges = () => {

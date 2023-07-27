@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 
 export const prepareChanges = (changedFields, newResponse, questionIndex, nestedOptions = {isNested: false}) => {
   if(changedFields.length === 0) {
+    // TODO: Добавить поле об обязательности заполнения. Из newResponse наверно.
     return [{index: questionIndex, newResponse: newResponse}]
   }
 

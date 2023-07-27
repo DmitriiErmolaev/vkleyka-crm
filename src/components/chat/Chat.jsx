@@ -6,14 +6,13 @@ import { getChatQuery } from '../../models/chat/chat.js';
 import { getSingleFieldFromDocSnapshot, updateDocField } from '../../models/data-processing.js';
 import "../../assets/chat/chat.scss";
 import { findAuthorizedOperatorName } from '../../models/operator/operators-data-processing.js';
-import { AdminsContext, UserContext} from '../../models/context.js';
+import { ProgramContext} from '../../models/context.js';
 import { getChatMessages, createNewMessageObject } from '../../models/chat/chat-data-processing.js';
 import { nanoid } from 'nanoid';
 import Error from '../error/Error.jsx';
 
 const Chat = ({ applicantId }) => {
-  const {user} = useContext(UserContext)
-  const {admins} = useContext(AdminsContext)
+  const {user, admins} = useContext(ProgramContext)
   const [text, setText] = useState("")
   const allMessages = useRef(null);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot.

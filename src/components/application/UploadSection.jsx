@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { Upload, Button, notification , Row, Col  } from 'antd';
+import React, {useState, useContext} from 'react';
+import { Upload, Button , Row, Col  } from 'antd';
 import { uploadBytesResumable } from 'firebase/storage';
 import { UploadOutlined } from '@ant-design/icons';
 import { storageDocumentsPath } from '../../models/client_files/files';
@@ -11,22 +11,12 @@ import { getPercent } from '../../models/data-processing';
 import { getNewFileExtraProps } from '../../models/client_files/files';
 import { getNewUploadedDocs } from '../../models/client_files/files';
 import { deleteObject } from 'firebase/storage';
+import { ProgramContext } from '../../models/context';
+import { openNotification } from '../../models/notification/notification';
 const { Title } = Typography;
 
 
 const allowedFileTypes = ["application/pdf",]
-const notificationMessages = {
-  error: {
-    title: 'Ошибка',
-    description: 'Неверный формат файла. Допустима загрузка файлов только в формате ".pdf" '
-  },
-  success: {
-    title: 'Успех',
-    description: 'Файл успешно загружен',
-  } 
-}
-
-
 
 const UploadSection = ({appId, uploadedDocs}) => {
   const makeInitialFilesExtraProps = () => {
@@ -44,16 +34,9 @@ const UploadSection = ({appId, uploadedDocs}) => {
   const [fileListState, setFileListState] = useState(makeInitialFilesExtraProps);
   const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false)
   const [clickedButton, setClickedButton] = useState(null);
-  const [api, contextHolder] = notification.useNotification()
   const APPLICATION_REF = getAppRefById(appId);
- 
-  const openNotification = (type) => {
-    api[type]({
-      placement: "topRight",
-      message: notificationMessages[type].title,   
-      description:notificationMessages[type].description,
-    })
-  }
+  const {api} = useContext(ProgramContext)
+
 
   const handleClick = (e) => {
     setClickedButton(e.currentTarget.dataset.doctype)
@@ -62,7 +45,8 @@ const UploadSection = ({appId, uploadedDocs}) => {
   const beforeUpload = (file, filelist) => {
     setUploadButtonIsDisabled(true)
     if(!allowedFileTypes.includes(file.type)) {
-      openNotification("error")
+      openNotification(api, "error", "uploadFile")
+      setUploadButtonIsDisabled(false)
       return Upload.LIST_IGNORE
     }
     const newFileExtraProps = getNewFileExtraProps(file.name, "uploading", clickedButton);
@@ -118,7 +102,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
       await updateDocField(APPLICATION_REF, "preparedInformation.documents", newUploadedDocs)
       const newFileExtraProps = getNewFileExtraProps(newFileName, "done", clickedButton);
       setFileListState({...fileListState, [clickedButton] : [newFileExtraProps]})
-      openNotification("success")
+      openNotification(api, "success", "uploadFile")
       setClickedButton(null)
       setUploadButtonIsDisabled(false) 
     })
@@ -131,7 +115,6 @@ const UploadSection = ({appId, uploadedDocs}) => {
 
   return (
     <div>
-      {contextHolder}
       <Typography>
         <Title level={5}>
           Готовые документы:

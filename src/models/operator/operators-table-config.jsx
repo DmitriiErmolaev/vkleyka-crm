@@ -1,7 +1,6 @@
 import DeleteOperator from "../../components/operator/DeleteOperator";
-
 const renderTrashCan = (_text, record, _index) => {
-  return <DeleteOperator id={record.id}/>
+  return <DeleteOperator id={record.id} />
 } 
 
 export const columns = [

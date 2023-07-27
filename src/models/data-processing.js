@@ -34,24 +34,6 @@ export const getDocsRefs = (collSnap) => {
   })
 }
 
-export const getSelectOptions = (data, selectType) => {
-  if(selectType === "operatorsSelect") {
-    return data.reduce((accum, admin) => {
-    
-      if(admin.role !== GLOBAL_ROLES.operator) {
-        return accum;
-      }
-      accum.push(
-        {
-          label: admin[operatorOptionMatrix.optionLabel],
-          value: admin[operatorOptionMatrix.optionValue],
-        }
-      )
-      return accum
-    },[])
-  }
-}
-
 export const updateDocField = async (ref, path, data) => {
   try {
     await updateDoc(ref, {[path]: data})

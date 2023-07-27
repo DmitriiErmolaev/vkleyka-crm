@@ -1,31 +1,32 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useContext} from 'react';
 import {Select} from "antd";
-import { AdminsContext } from '../../models/context.js';
+import { ProgramContext } from '../../models/context.js';
 import { setApplicationOperator } from '../../models/applications/table-data-processing.js';
-import { getSelectOptions } from '../../models/data-processing.js';
+import { getOperatorOptions } from '../../models/operator/operators.js';
+import { openNotification } from '../../models/notification/notification.js';
 
-const OperatorsSelect = ({docRef, assignedTo, transparent=true}) => {
-  const {admins} = useContext(AdminsContext)
-  const [selectedOperator, setSelectedOperator] = useState(null);
+const OperatorsSelect = ({docRef, assignedTo=null, transparent=true}) => {
+  const {admins, api} = useContext(ProgramContext)
 
-  useEffect(() => {
-    if(selectedOperator) {
-      setApplicationOperator(docRef, "preparedInformation.assignedTo", selectedOperator)
-      setSelectedOperator(null)
+  const handleSelect = (value, _option) => {
+    if(assignedTo === value) {
+      return false;
     }
-  }, [selectedOperator, docRef])
-
-  const handleSelect = (_, option) => {
-    setSelectedOperator(option.label)
+    try {
+      setApplicationOperator(docRef, "preparedInformation.assignedTo", value)
+      openNotification(api, "success", 'operatorChanged')
+    } catch(e) {
+      openNotification(api, "error", 'operatorChanged')
+    }
   }
-  
-  const options = getSelectOptions(admins, "operatorsSelect");
-  
+
+  const options = getOperatorOptions(admins);
+
   return (
     <div>
       <Select 
         bordered = {!transparent}
-        value={assignedTo || null}
+        value={assignedTo}
         placeholder="Назначить визовика"
         options={options} 
         style={{

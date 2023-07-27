@@ -2,9 +2,9 @@ import React, {useState, useEffect, useContext} from 'react';
 import {Form, Input, Button, Layout,  Alert} from "antd";
 import {fieldRules} from "../../models/operator/register-validation.js";
 import { createNewUser } from '../../models/operator/operators-data-processing.js';
-import { AdminsContext } from '../../models/context.js';
+import { ProgramContext} from '../../models/context.js';
 import { AuthErrorCodes } from 'firebase/auth';
-
+import { openNotification } from '../../models/notification/notification.js';
 // const initialFeedbackStatus = {
 //   name: "validating", 
 //   surname: "validating",
@@ -21,7 +21,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
   // const [feedBackStatus, setFeedbackStatus] = useState(initialFeedbackStatus) // для управляемой сигнализации валидации поля. Пока не разобрался.
   const [buttonLoadingState, setButtonLoadingState] = useState(false);
   const [errorMessageHidden, setErrorMessageHidden] = useState(true);
-  const {admins} = useContext(AdminsContext)
+  const {admins, api} = useContext(ProgramContext)
 
   function resetFormFileds() {
     form.resetFields();
@@ -38,8 +38,9 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
   const handleSubmit = async (values) => {
     try {
       setButtonLoadingState(true);
-      await createNewUser( values, admins)
+      await createNewUser(values, admins)
       setButtonLoadingState(false);
+      openNotification(api, "success", "createNewOperator")
       closeRegisterModal();
       resetFormFileds();
     } catch(e) {
@@ -54,7 +55,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
     } 
   }
 
-  const handleSubmitFail = (values, errorFields, outOfDate) => {
+  const handleSubmitFail = (_values, _errorFields, _outOfDate) => {
     setErrorMessage("Введены неверные данные. Пожалуйста проверьте корректность данных!")
     setErrorMessageHidden(false)
   }

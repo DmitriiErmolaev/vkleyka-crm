@@ -1,7 +1,7 @@
 import React, {useState, useContext} from "react";
 import { Button,  Layout, Row, Col, Table, Space} from "antd";
 import {columns} from "../../models/operator/operators-table-config";
-import {AdminsContext} from "../../models/context.js";
+import {ProgramContext} from "../../models/context.js";
 import { getOnlyOperators } from "../../models/operator/operators-data-processing";
 import Popup from "./Popup";
 
@@ -10,7 +10,7 @@ const contentInsideLayoutStyle = {
 }
 
 const Operators = () => {
-  const {admins} = useContext(AdminsContext);
+  const {admins} = useContext(ProgramContext);
   const [isModalOpened, setIsModalOpened] = useState(false);
 
   const closeRegisterModal = () => {
@@ -37,6 +37,7 @@ const Operators = () => {
             // loading={<Spin size="large"></Spin>} // NOTE; для спиннера загрузки
             columns={columns}
             dataSource={onlyOperators}
+            rowKey="id"
           />
       </Space>
       <Popup 

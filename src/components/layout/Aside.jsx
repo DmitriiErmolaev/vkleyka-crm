@@ -1,12 +1,12 @@
 import React, {useContext} from 'react';
 import {Layout, Menu} from "antd";
 import {useLocation} from "react-router-dom"
-import {UserContext} from "../../models/context.js";
+import {ProgramContext} from "../../models/context.js";
 import {roleBasedContent} from "../../models/role-based-rules.js";
 const {Sider} = Layout;
 
 const Aside = () => {
-  const {role} = useContext(UserContext)
+  const {role} = useContext(ProgramContext)
   const location = useLocation()
   
   return (

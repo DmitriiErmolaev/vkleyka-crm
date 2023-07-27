@@ -71,7 +71,6 @@ const createNewAuth = (email, pass) => {
 
 const createDbOperatorObject = async (admins, ref, newOperatorFormValues, newUser ) => {
   const updatedAdmins = [...admins, {
-    key: newUser.uid,
     id: newUser.uid,
     name: `${newOperatorFormValues.name} ${newOperatorFormValues.surname}`,
     role: GLOBAL_ROLES.operator,
@@ -83,3 +82,4 @@ const createDbOperatorObject = async (admins, ref, newOperatorFormValues, newUse
   }]
   await updateDoc(ref,{admins: updatedAdmins } );
 }
+

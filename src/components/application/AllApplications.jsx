@@ -8,7 +8,7 @@ import { getFilters, getDataForTable} from "../../models/applications/table-data
 import { findAuthorizedOperatorName } from "../../models/operator/operators-data-processing";
 import SelectComponent from "../selectors/SelectComponent";
 import Error from "../error/Error";
-import {UserContext, AdminsContext} from "../../models/context.js";
+import {ProgramContext} from "../../models/context.js";
 import {getUsersQuery} from "../../models/applicants/applicants"
 import {getAppsCollRef} from "../../models/applications/applications"
 import {getAllCountriesRef} from "../../models/countries/countries"
@@ -21,8 +21,7 @@ const APPS_REF = getAppsCollRef();
 // const TABLE_PAGE_ITEMS_NUMBER = 10; // NOTE: Для пагинации
 
 const AllApplications = () => {
-  const {role, user} = useContext(UserContext);
-  const {admins} = useContext(AdminsContext)
+  const {role, user, admins} = useContext(ProgramContext);
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(USERS_QUERY);
   const [selectedCountry, setSelectedCountry] = useState({value:null, label:null});
@@ -33,8 +32,7 @@ const AllApplications = () => {
   // const [lastApplicationRef, setLastApplicationRef] = useState();  // NOTE: Для пагинации
   
   // TODO: обернуть в одну функцию - getInitialConstraint/getRoleBasedConstraint
-  const authorizedOperatorName = findAuthorizedOperatorName(admins, user)
-  const initialConstraint = (role === "operator") ?  where("preparedInformation.assignedTo", "==", authorizedOperatorName) : null;
+  const initialConstraint = (role === "operator") ?  where("preparedInformation.assignedTo", "==", user.uid) : null;
   let filters = getFilters(selectedCountry,selectedStatus,selectedColumn, initialConstraint );
 
   /* TODO: для пагинации: запрос на 10 документов коллекции

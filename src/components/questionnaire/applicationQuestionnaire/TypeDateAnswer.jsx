@@ -15,9 +15,11 @@ const TypeDateAnswer = ({questionData, questionIndex, setAnswersToUpdate, answer
   }
 
   const alreadyChangedResponse = getChangedValue(answersToUpdate, questionIndex);
-  const displayedValue = !alreadyChangedResponse ?  dayjs.unix(questionData.response.seconds) 
-    : alreadyChangedResponse.seconds === '' ? '' 
-    : dayjs.unix(alreadyChangedResponse.seconds) 
+  const displayedValue = !alreadyChangedResponse 
+    ?  dayjs.unix(questionData.response.seconds) // пустая строка воспринимается как 0 - и возвращается dayjs объект временной метки 1970г
+    : alreadyChangedResponse.seconds === '' 
+      ? '' // чтобы дата пикер показал плейсхолдер "select date", value должно получить пустую строку.
+      : dayjs.unix(alreadyChangedResponse.seconds) 
 
   return  (
     <DatePicker value={displayedValue} onChange={handleChange} disabled={!isEdit}/>

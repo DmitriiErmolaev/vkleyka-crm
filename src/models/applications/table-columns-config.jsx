@@ -33,14 +33,13 @@ const id_object = {
   }
 }
 
-const data_object = {
+const date_object = {
   role: all,
   config: {
     title: 'Date',
     dataIndex: 'date',
     key: 'date',
     align: "center",
-    sorter: true,
   }
 }
 
@@ -51,7 +50,6 @@ const applicant_object = {
     dataIndex: 'applicant',
     key: 'applicant',
     align: "center",
-    sorter:true,
   }
 }
 
@@ -85,7 +83,6 @@ const viser_object = {
     dataIndex: 'assignedTo',
     key: 'assignedTo',
     align: "center",
-    sorter: true,
     render: (_test, record, _index) => {
         const ref = getAppRefById(record.fullDocId);
         const assignedTo = record.assignedTo;
@@ -96,7 +93,7 @@ const viser_object = {
 // массив общий для всех колонок, т.к. важен порядок в их отображении 
 const allObjects = [
   id_object,
-  data_object,
+  date_object,
   applicant_object,
   status_object, 
   country_object,

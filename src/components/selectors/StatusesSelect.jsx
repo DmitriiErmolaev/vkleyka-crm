@@ -1,15 +1,27 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Select } from 'antd';
 import { testStatuses } from '../../models/status/status';
 import { getStatusesSelectOptions } from '../../models/status/status';
 import { updateDocField } from '../../models/data-processing';
 import { getAppRefById } from '../../models/applications/applications';
+import { openNotification } from '../../models/notification/notification.js';
+import { ProgramContext } from '../../models/context.js';
 
 const StatusesSelect = ({curStatus, appDocId}) => {
+  const {api} = useContext(ProgramContext)
+
   const handleSelect = async (value, option) => {
+    if (curStatus === option.value) {
+      return false;
+    }
     const appDocRef = getAppRefById(appDocId)
-    await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
-    // TODO: нотификация, что визовик сменился
+    try {
+      await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
+      openNotification(api, "success", 'statusChanged')
+    } catch (e) {
+      console.log(e)
+      openNotification(api, "error", 'statusChanged')
+    }
   }
 
   return (
