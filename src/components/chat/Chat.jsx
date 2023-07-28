@@ -55,7 +55,7 @@ const Chat = ({ applicantId }) => {
   }
 
   if(chatCollSnapshot.size !== 1) {
-    // ошибка. Т.к. должен вывестись только 1 чат. Пока я так это понимаю.
+    // TODO:  ошибка. Т.к. должен вывестись только 1 чат. 
   }
 
   const messages = getSingleFieldFromDocSnapshot(chatCollSnapshot.docs[0], "messages").map(message => {

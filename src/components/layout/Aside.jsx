@@ -12,8 +12,7 @@ const Aside = () => {
   return (
     <Sider 
       style={{
-        borderRadius:"0 20px 0 0", 
-        backgroundColor:"#767680", 
+        backgroundColor:"#182A67", 
       }}
     >
       <Menu 

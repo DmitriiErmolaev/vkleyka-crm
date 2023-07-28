@@ -8,7 +8,7 @@ const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
     return option.label.toLowerCase().includes(inputValue.toLowerCase())
   }
 
-  const handleSelect = (value, option) => {
+  const handleSelect = (_value, option) => {
     if(option === undefined) {
       // NOTICE: срабатывает, когда нажимаем на иконку сброса select'а. 
       // В таком случае обработчик селекта возвращает undefined

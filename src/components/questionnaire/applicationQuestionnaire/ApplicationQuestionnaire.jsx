@@ -16,7 +16,7 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
 
   const applyChanges = async (e) => {
     try {
-      // функция, проверяющая answersToUpdate на заполенность всех обязательных вопросов
+      // TODO: функция, проверяющая answersToUpdate на заполенность всех обязательных вопросов
       await updateQuestionnaireAnswers(appRef, questionnaire, answersToUpdate)
       openNotification(api, "success", 'questionnaireUpdated')
       setAnswersToUpdate([]);

@@ -26,8 +26,8 @@ const TypeDropdownAnswer = ({questionData, questionIndex, setAnswersToUpdate, an
   const displayedValue = (alreadyChangedResponse !== false) ? alreadyChangedResponse.pickedOption : questionData.response.pickedOption;
   const answersToDisplay = (alreadyChangedResponse !== false) ? alreadyChangedResponse.answers : questionData.response.answers;
   const options = getQuestionnaireSelectOptions(questionData.options)
+
   const subQuestions = answersToDisplay.map((subQuestion, subQuestionIndex) => {
-   
     return (
       <div key={`${questionIndex}-sub-${subQuestionIndex}`} style={{marginLeft:"20px"}} >
         <Question question={subQuestion.question} isNested={true}/>
@@ -39,7 +39,7 @@ const TypeDropdownAnswer = ({questionData, questionIndex, setAnswersToUpdate, an
           nestedOptions={{
             isNested: true,
             nestedQuestionIndex: subQuestionIndex,  
-            dropdownQuestionData: questionData, // TODO: взять pickedOption отсюда. Проверить, не будут ли путаться ответы с разными опциями дропдауна. тест выбранной опции взять из options по pickedValue (это индекс опции)
+            dropdownQuestionData: questionData, 
           }}
           isEdit={isEdit}
         />

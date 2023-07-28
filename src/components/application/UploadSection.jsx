@@ -42,7 +42,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
     setClickedButton(e.currentTarget.dataset.doctype)
   }
 
-  const beforeUpload = (file, filelist) => {
+  const beforeUpload = (file, _filelist) => {
     setUploadButtonIsDisabled(true)
     if(!allowedFileTypes.includes(file.type)) {
       openNotification(api, "error", "uploadFile")
@@ -63,9 +63,10 @@ const UploadSection = ({appId, uploadedDocs}) => {
       const storageFileRef = getFileRef(uploadedDocs[docIndex].link);
       try {
         await deleteObject(storageFileRef)
+        openNotification(api, "success", 'deleteUploadedFile')
       } catch(e) {
         console.log(e)
-        // TODO: нотификация 
+        openNotification(api, "error", 'deleteUploadedFile')
         // Firebase Storage: Object 'documents/hJ1goDbnR8C8OMygvtm2-1690235227709.pdf' does not exist. (storage/object-not-found) - пример.
       }
 
@@ -120,7 +121,6 @@ const UploadSection = ({appId, uploadedDocs}) => {
           Готовые документы:
         </Title>
       </Typography>
-      {/* <Space direction="vertical"> */}
       <Row>
         <Col span={12}>
           <div style={{margin:"8px 0"}}>
@@ -173,11 +173,6 @@ const UploadSection = ({appId, uploadedDocs}) => {
           </div>
         </Col>
       </Row>
-        
-        
-        
-        
-      {/* </Space>  */}
     </div>
   );
 };

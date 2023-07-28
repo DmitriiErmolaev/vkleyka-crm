@@ -4,8 +4,7 @@ import { EditOutlined } from "@ant-design/icons";
 import Question from '../Question';
 import PassportInfoCollapseLabel from './PassportInfoCollapseLabel';
 import ApplyOrCancel from '../ApplyOrCancel';
-import { getPassportInfoQuestions } from '../../../models/applications/questionnaire/questionnaire';
-import { getPassportsInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
+import { getPassportInfoQuestions, getPassportsInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
 
 const PassportInfo = ({passports, appId}) => {
   const [passportInfoIsEdit, setPassportInfoIsEdit] = useState(false); // для будущей фнкции редактирования

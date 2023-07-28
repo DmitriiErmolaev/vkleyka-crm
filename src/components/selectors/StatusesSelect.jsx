@@ -10,7 +10,7 @@ import { ProgramContext } from '../../models/context.js';
 const StatusesSelect = ({curStatus, appDocId}) => {
   const {api} = useContext(ProgramContext)
 
-  const handleSelect = async (value, option) => {
+  const handleSelect = async (_value, option) => {
     if (curStatus === option.value) {
       return false;
     }

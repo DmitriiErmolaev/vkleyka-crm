@@ -21,12 +21,9 @@ const DeleteOperator = ({id}) => {
   }  
 
   return (
-    <>
-      
-      <div>
-        <a href="#" onClick={() => handleDelete(id)}><DeleteOutlined/></a>
-      </div>
-    </>
+    <div>
+      <a href="#" onClick={() => handleDelete(id)}><DeleteOutlined/></a>
+    </div>
   );
 };
 

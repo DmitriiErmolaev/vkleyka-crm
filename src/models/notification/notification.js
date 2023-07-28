@@ -33,6 +33,16 @@ const notifications = {
       description: 'Неверный формат файла. Допустима загрузка файлов только в формате ".pdf" '
     },
   },
+  deleteUploadedFile: {
+    success: {
+      title: "Операция выполнена успешно!",
+      description: 'Файл успешно удален!',
+    },
+    error: {
+      title: 'Произошла ошибка!',
+      description: 'При удалении файла произошла ошибка!',
+    },
+  },
   questionnaireUpdated: {
     success: {
       title: 'Операция выполнена успешно!',

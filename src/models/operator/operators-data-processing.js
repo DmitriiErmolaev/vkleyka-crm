@@ -59,10 +59,10 @@ const createNewAuth = (email, pass) => {
     
     createUserWithEmailAndPassword(auth, email, pass)
       .catch((e) => {
-        console.log(e.code)
         if(e.message === "auth/login-blocked"){
           //it's ok. Блокируется автоматическая авторизация под новым аккаунтом.
         } else {
+          console.log(e.code)
           reject(e) 
         }
       }).finally(unsubscribe)
@@ -82,4 +82,3 @@ const createDbOperatorObject = async (admins, ref, newOperatorFormValues, newUse
   }]
   await updateDoc(ref,{admins: updatedAdmins } );
 }
-

@@ -19,18 +19,24 @@ const OperatorsSelect = ({docRef, assignedTo=null, transparent=true}) => {
       openNotification(api, "error", 'operatorChanged')
     }
   }
+  
+  const isOperatorIdExist = admins.findIndex((elem => {
+    if(elem.role === "operator"){
+      return elem.id === assignedTo         
+    }
+  }))
 
   const options = getOperatorOptions(admins);
-
+  const value = isOperatorIdExist !== -1 ? assignedTo : null
   return (
     <div>
       <Select 
         bordered = {!transparent}
-        value={assignedTo}
+        value={value}
         placeholder="Назначить визовика"
         options={options} 
         style={{
-          maxWidth: 160,
+          width: 176,
         }}
         onSelect={handleSelect}
       />

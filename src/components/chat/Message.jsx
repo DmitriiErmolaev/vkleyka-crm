@@ -6,7 +6,7 @@ const Message = ({styleClass, messageContent, time}) => {
     <li className="message__container">
       <div className={styleClass}>
         <p className="message__text">
-          {messageContent || <i>пустое сообщение</i>}
+          {messageContent || <i>пустое сообщение</i>} 
         </p>
         <div className="message__status">
           <span className="message__created-time">{time}</span>
