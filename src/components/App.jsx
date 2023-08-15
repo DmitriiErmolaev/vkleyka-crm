@@ -16,6 +16,7 @@ import { getAdminsRef } from "../models/operator/operators";
 import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
 import { findRole } from "../models/operator/operators-data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
+import { getAuthorizedOperator } from "../models/operator/operators-data-processing";
 
 const RoutesComponent = () => {
   const [api, contextHolder] = notification.useNotification();
@@ -45,23 +46,24 @@ const RoutesComponent = () => {
       </Routes>
     )
   }
-
+  let authorizedOperator = null
   let role = null;
-  let adminsData = [];
+  let admins = [];
 
   if(!adminsLoading) {
-    adminsData = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
-    role = findRole(adminsData, user);
+    admins = getSingleFieldFromDocSnapshot(adminsDocSnapshot, "admins");
+    authorizedOperator = getAuthorizedOperator(admins, user.uid)
+    role = authorizedOperator.role;
   }
 
   if(role === GLOBAL_ROLES.operator) {
     return  (
-      <ProgramContext.Provider value = {{user: user, role: role,admins: adminsData, api:api}}>
+      <ProgramContext.Provider value = {{authorizedOperator, role, admins, notificationApi:api}}>
         {contextHolder}
         <Routes>
           <Route path="/" element={<WorkPage />}>
             <Route index element={< AllApplications/>}/>
-            <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
+            <Route path="application/:appId" element={< ApplicationForm />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
         </Routes>
@@ -71,13 +73,13 @@ const RoutesComponent = () => {
     
   if(role === GLOBAL_ROLES.admin) {
     return  (
-      <ProgramContext.Provider value = {{user: user, role: role,admins: adminsData, api:api}}>
+      <ProgramContext.Provider value = {{authorizedOperator, role, admins, notificationApi:api}}>
         {contextHolder}
         <Routes>
           <Route path="/" element={<WorkPage />}>
             <Route index element={< AllApplications />}/>
             <Route path="users-manager" element={< Operators/>}/>
-            <Route path="application/:appId" element={< ApplicationForm user={user}/>}/>
+            <Route path="application/:appId" element={< ApplicationForm />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
         </Routes>

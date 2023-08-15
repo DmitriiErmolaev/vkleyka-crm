@@ -30,7 +30,7 @@ export const roleBasedContent = {
       },
       {
         key:"/chat",
-        label:(<Link to="chat">Чат</Link>)
+        label: "Чат",
       },
     ],
     collectionConstraint: "assigned-only",

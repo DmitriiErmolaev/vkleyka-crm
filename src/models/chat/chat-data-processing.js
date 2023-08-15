@@ -1,88 +1,40 @@
-import DateDivider from "../../components/chat/DateDivider";
-import Message from "../../components/chat/Message";
-import { Timestamp } from "firebase/firestore";
+import {collection, query, where} from "firebase/firestore";
+import {firestore} from "../firebase.js";
+import { updateDocField } from "../data-processing.js";
+import { createNewMessageObject } from "./message.js";
 
-const addZero = (num) => {
-  return (num < 10) ? `0${num}` : num;
+export const chatPaths = {
+  chatCollection: 'vkleyka_chat',
+  storageAttachmentsFolder: 'chatDocs',
+  userChatDocumentField: "messages",
 }
 
-const  getShortYear = (year) => {
-  return +String(year).slice(2);
+const  getChatsCollectionRef = () => {
+  return collection(firestore, chatPaths.chatCollection);
+}
+export const getChatQuery = () => {
+  return query(getChatsCollectionRef())
+}
+export const getChatsQueryForDialoguesList = (operatorId) => {
+  // INFO: запрос на диалоги, где assignedTo равен переданному айди или пустой строке.
+  return  query(getChatsCollectionRef(), where('assignedTo', 'in', [operatorId, '']));
+}
+// ищет документ в коллекции, в котором поле UID содержит искомый айди юзера.
+export const getChatQueryForApplication = (applicantId) => {
+    return query(getChatsCollectionRef(), where("UID", "==", applicantId))
 }
 
-export const getMessageCreationTime = (s) => {
-  const date = new Date(s * 1000);
-  const hh = addZero(date.getHours());
-  const mm = addZero(date.getMinutes());
-  return `${hh}:${mm}`
-}
-
-export const getMessageCreationDate = (s) => {
-  const date = new Date(s * 1000);
-  const dd = `${addZero(date.getDate())}`;
-  const mm = `${addZero(date.getMonth() + 1)}`;
-  const yy = `${getShortYear(date.getFullYear())}`
-  return `${dd}/${mm}/${yy}`;
-}
-
-const getClassNameForMessage = (sender) => {
-  return (sender === "me") ? "message__content applicant" : "message__content operator";
-}
-
-const memoizedCreationDate = () => {
-  let dateCached;
-  
-  return (creationDate) => {
-    if (!dateCached || creationDate !== dateCached) {
-      dateCached = creationDate;
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
-export const getChatMessages = (messages) => {
-  // пустой контейнер, который заполнит диалоговое окно, пока нет новых сообщений.
-  let result = [
-    <li key={"invisible-container"} className="invisible-container">
-      <div className="invisible-message"></div>
-    </li>,
-  ];
-
-  const isDateNew = memoizedCreationDate();
-
-  messages.forEach( (message) => {
-    const messageCreationDate = getMessageCreationDate(message.time.seconds);
-    const messageCreationTime = getMessageCreationTime(message.time.seconds);
-    const classNameForMessage = getClassNameForMessage(message.sender);
-
-    if(isDateNew(messageCreationDate)) {
-      result.push(
-        <DateDivider key={messageCreationDate} date={messageCreationDate} />
-      )
-    } 
-   
-    result.push(
-      <Message 
-        key={message.key}
-        styleClass={classNameForMessage} 
-        messageContent={message.content} 
-        time={messageCreationTime} 
-      />
-    )
+export const getDialogueRef = (chatCollection, applicantId) => {
+  const docSnap = chatCollection.docs.find(docSnap => {
+    return docSnap.get('UID') === applicantId;
   })
-  return result
+  console.log(docSnap.ref)
+  return docSnap.ref;
 }
 
-export const createNewMessageObject = (text, operatorName, messageType) => {
-  return {
-    // attachments надо будет брать из стейта наверно позднее.
-    attachments:[],
-    content: text,
-    sendState: -1,
-    sender: operatorName,
-    time: Timestamp.now(),
-    type: messageType,
-  }
+export  const sendMessage = async (text, operatorName, docRef, messageData, attachmentsArray) => {
+  const newMessage = createNewMessageObject(text, operatorName, attachmentsArray);
+  const newMessagesToUpload = [...messageData, newMessage];
+  await updateDocField(docRef, chatPaths.userChatDocumentField, newMessagesToUpload);
 }
+

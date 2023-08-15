@@ -1,13 +1,8 @@
 import {where} from "firebase/firestore";
-import { updateDoc } from "firebase/firestore";
-
-const addZero = (num) => {
-  return (num < 10) ? `0${num}` : num;
-}
-
-const getShortYear = (year) => {
-  return +String(year).slice(2);
-}
+import { updateDoc,orderBy } from "firebase/firestore";
+import { addZero } from "../../utils";
+import { getShortYear } from "../../utils";
+import { getDialogueRef } from "../chat/chat-data-processing";
 
 // ====== Получают данные для отображение в таблице ======
 export const getApplicationId = (docId) => {
@@ -15,9 +10,9 @@ export const getApplicationId = (docId) => {
   return id
 }
 
-export const getApplicationCreationDate = (s) => {
+export const getApplicationCreationDate = (firebaseTimestamp) => {
   // TODO: проверить какую дату получают пользователи из других временных зон
-  const date = new Date(s * 1000);
+  const date = firebaseTimestamp.toDate();
   const day = addZero(date.getDate());
   const correctMonth = addZero(date.getMonth() + 1);
   const shortYear = getShortYear(date.getFullYear());
@@ -42,19 +37,16 @@ export const getFullCountryName = (countries, countryCode) => {
   return findedCountry.name_ru
 }
 
-export const getDataForTable = (applications, applicants, countries) => {
+export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot) => {
+  console.log(chatsCollSnapshot)
   return applications.reduce((accum, application) => {
-
-    if( !application.paymentSuccessful) {
-      // NOTE: временно: чтобы не отображать в таблице неоплаченные заявки.
-      return accum;
-    } 
     accum.push(
       {
-        fullDocId: application.documentID,
+        key: application.documentID,
         id: getApplicationId(application.documentID),
-        date: getApplicationCreationDate(application.createdAt.seconds),
-        applicant: getUserName(applicants, application.UID), 
+        date: getApplicationCreationDate(application.createdAt),
+        // dialogueRef: getDialogueRef(chatsCollSnapshot, application.UID),
+        applicant: `${application.passports[0].first_name} ${application.passports[0].last_name}`,
         status: application.preparedInformation.preparationStatus,
         country: getFullCountryName(countries, application.country_code),
         assignedTo: application.preparedInformation.assignedTo,
@@ -64,14 +56,16 @@ export const getDataForTable = (applications, applicants, countries) => {
   }, [])
 }
 
-export const setApplicationOperator = async (ref, fileName, value) => {
-  await updateDoc(ref, fileName, value)
-}
-
-export const getFilters = (country, status, column, initialQueryConstraints) => {
-  let filters = [];
-  filters.push(initialQueryConstraints)
+export const getFilters = (country, status, column, authorizedOperator) => {
+  let filters = [
+    where('paymentSuccessful', '==', true),
+    orderBy("createdAt", "desc"),
+  ];
   
+  if (authorizedOperator.role === 'operator') {
+    filters.push(where("preparedInformation.assignedTo", "==", authorizedOperator.id));
+  }
+
   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/
 
   // if(selectedColumn && selectedColumn.order) {

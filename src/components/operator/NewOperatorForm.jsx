@@ -21,7 +21,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
   // const [feedBackStatus, setFeedbackStatus] = useState(initialFeedbackStatus) // для управляемой сигнализации валидации поля. Пока не разобрался.
   const [buttonLoadingState, setButtonLoadingState] = useState(false);
   const [errorMessageHidden, setErrorMessageHidden] = useState(true);
-  const {admins, api} = useContext(ProgramContext)
+  const {admins, notificationApi} = useContext(ProgramContext)
 
   function resetFormFileds() {
     form.resetFields();
@@ -40,7 +40,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
       setButtonLoadingState(true);
       await createNewUser(values, admins)
       setButtonLoadingState(false);
-      openNotification(api, "success", "createNewOperator")
+      openNotification(notificationApi, "success", "createNewOperator")
       closeRegisterModal();
       resetFormFileds();
     } catch(e) {

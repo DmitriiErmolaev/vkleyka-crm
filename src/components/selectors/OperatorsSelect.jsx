@@ -4,27 +4,31 @@ import { ProgramContext } from '../../models/context.js';
 import { setApplicationOperator } from '../../models/applications/table-data-processing.js';
 import { getOperatorOptions } from '../../models/operator/operators.js';
 import { openNotification } from '../../models/notification/notification.js';
+import { updateDocField } from '../../models/data-processing.js';
 
-const OperatorsSelect = ({docRef, assignedTo=null, transparent=true}) => {
-  const {admins, api} = useContext(ProgramContext)
+const OperatorsSelect = ({dialogueRef, docRef, assignedTo=null, transparent=true}) => {
+  const {admins, notificationApi} = useContext(ProgramContext)
 
   const handleSelect = (value, _option) => {
     if(assignedTo === value) {
       return false;
     }
+    
     try {
-      setApplicationOperator(docRef, "preparedInformation.assignedTo", value)
-      openNotification(api, "success", 'operatorChanged')
+      updateDocField(docRef, "preparedInformation.assignedTo", value)
+      // updateDocField(dialogueRef, "assignedTo", value)
+      openNotification(notificationApi, "success", 'operatorChanged')
     } catch(e) {
-      openNotification(api, "error", 'operatorChanged')
+      openNotification(notificationApi, "error", 'operatorChanged')
     }
   }
   
-  const isOperatorIdExist = admins.findIndex((elem => {
-    if(elem.role === "operator"){
+  const isOperatorIdExist = admins.findIndex(elem => {
+    if(elem.role === "operator") {
       return elem.id === assignedTo         
     }
-  }))
+    return false;
+  })
 
   const options = getOperatorOptions(admins);
   const value = isOperatorIdExist !== -1 ? assignedTo : null

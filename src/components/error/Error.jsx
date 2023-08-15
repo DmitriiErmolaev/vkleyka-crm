@@ -6,7 +6,7 @@ const Error = ({error}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/");
+    window.location.reload();
   }
 
   return (
@@ -15,6 +15,7 @@ const Error = ({error}) => {
         <Row>
           <Col span={12} offset={6}>
             <Alert
+              style={{wordBreak:"break-all", whiteSpace:"pre-wrap"}}
               showIcon
               type="error"
               message={error.code }

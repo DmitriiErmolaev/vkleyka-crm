@@ -31,7 +31,7 @@ const PassportInfo = ({passports, appId}) => {
 
   const passportsInfoLabelExtra = (
     <EditOutlined 
-      className="editButton"
+      className="interactive-icons"
       style={{ fontSize: '22px', color: '#08c', marginLeft:"10px"}}
       onClick={() =>  setPassportInfoIsEdit(true)}
     /> 

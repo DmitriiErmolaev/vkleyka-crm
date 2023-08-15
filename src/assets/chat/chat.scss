@@ -1,12 +1,36 @@
-.chat-container {
+.chat__container {
   border-radius:10px ;
   background-color:white;
   width:100% ;
-  height:400px ;
-  margin-top:30px ;
+  height:450px ;
+  // margin-top:30px ;
   font: 400 16px Inter, sans-serif;
 
-  .messages {
+  .chat-info {
+    display:flex;
+    align-items:center;
+    padding: 7px 12px;
+
+    .applicant-name {
+      width:30%;
+      overflow-x: hidden;
+      text-overflow:ellipsis;
+    }
+    
+    .operator-info {
+      margin-left:auto;
+
+      .operator-title{
+        text-align: center;
+      }
+    }
+    .dialogue-is-active-status {
+      margin-left:30px;
+    }
+  }
+  
+
+  .chat-messages {
     display: flex;
     flex-direction: column;
     height: 340px;
@@ -36,7 +60,10 @@
     }
   }
 
-  .input-panel {
+  .chat-footer {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
     height:60px;
     margin:0 10px;
   } 

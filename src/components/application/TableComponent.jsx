@@ -86,7 +86,6 @@ const TableComponent = ({
         columns={columnsSettings} 
         pagination={paginationSettings} 
         onChange={handleTableChange} 
-        rowKey={(record) => record.id}
       />
     )
   }
@@ -98,7 +97,6 @@ const TableComponent = ({
       columns={columnsSettings} 
       pagination={paginationSettings} 
       onChange={handleTableChange} 
-      rowKey={(record) => record.id}
     />
   );
 };

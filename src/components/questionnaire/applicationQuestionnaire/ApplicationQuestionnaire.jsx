@@ -12,17 +12,17 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   const [isEdit, setIsEdit] = useState(false);
   const [currentPanelOpened, setCurrentPanelOpened] = useState([]);
   const [answersToUpdate, setAnswersToUpdate] = useState([]);
-  const {api} = useContext(ProgramContext)
+  const {notificationApi} = useContext(ProgramContext)
 
   const applyChanges = async (e) => {
     try {
       // TODO: функция, проверяющая answersToUpdate на заполенность всех обязательных вопросов
       await updateQuestionnaireAnswers(appRef, questionnaire, answersToUpdate)
-      openNotification(api, "success", 'questionnaireUpdated')
+      openNotification(notificationApi, "success", 'questionnaireUpdated')
       setAnswersToUpdate([]);
       setIsEdit(false)
     } catch (e) {
-      openNotification(api, "error", 'questionnaireUpdated')
+      openNotification(notificationApi, "error", 'questionnaireUpdated')
     }
   }
 
@@ -60,7 +60,7 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
       <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
         <Title level={3}>Анкета</Title>
         <EditOutlined 
-          className="editButton"
+          className="interactive-icons"
           style={{ fontSize: '22px', color: '#08c', marginLeft:"10px", marginRight:"10px"}}
           onClick={() =>  setIsEdit(true)}
         />

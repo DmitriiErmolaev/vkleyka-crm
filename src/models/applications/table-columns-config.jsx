@@ -23,7 +23,7 @@ const id_object = {
     render: (text, record, _) => {
       return (
         <Link 
-          to={`/application/${record.fullDocId}`} 
+          to={`/application/${record.key}`} 
           style={{color:"#0EA5E9", fontWeight:"800"}}
         >
           {text}
@@ -84,9 +84,10 @@ const viser_object = {
     key: 'assignedTo',
     align: "center",
     render: (_test, record, _index) => {
-        const ref = getAppRefById(record.fullDocId);
+      console.log(record)
+        const ref = getAppRefById(record.key);
         const assignedTo = record.assignedTo;
-        return <SelectComponent collectionType={"operators"} data={{ref, assignedTo }}/> 
+        return <SelectComponent collectionType={"operators"} data={{ref, assignedTo, dialogueRef:record.dialogueRef }}/> 
     }
   }
 }

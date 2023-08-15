@@ -1,5 +1,5 @@
 import React from 'react';
-import "../../assets/chat/date-divider.scss";
+import "../../../assets/chat/date-divider.scss";
 
 const DateDivider = ({date}) => {
   return (

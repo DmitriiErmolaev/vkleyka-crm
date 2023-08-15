@@ -50,6 +50,7 @@ const ApplicationForm = () => {
   // const cardTitle = `${state.countryNameRu}-${visaType[application.type]}`
   const cardTitle = `${countryNameRu}-${visaType[application.type]}`
   const curAppStatus = application.preparedInformation.preparationStatus;
+  const applicantName = `${application.passports[0].first_name} ${application.passports[0].last_name}`
 
   return (
     <Layout style={{height:"calc(100vh - 64px)", padding:"0px 10px 10px"}}>
@@ -66,7 +67,7 @@ const ApplicationForm = () => {
           <QuestionnaireSection questionnaire={application.questionnary.answers} passports={application.passports} appRef={APPLICATION_REF} appId={appId}/>
         </Col>
         <Col  span={12} style={{height:"100%", overflowY:"auto", borderLeft:"1px solid #0000002c"}}>
-          <Chat appId={appId} applicantId={application.UID}/>
+          <Chat applicantName={applicantName} applicantId={application.UID}/>
           <UploadSection appId={appId} uploadedDocs={application.preparedInformation.documents}/>
         </Col>
       </Row>

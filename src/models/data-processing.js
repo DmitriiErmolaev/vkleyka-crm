@@ -15,12 +15,16 @@ export const getDataFromCollSnapshot = (collSnap) => {
   if (!collSnap) {
     return
   }
-  let collData = []
-  collSnap.forEach(docSnap => {
-    const docData = docSnap.data();
-    collData.push(docData);
+  return collSnap.docs.map(docSnap => {
+    return docSnap.data();
   })
-  return collData;
+
+  // let collData = []
+  // collSnap.forEach(docSnap => {
+  //   const docData = ;
+  //   collData.push(docData);
+  // })
+  // return collData;
 }
 
 export const getQueryWithConstraints = (ref,constraints) => {

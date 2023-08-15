@@ -1,14 +1,4 @@
-.editButton {
-  transition: transform 0.1s;
 
-  &:hover {
-    cursor:pointer;
-  }
-
-  &:active {
-    transform:scale(0.85);
-  }
-}
 
 .person__title {
   color:#0F6CA5;

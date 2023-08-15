@@ -33,9 +33,16 @@ export const findRole = (admins, authorizedUser) => {
   return findedUser.role;
 }
 
-export const findAuthorizedOperatorName = (admins, authorizedUser) => {
+export const getAuthorizedOperator = (admins, authorizedUserID) => {
   const findedUser = admins.find((admin) => {
-    return admin.id === authorizedUser.uid;
+    return admin.id === authorizedUserID;
+  })
+  return findedUser;
+}
+
+export const findAuthorizedOperatorName = (admins, authorizedUserID) => {
+  const findedUser = admins.find((admin) => {
+    return admin.id === authorizedUserID;
   })
   return findedUser.name;
 }

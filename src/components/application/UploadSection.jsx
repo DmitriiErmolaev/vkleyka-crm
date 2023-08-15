@@ -35,7 +35,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
   const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false)
   const [clickedButton, setClickedButton] = useState(null);
   const APPLICATION_REF = getAppRefById(appId);
-  const {api} = useContext(ProgramContext)
+  const {notificationApi} = useContext(ProgramContext)
 
 
   const handleClick = (e) => {
@@ -45,7 +45,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
   const beforeUpload = (file, _filelist) => {
     setUploadButtonIsDisabled(true)
     if(!allowedFileTypes.includes(file.type)) {
-      openNotification(api, "error", "uploadFile")
+      openNotification(notificationApi, "error", "uploadFile")
       setUploadButtonIsDisabled(false)
       return Upload.LIST_IGNORE
     }
@@ -63,10 +63,10 @@ const UploadSection = ({appId, uploadedDocs}) => {
       const storageFileRef = getFileRef(uploadedDocs[docIndex].link);
       try {
         await deleteObject(storageFileRef)
-        openNotification(api, "success", 'deleteUploadedFile')
+        openNotification(notificationApi, "success", 'deleteUploadedFile')
       } catch(e) {
         console.log(e)
-        openNotification(api, "error", 'deleteUploadedFile')
+        openNotification(notificationApi, "error", 'deleteUploadedFile')
         // Firebase Storage: Object 'documents/hJ1goDbnR8C8OMygvtm2-1690235227709.pdf' does not exist. (storage/object-not-found) - пример.
       }
 
@@ -91,7 +91,8 @@ const UploadSection = ({appId, uploadedDocs}) => {
     }, error => {
       // TODO: обработать ошибки.
     }, async () => {
-
+    
+    
     // загрузка в бд---------------------------------------------------
       const options = {
         docType: clickedButton, 
@@ -103,7 +104,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
       await updateDocField(APPLICATION_REF, "preparedInformation.documents", newUploadedDocs)
       const newFileExtraProps = getNewFileExtraProps(newFileName, "done", clickedButton);
       setFileListState({...fileListState, [clickedButton] : [newFileExtraProps]})
-      openNotification(api, "success", "uploadFile")
+      openNotification(notificationApi, "success", "uploadFile")
       setClickedButton(null)
       setUploadButtonIsDisabled(false) 
     })

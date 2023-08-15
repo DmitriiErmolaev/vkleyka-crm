@@ -10,7 +10,7 @@ const SelectComponent = ({data, collectionType}) => {
     select = <StatusesSelect curStatus={data.curAppStatus} appDocId={data.appDocId}/>
   }
   if (collectionType === 'operators') {
-    select = <OperatorsSelect docRef={data.ref} assignedTo={data.assignedTo} transparent={data.transparent}/>
+    select = <OperatorsSelect dialogueRef={data.dialogueRef} docRef={data.ref} assignedTo={data.assignedTo} transparent={data.transparent}/>
   }
   if (collectionType === 'countries') {
     select = <CountrySelect setSelectedCountry={data.setSelectedCountry} selectedCountry={data.selectedCountry} countries={data.countries}/>

@@ -8,7 +8,7 @@ import { openNotification } from '../../models/notification/notification.js';
 import { ProgramContext } from '../../models/context.js';
 
 const StatusesSelect = ({curStatus, appDocId}) => {
-  const {api} = useContext(ProgramContext)
+  const {notificationApi} = useContext(ProgramContext)
 
   const handleSelect = async (_value, option) => {
     if (curStatus === option.value) {
@@ -17,10 +17,10 @@ const StatusesSelect = ({curStatus, appDocId}) => {
     const appDocRef = getAppRefById(appDocId)
     try {
       await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
-      openNotification(api, "success", 'statusChanged')
+      openNotification(notificationApi, "success", 'statusChanged')
     } catch (e) {
       console.log(e)
-      openNotification(api, "error", 'statusChanged')
+      openNotification(notificationApi, "error", 'statusChanged')
     }
   }
 
