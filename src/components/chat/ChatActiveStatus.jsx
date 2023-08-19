@@ -1,11 +1,10 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext} from 'react';
 import { Tag } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { ProgramContext } from '../../models/context';
 import { updateDocField } from '../../models/data-processing';
 
-const ChatActiveStatus = ({dialogueAssignedTo, dialogueRef}) => {
-  // const [dialogueStatusChecked, setDialogueStatusChecked] = useState(false)
+const ChatActiveStatus = ({dialogueAssignedTo, dialogueRef, source}) => {
   const {authorizedOperator} = useContext(ProgramContext)
 
   const handleTagClick = async () => {
@@ -15,13 +14,17 @@ const ChatActiveStatus = ({dialogueAssignedTo, dialogueRef}) => {
     if(dialogueAssignedTo) {
       await updateDocField(dialogueRef, "assignedTo", '')
     }
-
-    // setDialogueStatusChecked(!dialogueStatusChecked)
   }
   
-  const icon = dialogueAssignedTo 
-    ? <CloseCircleOutlined style={{color:"red"}} onClick={handleTagClick} />
-    : <CheckCircleOutlined style={{color:"#36CE00"}} onClick={handleTagClick} />
+  const icon = source === "application" 
+    ? null 
+    : (
+      dialogueAssignedTo 
+        ? <CloseCircleOutlined style={{color:"red"}} onClick={handleTagClick} />
+        : <CheckCircleOutlined style={{color:"#36CE00"}} onClick={handleTagClick} />
+    )
+  
+  
 
   const dialogueIsActiveStatus = dialogueAssignedTo 
     ? 'Активен'
@@ -29,14 +32,16 @@ const ChatActiveStatus = ({dialogueAssignedTo, dialogueRef}) => {
   const tagColor = dialogueAssignedTo 
     ? 'green'
     : 'geekblue'
+
   return (  
-    <Tag 
-      color={tagColor}
-      icon={icon}
-      
-    >
-      {dialogueIsActiveStatus}  
-    </Tag>
+    <div className="dialogue-is-active-status">
+      <Tag 
+        color={tagColor}
+        icon={icon}
+      >
+        {dialogueIsActiveStatus}  
+      </Tag>
+    </div>
   );
 };
 

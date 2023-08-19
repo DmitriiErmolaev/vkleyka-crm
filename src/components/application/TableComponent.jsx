@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Table} from "antd";
 import {getColumnsConfig} from "../../models/applications/table-columns-config";
 
+//TODO: рефакторинг после завершения пагинации
 const total = (total, range)=>{
   let first = `${range[0]} - ${range[1]}`
   let second = ` из ${total}`

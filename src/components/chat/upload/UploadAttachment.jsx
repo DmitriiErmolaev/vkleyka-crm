@@ -1,6 +1,7 @@
 import React from 'react';
 import { FileFilled } from '@ant-design/icons';
-import "../../../assets/chat/chat-upload-file.scss"
+import "../../../assets/chat/chat-upload-file.scss";
+
 const UploadAttachment = ({attachment}) => {
   return (
     <div className="chat-upload-attachment__container">

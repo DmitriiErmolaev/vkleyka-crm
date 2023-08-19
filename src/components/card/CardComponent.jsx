@@ -10,7 +10,7 @@ import { getFileUrl } from '../../models/applications/applications';
 
 const {Title} = Typography;
 
-const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assignedTo, appRef}) => {
+const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assignedTo, appRef, dialogueRef}) => {
   const [progressPercent, setProgressPercent] = useState();
   const [progressColor, setProgressColor] = useState();
   const {role} = useContext(ProgramContext)
@@ -45,23 +45,23 @@ const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assigned
         <Progress 
           percent = {progressPercent}
           strokeLinecap = "square"
-          size = {["418px",41]} // ширина и высота. Ширина складывается из фактической ширина прогресс бара и зарезервированного паддинга под ::after.
+          size = {["418px", 41]} // ширина и высота. Ширина складывается из фактической ширина прогресс бара и зарезервированного паддинга под ::after.
           strokeColor = {progressColor}
           trailColor = "#fff"
           style={{
             marginBottom:"25px", 
-            position:"relative" // позиционируем, чтобы спан прогресс бара, в котором рендерится селектор позиционировался относительно начальных координат прогресс бара
+            position:"relative", // позиционируем, чтобы спан прогресс бара, в котором рендерится селектор позиционировался относительно начальных координат прогресс бара
           }}
           format = {() => <SelectComponent data={{curAppStatus, appDocId:appDocId}} collectionType="statuses"/>}
         />
-        {/*Рефакторить отдельным компонентом который принимает параметр и в результате рнедерит или нет */}
+        {/*TODO: Рефакторить отдельным компонентом который принимает параметр и в результате рнедерит или нет */}
         <Layout style={{backgroundColor:"inherit", display:roleBasedContent[role].cardOperatorAssigmentDisplayProperty}}>
           <Typography >
             <Title style={{color:"#fff"}} level={4}>
               Отв-ный
             </Title>
           </Typography>
-          <SelectComponent data={{ref:appRef, assignedTo:assignedTo, transparent: false}} collectionType="operators"/>
+          <SelectComponent data={{ref:appRef, assignedTo, dialogueRef,  transparent: false}} collectionType="operators"/>
         </Layout>
       </Card>
     </Layout>

@@ -1,24 +1,22 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { ProgramContext } from '../../models/context';
-import { Spin } from 'antd';
+import { Spin, Card, ConfigProvider, Drawer } from 'antd';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { Drawer } from "antd";
 import { getChatsQueryForDialoguesList } from '../../models/chat/chat-data-processing';
 import { getDataFromCollSnapshot } from '../../models/data-processing';
 import { getUsersQuery } from '../../models/applicants/applicants';
 import Error from '../error/Error';
 import DialogueListItem from './DialogueListItem';
-import Chat from './Chat';
 import Dialog from './Dialog';
-
+import '../../assets/chat/dialogue-list.scss'
 
 const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
   const {authorizedOperator} = useContext(ProgramContext);
-  const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedOperator.id));
+  const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedOperator));
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(getUsersQuery());
-  const [selectedDialogApplicantId, setSelectedDialogApplicantId] = useState(null);
+  const [selectedDialog, setSelectedDialog] = useState(null);
   const [dialogWindowOpen, setDialogWindowOpen] = useState(false)
-  // TODO: из DialogueListItem можно в стайт записать весь диалог. Который потом передать в Dialog/Сhat. Но там свое скачивание. повторное
+  // TODO: из DialogueListItem можно в стейт записать весь диалог. Который потом передать в Dialog/Сhat. Но там свое скачивание. повторное
   
   const handleDrawerClose = () => {
     setDrawerOpen(false)
@@ -28,7 +26,7 @@ const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
   if(chatsLoading || usersLoading){
     return (
       <Drawer
-        bodyStyle="drawer-body"
+        bodyStyle={{paddingTop: "0"}}
         rootClassName="drawer"
         placement="left"
         title="Чат"
@@ -51,13 +49,13 @@ const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
     const user = users.find(user => {
       return user.UID === dialogue.UID;
     })
-    return <DialogueListItem key={dialogue.UID} user={user} dialogue={dialogue} setSelectedDialogApplicantId={setSelectedDialogApplicantId} setDialogWindowOpen={setDialogWindowOpen}/>
+    return <DialogueListItem key={dialogue.UID} user={user} dialogue={dialogue} setSelectedDialog={setSelectedDialog} setDialogWindowOpen={setDialogWindowOpen}/>
   })
   
   return (
     <>
       <Drawer 
-        bodyStyle={{paddingTop:"0"}}
+        bodyStyle={{padding:"5px 0 10px 0"}}
         rootClassName="dialogues-list"
         placement="left"
         title="Чат"
@@ -65,15 +63,28 @@ const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
         mask={false}
         onClose={handleDrawerClose}
         getContainer={false}
-        zIndex="99"
+        zIndex={100}
       >
-        <ul>
-          {dialoguesList}
-        </ul>
+        <ConfigProvider
+          theme={{
+            components:{
+              Card: {
+                actionsBg:"black"
+              }
+            }
+          }}
+        >
+          <Card
+            bordered={false}
+            bodyStyle={{padding:"0", borderRadius:"0"}}
+
+          >
+            {dialoguesList}
+          </Card>
+        </ConfigProvider>
       </Drawer>
-      <Dialog users={users} dialogWindowOpen={dialogWindowOpen} setDialogWindowOpen={setDialogWindowOpen} selectedDialogApplicantId={selectedDialogApplicantId}/>
+      <Dialog users={users} dialogWindowOpen={dialogWindowOpen} setDialogWindowOpen={setDialogWindowOpen} selectedDialog={selectedDialog} />
     </>
-    
   );
 };
 

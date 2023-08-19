@@ -16,6 +16,10 @@ export const roleBasedContent = {
         key:"/users-manager",
         label:(<Link to="users-manager">Менеджер аккаунтов</Link>)
       },
+      {
+        key:"/chat",
+        label:"Чат",
+      },
     ],
     collectionConstraints: "all-applications",
     initialQueryConstraints: null,

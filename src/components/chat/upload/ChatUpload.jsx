@@ -1,24 +1,14 @@
 import React, {useState, useEffect, useContext} from 'react';
-import { Upload, Modal, Button, Space, Input } from "antd";
+import { Upload } from "antd";
 import { PaperClipOutlined } from "@ant-design/icons"
-import { nanoid } from 'nanoid';
-import SelectedAttachmentList from './SelectedAttachmentList';
-import ChatUploadPopupFooter from './SelectedAttachmentPopupFooter';
-import { chatAttachmentsPath } from '../../../models/chat/attachment';
 import { uploadBytesResumable } from 'firebase/storage';
 import { getFileRef } from '../../../models/firebase';
-import { createLoadingAttachmentList } from '../../../models/chat/attachment';
 import {createNewMessageObject} from '../../../models/chat/message'
-import { getPercent } from '../../../models/data-processing';
-import { prepareAttachmentsInfo } from '../../../models/chat/attachment';
-import { addPathToDownload } from '../../../models/chat/attachment';
+import { prepareAttachmentsInfo, addPathToDownload } from '../../../models/chat/attachment';
 import SelectedAttachmentsPopup from './SelectedAttachmentsPopup';
-import { ChatAttachmentsContext } from '../../../models/context';
-import { sendMessage } from '../../../models/chat/chat-data-processing';
-import { getCollectionFirstDocRef } from '../../../utils';
-import { ProgramContext } from '../../../models/context';
+import { ChatAttachmentsContext, ProgramContext } from '../../../models/context';
+import { sendMessage, chatPaths } from '../../../models/chat/chat-data-processing';
 import { getFileExtension } from '../../../utils';
-import { chatPaths } from '../../../models/chat/chat-data-processing';
 
 const ChatUpload = ({chatDocRef, messageText, applicantId, setUploadingMessageWithAttachments, messagesData}) => {
   const [ chatUploadAttachmentList, setChatUploadAttachmentList ] = useState([])
@@ -100,8 +90,7 @@ const ChatUpload = ({chatDocRef, messageText, applicantId, setUploadingMessageWi
           attachmentTextChange={attachmentTextChange}
         />
       </ChatAttachmentsContext.Provider>
-      
-   </div>
+    </div>
   );
 };
 

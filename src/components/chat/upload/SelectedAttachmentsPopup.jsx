@@ -18,7 +18,13 @@ const SelectedAttachmentsPopup = ({modalIsOpened, handleSendWithAttachments, bef
     >
       <SelectedAttachmentList />
       <div style={{marginTop:"10px", borderBottom:"2px solid rgb(77, 161, 255)"}}>
-        <Input placeholder="Текст сообщения" bordered={false} value={attachmentText} onChange={attachmentTextChange}/>
+        <Input 
+          placeholder="Текст сообщения" 
+          bordered={false} 
+          value={attachmentText} 
+          onChange={attachmentTextChange}
+          onPressEnter={handleSendWithAttachments}
+        />
       </div>
     </Modal>
   );

@@ -125,7 +125,6 @@ export const getPassportInfoQuestions = () => {
   ]
 }
 
-
 export const getPassportsInfoCollapseItem = (label, extra, children) => {
   return {
     key: "personalInfo",

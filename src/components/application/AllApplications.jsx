@@ -32,11 +32,8 @@ const AllApplications = () => {
   // const [curTablePage, setCurTablePage] = useState();  // NOTE: Для пагинации
   // const [firstApplicationRef, setFirstApplicationRef] = useState();  // NOTE: Для пагинации
   // const [lastApplicationRef, setLastApplicationRef] = useState();  // NOTE: Для пагинации
-  
-  // TODO: обернуть в одну функцию - getInitialConstraint/getRoleBasedConstraint
 
-  let filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedOperator);
-
+  const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedOperator);
   /* TODO: для пагинации: запрос на 10 документов коллекции
   * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));  // NOTE: Для пагинации
   */
@@ -54,6 +51,10 @@ const AllApplications = () => {
     }
   }, [appsCollSnapshot]) // TODO: вынести в стейт? или найти другой  вариант? 
 
+  const radioChange = (e) => {
+    setSelectedStatus(e.target.value)
+  }
+
   let countries = [];
   let arrangedTableData = [];
   let applications = [];
@@ -70,14 +71,12 @@ const AllApplications = () => {
       // refArray = getDocsRefs(appsCollSnapshot);  NOTE: Для пагинации
     }
   }
+  
   /* TODO: для пагинации: запоминание ссылки на 1 и 10 документы
   * let firstDocRef = refArray[0];  // NOTE: Для пагинации
   * let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
   */
-  
-  const radioChange = (e) => {
-    setSelectedStatus(e.target.value)
-  }
+
   return (
     <Layout 
       style={{

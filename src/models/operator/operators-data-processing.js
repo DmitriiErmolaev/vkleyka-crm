@@ -40,9 +40,9 @@ export const getAuthorizedOperator = (admins, authorizedUserID) => {
   return findedUser;
 }
 
-export const findAuthorizedOperatorName = (admins, authorizedUserID) => {
+export const findOperatorName = (admins, userID) => {
   const findedUser = admins.find((admin) => {
-    return admin.id === authorizedUserID;
+    return admin.id === userID;
   })
   return findedUser.name;
 }

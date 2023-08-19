@@ -1,7 +1,6 @@
 import React, {useContext} from 'react';
 import {Select} from "antd";
 import { ProgramContext } from '../../models/context.js';
-import { setApplicationOperator } from '../../models/applications/table-data-processing.js';
 import { getOperatorOptions } from '../../models/operator/operators.js';
 import { openNotification } from '../../models/notification/notification.js';
 import { updateDocField } from '../../models/data-processing.js';
@@ -16,7 +15,7 @@ const OperatorsSelect = ({dialogueRef, docRef, assignedTo=null, transparent=true
     
     try {
       updateDocField(docRef, "preparedInformation.assignedTo", value)
-      // updateDocField(dialogueRef, "assignedTo", value)
+      updateDocField(dialogueRef, "assignedTo", value)
       openNotification(notificationApi, "success", 'operatorChanged')
     } catch(e) {
       openNotification(notificationApi, "error", 'operatorChanged')

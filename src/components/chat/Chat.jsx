@@ -1,29 +1,24 @@
 import React, {useState, useEffect, useRef, useContext} from 'react';
 import {useCollection} from "react-firebase-hooks/firestore";
-import {Spin, Input, Button, Space, Upload, Modal, Tag } from "antd";
-import {SendOutlined, PaperClipOutlined, CheckCircleOutlined, CloseCircleOutlined  } from "@ant-design/icons"
-import { getChatQueryForApplication } from '../../models/chat/chat-data-processing.js';
-import { getAllFieldsFromDocSnapshot, updateDocField } from '../../models/data-processing.js';
-import "../../assets/chat/chat.scss";
-import { findAuthorizedOperatorName } from '../../models/operator/operators-data-processing.js';
+import {Spin, Input, Button, Space } from "antd";
+import {SendOutlined } from "@ant-design/icons"
+import { getAllFieldsFromDocSnapshot } from '../../models/data-processing.js';
 import { ProgramContext} from '../../models/context.js';
 import { getChatMessages } from '../../models/chat/message.js';
+import { sendMessage, getAssignedOperator, getChatQueryForApplication } from '../../models/chat/chat-data-processing.js';
+import { getCollectionFirstDocRef } from '../../utils.js';
 import Error from '../error/Error.jsx';
 import ChatUpload from './upload/ChatUpload.jsx';
 import ChatActiveStatus from './ChatActiveStatus.jsx';
-import { prepareAttachmentsInfo } from '../../models/chat/chat-data-processing.js';
-import { sendMessage } from '../../models/chat/chat-data-processing.js';
-import { getCollectionFirstDocRef } from '../../utils.js';
-import { chatPaths } from '../../models/chat/chat-data-processing.js';
+import "../../assets/chat/chat.scss";
 
-const Chat = ({applicantName, applicantId }) => {
-  const {authorizedOperator, admins} = useContext(ProgramContext)
-  const [text, setText] = useState("")
+const Chat = ({ applicantName, applicantId, source }) => {
+  const {authorizedOperator, admins} = useContext(ProgramContext);
+  const [text, setText] = useState("");
   const allMessages = useRef(null);
   const [uploadingMessageWithAttachments, setUploadingMessageWithAttachments] = useState([]);
-  // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot.
+  // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot. 
   const [chatCollSnapshot, chatLoading, chatError] = useCollection(getChatQueryForApplication(applicantId));
-
 
   useEffect(()=> {
     if(!chatLoading){
@@ -65,6 +60,7 @@ const Chat = ({applicantName, applicantId }) => {
   const chatDocRef = getCollectionFirstDocRef(chatCollSnapshot); 
   const dialogueData = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
   const dialogueMessages = getChatMessages(dialogueData.messages, uploadingMessageWithAttachments);
+  const operatorName = getAssignedOperator(admins, chatCollSnapshot.docs[0].get("assignedTo"))
 
   return (
     <div className="chat__container" >
@@ -74,15 +70,17 @@ const Chat = ({applicantName, applicantId }) => {
         </div>
         <div className="operator-info">
           <div className="operator-title">
-            Визовик:
+            Визовик: 
           </div>
           <div className="operator-name">
-            {authorizedOperator.name}
+            {operatorName}
           </div>
         </div>
-        <div className="dialogue-is-active-status">
-          <ChatActiveStatus dialogueAssignedTo={dialogueData.assignedTo} dialogueRef={chatCollSnapshot.docs[0].ref}/>
-        </div>
+        <ChatActiveStatus 
+          dialogueAssignedTo={dialogueData.assignedTo} 
+          dialogueRef={chatCollSnapshot.docs[0].ref}
+          source={source}
+        />
       </div>
       <ul className="chat-messages" ref={allMessages}>
         {dialogueMessages}

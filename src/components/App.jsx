@@ -14,7 +14,6 @@ import {auth} from "../models/firebase";
 import { ProgramContext } from "../models/context.js"
 import { getAdminsRef } from "../models/operator/operators";
 import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
-import { findRole } from "../models/operator/operators-data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
 import { getAuthorizedOperator } from "../models/operator/operators-data-processing";
 

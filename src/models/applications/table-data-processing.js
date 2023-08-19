@@ -38,14 +38,13 @@ export const getFullCountryName = (countries, countryCode) => {
 }
 
 export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot) => {
-  console.log(chatsCollSnapshot)
   return applications.reduce((accum, application) => {
     accum.push(
       {
         key: application.documentID,
         id: getApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),
-        // dialogueRef: getDialogueRef(chatsCollSnapshot, application.UID),
+        dialogueRef: getDialogueRef(chatsCollSnapshot, application.UID),
         applicant: `${application.passports[0].first_name} ${application.passports[0].last_name}`,
         status: application.preparedInformation.preparationStatus,
         country: getFullCountryName(countries, application.country_code),

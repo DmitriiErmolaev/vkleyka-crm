@@ -15,7 +15,6 @@ import { ProgramContext } from '../../models/context';
 import { openNotification } from '../../models/notification/notification';
 const { Title } = Typography;
 
-
 const allowedFileTypes = ["application/pdf",]
 
 const UploadSection = ({appId, uploadedDocs}) => {
@@ -36,7 +35,6 @@ const UploadSection = ({appId, uploadedDocs}) => {
   const [clickedButton, setClickedButton] = useState(null);
   const APPLICATION_REF = getAppRefById(appId);
   const {notificationApi} = useContext(ProgramContext)
-
 
   const handleClick = (e) => {
     setClickedButton(e.currentTarget.dataset.doctype)
@@ -132,7 +130,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
                   '0%': '#108ee9',
                   '100%': '#87d068',
                 },
-                size: [200,4], 
+                size: [200, 4], 
                 showInfo: true,
                 format: (percent) => `${percent}%`,
               }}
@@ -150,7 +148,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
       </Row>
       <Row>
         <Col span={12}>
-          <div style={{margin:"8px 0"}}> {/* margin для upload, чтобы между Row элементами был видимый отступ */}
+          <div style={{margin:"0"}}> {/* margin для upload, чтобы между Row элементами был видимый отступ */}
             <Upload
               disabled={uploadButtonIsDisabled}
               progress={{
@@ -158,7 +156,7 @@ const UploadSection = ({appId, uploadedDocs}) => {
                   '0%': '#108ee9',
                   '100%': '#87d068',
                 },
-                size: [200,4],
+                size: [200, 4],
                 showInfo: true,
                 format: (percent) => `${percent}%`,
               }}

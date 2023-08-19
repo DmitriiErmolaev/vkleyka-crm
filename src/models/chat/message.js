@@ -4,7 +4,6 @@ import DateDivider from "../../components/chat/message/DateDivider";
 import Message from "../../components/chat/message/Message";
 import { nanoid } from "nanoid";
 import { Timestamp } from "firebase/firestore";
-import { prepareAttachmentsInfo } from "./attachment";
 
 const getClassNameForMessage = (sender) => {
   return (sender === "me") ? "message__content applicant" : "message__content operator";
@@ -49,7 +48,6 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
   const isDateNew = memoizedCreationDate();
 
   messages.forEach((message) => {
-    console.log(message)
     const messageCreationDate = getMessageCreationDate(message.time.seconds);
     const messageCreationTime = getMessageCreationTime(message.time.toDate()); // метод toDate возвращает js Date object с потерей точности до секунд.
     const classNameForMessage = getClassNameForMessage(message.sender);

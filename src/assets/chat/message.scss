@@ -10,6 +10,12 @@
     border-radius:14px;
     overflow-wrap: break-word;
 
+    .message__senderName {
+      font-style: italic;
+      color:#00000069;
+      transform: translateX(-7px)
+    }
+
     .attachment-link {
       display:block;
       margin-bottom:5px;

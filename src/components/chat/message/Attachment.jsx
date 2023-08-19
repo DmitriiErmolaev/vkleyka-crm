@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { FileFilled, LoadingOutlined  } from '@ant-design/icons';
-import { Progress } from 'antd';
 import { getDownloadURL } from "firebase/storage";
 import { getFileRef } from '../../../models/firebase';
-
 
 const Attachment = ({ attachment, isLoading }) => {
   const [downloadURL, setDownloadURL] = useState(null)
@@ -18,7 +16,6 @@ const Attachment = ({ attachment, isLoading }) => {
 
   const icon = isLoading ? <LoadingOutlined style={{fontSize:"32px", color:"#4DA1FF"}}/> : <FileFilled style={{fontSize:"32px", color:"#4DA1FF"}}/>
   const linkStyle = isLoading ? "attachment-link forbidden" : "attachment-link" 
-  {/* <Progress type="circle" percent={attachment.percent} size={40} /> */}
 
   return (
     <>
@@ -26,8 +23,8 @@ const Attachment = ({ attachment, isLoading }) => {
         className={linkStyle} 
         href={downloadURL} // ссылка возвращаемая firebase'ом для скачивания из storage.
         // download={attachment.name} // не работает, т.к. файл не скачен в браузер или не находится на данном сайте. 
-        // target="_blank" 
-        // rel='noreferrer' 
+        target="_blank" 
+        rel='noreferrer' 
       >
         <div className="attachment-container">
           {icon}

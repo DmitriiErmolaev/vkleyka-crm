@@ -2,7 +2,6 @@ import React from 'react';
 import {Layout} from 'antd';
 import PassportInfo from './applicationPassportInfo/PassportInfo';
 import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQuestionnaire';
-import "../../assets/questionnaire.scss"
 
 // const panelStyle = { // NOTE: для стилизации панелей collapse
 //   marginBottom: 20,

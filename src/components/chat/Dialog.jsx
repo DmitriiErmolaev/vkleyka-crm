@@ -3,9 +3,10 @@ import Chat from './Chat';
 import { Drawer } from "antd";
 
 
-const Dialog = ({users, dialogWindowOpen, setDialogWindowOpen, selectedDialogApplicantId}) => {
-
-  if(selectedDialogApplicantId === null) {
+const Dialog = ({users, dialogWindowOpen, setDialogWindowOpen, selectedDialog}) => {
+  // когда открывается список чатов. Диалог тоже начинает рендерится.  
+  // Данная проверка это предотвращает.
+  if(!dialogWindowOpen) {
     return 
   }
 
@@ -14,7 +15,7 @@ const Dialog = ({users, dialogWindowOpen, setDialogWindowOpen, selectedDialogApp
   }
 
   const user = users.find(user => {
-    return user.UID === selectedDialogApplicantId;
+    return user.UID === selectedDialog.UID;
   })
 
   const userName = user.name 
@@ -25,11 +26,10 @@ const Dialog = ({users, dialogWindowOpen, setDialogWindowOpen, selectedDialogApp
         : user.UID
     )
 
-  console.log(user)
   return (
     <Drawer
-      bodyStyle={{paddingTop:"0"}}
-      width={"500"}
+      bodyStyle={{padding:"0"}}
+      width={ 500}
       rootClassName="dialog"
       placement="left"
       title="Чат"
@@ -37,9 +37,9 @@ const Dialog = ({users, dialogWindowOpen, setDialogWindowOpen, selectedDialogApp
       open={dialogWindowOpen}
       onClose={handleDialogClose}
       getContainer={false}
-      zIndex="91"
+      zIndex={99}
     >
-      <Chat applicantName={userName} applicantId={selectedDialogApplicantId}/>
+      <Chat applicantName={userName} applicantId={selectedDialog.UID} source="global-chat"/>
     </Drawer>
   );
 };

@@ -84,7 +84,6 @@ const viser_object = {
     key: 'assignedTo',
     align: "center",
     render: (_test, record, _index) => {
-      console.log(record)
         const ref = getAppRefById(record.key);
         const assignedTo = record.assignedTo;
         return <SelectComponent collectionType={"operators"} data={{ref, assignedTo, dialogueRef:record.dialogueRef }}/> 

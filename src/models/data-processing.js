@@ -1,6 +1,4 @@
 import {query} from "firebase/firestore";
-import { GLOBAL_ROLES } from "./role-based-rules";
-import { operatorOptionMatrix } from "./operator/operators";
 import { updateDoc } from "firebase/firestore";
 
 export const getSingleFieldFromDocSnapshot = (docSnapshot, fieldName) => {
@@ -18,13 +16,6 @@ export const getDataFromCollSnapshot = (collSnap) => {
   return collSnap.docs.map(docSnap => {
     return docSnap.data();
   })
-
-  // let collData = []
-  // collSnap.forEach(docSnap => {
-  //   const docData = ;
-  //   collData.push(docData);
-  // })
-  // return collData;
 }
 
 export const getQueryWithConstraints = (ref,constraints) => {
