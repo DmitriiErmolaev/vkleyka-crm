@@ -14,13 +14,13 @@ const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
   const {authorizedOperator} = useContext(ProgramContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedOperator));
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(getUsersQuery());
-  const [selectedDialog, setSelectedDialog] = useState(null);
-  const [dialogWindowOpen, setDialogWindowOpen] = useState(false)
+  const [selectedDialogue, setSelectedDialogue] = useState(null);
+  const [dialogueWindowOpen, setDialogueWindowOpen] = useState(false)
   // TODO: из DialogueListItem можно в стейт записать весь диалог. Который потом передать в Dialog/Сhat. Но там свое скачивание. повторное
   
   const handleDrawerClose = () => {
     setDrawerOpen(false)
-    setDialogWindowOpen(false)
+    setDialogueWindowOpen(false)
   }
 
   if(chatsLoading || usersLoading){
@@ -46,10 +46,15 @@ const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
   const dialogues = getDataFromCollSnapshot(chatsCollSnapshot);
   const users = getDataFromCollSnapshot(usersCollSnapshot);
   const dialoguesList = dialogues.map(dialogue => {
+    const unreadMessagesNumber = dialogue.messages.reduce((acc, elem) => {
+      return elem.sendState === 0 ? ++acc : acc
+    }, 0)
+
     const user = users.find(user => {
       return user.UID === dialogue.UID;
     })
-    return <DialogueListItem key={dialogue.UID} user={user} dialogue={dialogue} setSelectedDialog={setSelectedDialog} setDialogWindowOpen={setDialogWindowOpen}/>
+    
+    return <DialogueListItem key={dialogue.UID} user={user} dialogue={dialogue} setSelectedDialogue={setSelectedDialogue} setDialogueWindowOpen={setDialogueWindowOpen} unreadMessagesNumber={unreadMessagesNumber}/>
   })
   
   return (
@@ -83,7 +88,7 @@ const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
           </Card>
         </ConfigProvider>
       </Drawer>
-      <Dialog users={users} dialogWindowOpen={dialogWindowOpen} setDialogWindowOpen={setDialogWindowOpen} selectedDialog={selectedDialog} />
+      <Dialog users={users} dialogueWindowOpen={dialogueWindowOpen} setDialogueWindowOpen={setDialogueWindowOpen} selectedDialogue={selectedDialogue} />
     </>
   );
 };

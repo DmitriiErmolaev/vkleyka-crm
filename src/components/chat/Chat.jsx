@@ -5,14 +5,14 @@ import {SendOutlined } from "@ant-design/icons"
 import { getAllFieldsFromDocSnapshot } from '../../models/data-processing.js';
 import { ProgramContext} from '../../models/context.js';
 import { getChatMessages } from '../../models/chat/message.js';
-import { sendMessage, getAssignedOperator, getChatQueryForApplication } from '../../models/chat/chat-data-processing.js';
+import { sendMessage, getAssignedOperator, getChatQueryForApplication, readUnreadMessages } from '../../models/chat/chat-data-processing.js';
 import { getCollectionFirstDocRef } from '../../utils.js';
 import Error from '../error/Error.jsx';
 import ChatUpload from './upload/ChatUpload.jsx';
 import ChatActiveStatus from './ChatActiveStatus.jsx';
 import "../../assets/chat/chat.scss";
 
-const Chat = ({ applicantName, applicantId, source }) => {
+const Chat = ({ applicantName, applicantId, unreadMessagesExist, source }) => {
   const {authorizedOperator, admins} = useContext(ProgramContext);
   const [text, setText] = useState("");
   const allMessages = useRef(null);
@@ -23,6 +23,21 @@ const Chat = ({ applicantName, applicantId, source }) => {
   useEffect(()=> {
     if(!chatLoading){
       allMessages.current.scrollTop = 9999;
+    }
+  })
+
+  useEffect(() => {
+    if(unreadMessagesExist && !chatLoading && !chatError) {
+      // при размонтировании компонента, возвращаемая функция меняет статус всех сообщений на 1 ("прочитано") и отправлет в бд.
+      return () => {
+        const readMessages = dialogueData.messages.map(message => {
+          if(message.sendState === 0) {
+            return {...message, sendState: 1};
+          }
+          return message;
+        })
+        readUnreadMessages(chatDocRef, readMessages);
+      }
     }
   })
 

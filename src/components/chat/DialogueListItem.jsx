@@ -1,15 +1,17 @@
 import React from 'react';
-import { Card, Avatar } from 'antd';
+import { Card, Avatar, Badge } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import '../../assets/chat/dialog-list-item.scss'
+import DialogueListItemTitle from './DialogueListItemTitle';
+import { getlastMessageTime } from '../../models/chat/dialogue-list/dialogue-list-item-title';
 const {Meta} = Card;
 
-const DialogueListItem = ({user, dialogue, setSelectedDialog, setDialogWindowOpen}) => {
+const DialogueListItem = ({user, dialogue, setSelectedDialogue, setDialogueWindowOpen, unreadMessagesNumber}) => {
   const handleDialogSelect = () => {
-    setSelectedDialog(dialogue);
-    setDialogWindowOpen(true);
+    setSelectedDialogue({dialogue, unreadMessagesNumber});
+    setDialogueWindowOpen(true);
   }
-  
+
   // у клиента имени может не быть. Вывести айди если его нет.
   const applicantName = user.name 
     ? user.name 
@@ -18,6 +20,7 @@ const DialogueListItem = ({user, dialogue, setSelectedDialog, setDialogWindowOpe
           ? `${user.passports[0].first_name} ${user.passports[0].last_name}`
           : user.UID
       )
+
   const lastMessage = !dialogue.messages.length
     ? ''
     : ( dialogue.messages[dialogue.messages.length - 1].content === ''
@@ -25,17 +28,34 @@ const DialogueListItem = ({user, dialogue, setSelectedDialog, setDialogWindowOpe
       : dialogue.messages[dialogue.messages.length - 1].content 
     ) 
 
+  const messageCreationTime = !dialogue.messages.length
+      ? ''
+      : getlastMessageTime(dialogue.messages[dialogue.messages.length - 1].time)
+  
+
   return (
     <Card.Grid
-      style={{width:"100%", padding:"10px 20px"}}
+      style={{width:"100%", padding:"14px 7px 14px 20px"}}
     >
       <div className="dialogue-card" onClick={handleDialogSelect}>
         <Meta
           style={{backgroundColor:"transparent",border:"none", alignItems:"center",}}
-          avatar={<Avatar shape="sircle" icon={<UserOutlined />} alt="avatar" size="large"/>}
-          title={applicantName}
-          // description={dialogue.messages[dialogue.messages.length - 1]?.content}
-          description={lastMessage}
+          avatar={
+            <Avatar 
+              shape="sircle" 
+              icon={<UserOutlined />} 
+              alt="avatar" 
+              size={50}
+            />
+          }
+          title={
+            <DialogueListItemTitle 
+              applicantName={applicantName} 
+              unreadMessagesNumber={unreadMessagesNumber} 
+              messageCreationTime={messageCreationTime}
+            />
+          }
+          description={<div className="dialogue-list__last-message">{lastMessage}</div>}
         />
       </div>
     </Card.Grid>

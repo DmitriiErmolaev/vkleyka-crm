@@ -49,3 +49,7 @@ export  const sendMessage = async (text, operatorName, docRef, messageData, atta
 export const getAssignedOperator = (admins, operatorId) => {
   return operatorId ? findOperatorName(admins, operatorId) : 'Не назначен';
 }
+
+export const readUnreadMessages = async (chatDocRef, data) => {
+ await updateDocField(chatDocRef, 'messages', data)
+}

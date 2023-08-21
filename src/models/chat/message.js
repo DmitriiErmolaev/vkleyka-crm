@@ -9,7 +9,7 @@ const getClassNameForMessage = (sender) => {
   return (sender === "me") ? "message__content applicant" : "message__content operator";
 }
 
-const getMessageCreationTime = (dateObject) => {
+export const getMessageCreationTime = (dateObject) => {
   // const date = timestamp.toDate(); // возвращает js Date object с потерей точности до секунд.
   const hh = addZero(dateObject.getHours());
   const mm = addZero(dateObject.getMinutes());
@@ -27,8 +27,8 @@ const getMessageCreationDate = (s) => {
 const memoizedCreationDate = () => {
   let dateCached;
   
-  return (creationDate) => {
-    if (!dateCached || creationDate !== dateCached) {
+  return creationDate => {
+    if (!dateCached || (creationDate !== dateCached)) {
       dateCached = creationDate;
       return true;
     } else {
@@ -46,6 +46,7 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
   ];
 
   const isDateNew = memoizedCreationDate();
+  let unreadMessageExist = false;
 
   messages.forEach((message) => {
     const messageCreationDate = getMessageCreationDate(message.time.seconds);
@@ -57,6 +58,10 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
         <DateDivider key={messageCreationDate} date={messageCreationDate} />
       )
     } 
+    if(message.sendState === 0 && !unreadMessageExist) {
+      result.push(<div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>)
+      unreadMessageExist = true;
+    }
     
     result.push(
       <Message 

@@ -4,6 +4,11 @@ import { getAttachments } from '../../../models/chat/attachment';
 
 
 const Message = ({styleClass, message, time, attachmentsIsLoading=false}) => {
+
+  if (message.sendState === 0) {
+    
+  }
+
   const attachments = message.attachments.length > 0 ? getAttachments(message.attachments, attachmentsIsLoading) : null;
   const senderName = message.sender !== "me" 
     ? (
@@ -12,7 +17,7 @@ const Message = ({styleClass, message, time, attachmentsIsLoading=false}) => {
         </div>
       ) 
     : null
-    
+  
   return (
     <li className="message__container">
       <div className={styleClass}>

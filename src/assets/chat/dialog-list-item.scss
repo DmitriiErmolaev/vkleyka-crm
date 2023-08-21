@@ -1,5 +1,10 @@
 .dialogue-card {
-  
+
+  .dialogue-list__last-message {
+    font:500 14px Roboto, sans-serif;
+    color:#101010;
+  }
+
   &:hover {
     cursor: pointer;
   }

@@ -1,0 +1,31 @@
+.dialogue-list__card-title {
+  display: flex;
+  align-items: center;
+
+  .card-title__client-name {
+    width:75%;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    font: 700 16px Roboto, sans-serif;
+  }
+
+  .card-title__service-info {
+    width:25%;
+    display:flex;
+    align-items: center;
+
+    .card-title__unread {
+      margin-left:auto;
+
+      .unread__indicator {
+        background-image:linear-gradient(#36CE00, #00D8A4);
+      }
+    } 
+
+    .card-title__last-message-time {
+      margin-left:5px;
+      font: 500 11px Roboto, sans-serif;
+      color:#727272;
+    }
+  }
+}
