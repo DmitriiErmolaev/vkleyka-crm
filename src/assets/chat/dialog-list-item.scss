@@ -1,11 +1,22 @@
 .dialogue-card {
-
-  .dialogue-list__last-message {
-    font:500 14px Roboto, sans-serif;
-    color:#101010;
+  border:"none";
+  .dialogue-card__container {
+    .dialogue-card__content {
+      .dialogue-list__last-message {
+        font:500 14px Roboto, sans-serif;
+        color:#101010;
+      }
+    }
+  
+    .dialogue-card__footer {
+      display: flex;
+      justify-content: space-between;
+    }
   }
 
   &:hover {
     cursor: pointer;
   }
 }
+
+

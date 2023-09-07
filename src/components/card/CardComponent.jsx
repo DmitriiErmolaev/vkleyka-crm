@@ -1,20 +1,19 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Card, Progress, Typography, Layout} from 'antd';
+import {Card, Progress, Layout} from 'antd';
 import SelectComponent from '../selectors/SelectComponent';
 import { testStatuses } from '../../models/status/status';
-import { ProgramContext } from '../../models/context';
-import { roleBasedContent } from '../../models/role-based-rules';
 import CardTitle from './CardTitle';
+import ApplicationInfoCardFooter from './ApplicationInfoCardFooter';
 import { getFileRef } from '../../models/firebase';
 import { getFileUrl } from '../../models/applications/applications';
+import { ApplicationStatus } from '../../models/context';
 
-const {Title} = Typography;
-
-const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assignedTo, appRef, dialogueRef}) => {
+const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, dialogueSnap, currentClientApplications}) => {
   const [progressPercent, setProgressPercent] = useState();
   const [progressColor, setProgressColor] = useState();
-  const {role} = useContext(ProgramContext)
   const [flagUrl, setFlagUrl] = useState(null)
+  const {curAppStatus} = useContext(ApplicationStatus); // если рендерится из ApplicationForm - получает статус заявки.
+
   const flagRef = getFileRef(countryFlag);
 
   useEffect(() => {
@@ -35,6 +34,9 @@ const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assigned
     // TODO: показать скелетон или спиннер на всей карте.
   }
 
+
+  
+
   return (
     <Layout style={{marginBottom:"10px"}}>
       <Card
@@ -52,17 +54,9 @@ const CardComponent = ({countryFlag, cardTitle, curAppStatus, appDocId, assigned
             marginBottom:"25px", 
             position:"relative", // позиционируем, чтобы спан прогресс бара, в котором рендерится селектор позиционировался относительно начальных координат прогресс бара
           }}
-          format = {() => <SelectComponent data={{curAppStatus, appDocId:appDocId}} collectionType="statuses"/>}
+          format = {() => <SelectComponent data={{ appDocId, currentClientApplications, dialogueSnap, assignedTo}} collectionType="statuses"/>}
         />
-        {/*TODO: Рефакторить отдельным компонентом который принимает параметр и в результате рнедерит или нет */}
-        <Layout style={{backgroundColor:"inherit", display:roleBasedContent[role].cardOperatorAssigmentDisplayProperty}}>
-          <Typography >
-            <Title style={{color:"#fff"}} level={4}>
-              Отв-ный
-            </Title>
-          </Typography>
-          <SelectComponent data={{ref:appRef, assignedTo, dialogueRef,  transparent: false}} collectionType="operators"/>
-        </Layout>
+        <ApplicationInfoCardFooter appRef={appRef} assignedTo={assignedTo} dialogueSnap={dialogueSnap} currentClientApplications={currentClientApplications}/>
       </Card>
     </Layout>
   );

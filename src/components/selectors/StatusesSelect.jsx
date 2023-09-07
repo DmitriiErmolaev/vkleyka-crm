@@ -1,22 +1,47 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import { Select } from 'antd';
 import { testStatuses } from '../../models/status/status';
 import { getStatusesSelectOptions } from '../../models/status/status';
 import { updateDocField } from '../../models/data-processing';
 import { getAppRefById } from '../../models/applications/applications';
 import { openNotification } from '../../models/notification/notification.js';
-import { ProgramContext } from '../../models/context.js';
+import { ApplicationStatus, ProgramContext } from '../../models/context.js';
 
-const StatusesSelect = ({curStatus, appDocId}) => {
+const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assignedTo}) => {
+  
   const {notificationApi} = useContext(ProgramContext)
+  const {curAppStatus} = useContext(ApplicationStatus); // если рендерится из ApplicationForm - получает статус заявки.
+
+  const unFinishedAppsExist = currentClientApplications.some(appSnap => {
+    return appSnap.get('preparedInformation.preparationStatus') !== 2;
+  })
+
+  useEffect(() => {
+    // если все заявки клиента завершены, то сбрасываем чат.
+    if (!unFinishedAppsExist) {
+      const finishChat = async () => {
+        await updateDocField(dialogueSnap.ref, 'assignedTo',  '');
+        await updateDocField(dialogueSnap.ref, 'active',  false);
+      }
+      finishChat();
+    }
+  },[dialogueSnap, unFinishedAppsExist])
 
   const handleSelect = async (_value, option) => {
-    if (curStatus === option.value) {
+    if (curAppStatus === option.value) {
       return false;
     }
+  
+
     const appDocRef = getAppRefById(appDocId)
+    // Меняем статус заявки
     try {
-      await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
+      await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)  
+      // При возврате заявки в работу, назначаем на чат визовика данной заявки.
+      if ((!unFinishedAppsExist && curAppStatus === 2 && option.value === 0) || (!unFinishedAppsExist && curAppStatus === 2 && option.value === 1)) {
+        await updateDocField(dialogueSnap.ref, 'active',  true) ;
+        await updateDocField(dialogueSnap.ref, 'assignedTo', assignedTo);
+      }    
       openNotification(notificationApi, "success", 'statusChanged')
     } catch (e) {
       console.log(e)
@@ -26,7 +51,7 @@ const StatusesSelect = ({curStatus, appDocId}) => {
 
   return (
     <Select 
-      value={testStatuses[curStatus].selectLabel}
+      value={testStatuses[curAppStatus].selectLabel}
       dropdownStyle={{
         borderRadius:"0" 
       }}

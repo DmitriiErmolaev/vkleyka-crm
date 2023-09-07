@@ -1,0 +1,9 @@
+.aplication-info-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &:last-child {
+    margin-right:80px;
+  }  
+}

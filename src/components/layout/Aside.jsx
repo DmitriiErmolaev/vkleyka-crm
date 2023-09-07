@@ -7,7 +7,7 @@ import "../../assets/aside.scss"
 const {Sider} = Layout;
 
 const Aside = ({handleMenuSelect}) => {
-  const {role} = useContext(ProgramContext)
+  const { role } = useContext(ProgramContext)
   const location = useLocation()
 
   return (

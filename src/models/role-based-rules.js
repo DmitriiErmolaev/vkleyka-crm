@@ -24,7 +24,7 @@ export const roleBasedContent = {
     collectionConstraints: "all-applications",
     initialQueryConstraints: null,
     columnsIncluded: ["all", "admin"],
-    cardOperatorAssigmentDisplayProperty: "flex"
+    cardOperatorAssigmentDisplayProperty: "flex",
   },
   operator:{
     siderMenuItems: [

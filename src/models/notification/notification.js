@@ -26,7 +26,7 @@ const notifications = {
   uploadFile:{
     success: {
       title: "Операция выполнена успешно!",
-      description: 'Файл успешно загружен',
+      description: 'Файл(ы) успешно загружен(ы)',
     }, 
     error: {
       title: 'Произошла ошибка!',

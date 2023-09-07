@@ -1,20 +1,19 @@
 import React, {useState, useEffect, useRef, useContext} from 'react';
 import {useCollection} from "react-firebase-hooks/firestore";
-import {Spin, Input, Button, Space } from "antd";
-import {SendOutlined } from "@ant-design/icons"
+import { Spin } from "antd";
 import { getAllFieldsFromDocSnapshot } from '../../models/data-processing.js';
-import { ProgramContext} from '../../models/context.js';
+import { ApplicationStatus, ProgramContext} from '../../models/context.js';
 import { getChatMessages } from '../../models/chat/message.js';
-import { sendMessage, getAssignedOperator, getChatQueryForApplication, readUnreadMessages } from '../../models/chat/chat-data-processing.js';
+import { getChatQueryForApplication, readUnreadMessages } from '../../models/chat/chat-data-processing.js';
 import { getCollectionFirstDocRef } from '../../utils.js';
 import Error from '../error/Error.jsx';
-import ChatUpload from './upload/ChatUpload.jsx';
 import ChatActiveStatus from './ChatActiveStatus.jsx';
+import ChatFooter from './ChatFooter.jsx';
+import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
 
-const Chat = ({ applicantName, applicantId, unreadMessagesExist, source }) => {
-  const {authorizedOperator, admins} = useContext(ProgramContext);
-  const [text, setText] = useState("");
+const Chat = ({ applicantName, applicantId, unreadMessagesExist, source, clientApplicationsSnaps }) => {
+  const {authorizedUser, role} = useContext(ProgramContext)
   const allMessages = useRef(null);
   const [uploadingMessageWithAttachments, setUploadingMessageWithAttachments] = useState([]);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot. 
@@ -36,23 +35,10 @@ const Chat = ({ applicantName, applicantId, unreadMessagesExist, source }) => {
           }
           return message;
         })
-        readUnreadMessages(chatDocRef, readMessages);
+        readUnreadMessages(dialogueSnap.ref, readMessages);
       }
     }
   })
-
-  const handleChange = (e)=> {
-    setText(e.target.value);
-  }
-
-  const handleSend = async () => {
-    if(!text) {
-      return
-    }
-    await sendMessage(text, authorizedOperator.name, chatDocRef, dialogueData.messages)
-    setText("")
-  }
-
 
   if(chatLoading){
     return (
@@ -72,61 +58,42 @@ const Chat = ({ applicantName, applicantId, unreadMessagesExist, source }) => {
     // TODO:  ошибка. Т.к. должен вывестись только 1 чат. 
   }
 
-  const chatDocRef = getCollectionFirstDocRef(chatCollSnapshot); 
+  const dialogueSnap = chatCollSnapshot.docs[0]; 
   const dialogueData = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
   const dialogueMessages = getChatMessages(dialogueData.messages, uploadingMessageWithAttachments);
-  const operatorName = getAssignedOperator(admins, chatCollSnapshot.docs[0].get("assignedTo"))
 
+  // const operatorSelectDisabled = (role === 'admin' || dialogueData.assignedTo === authorizedUser.id) ? false : true;
+  const operatorSelectDisabled = (role === 'operator' && (dialogueData.assignedTo !== authorizedUser.id)) ? true : false;
   return (
     <div className="chat__container" >
-      <div className="chat-info">
-        <div className="applicant-name">
+      <div className="chat__info">
+        <div className="chat__applicant-name">
           {applicantName}
         </div>
-        <div className="operator-info">
-          <div className="operator-title">
-            Визовик: 
-          </div>
-          <div className="operator-name">
-            {operatorName}
-          </div>
-        </div>
+        {source === 'application'
+          ? null
+          : (
+              <div className="chat__operator-info">
+                <div className="operator-title">
+                  Отв-ный: 
+                </div>
+                <div className="operator-name">
+                  <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogueData.assignedTo, disabledProp:operatorSelectDisabled}}/>
+                </div>
+              </div>
+            )
+        }
         <ChatActiveStatus 
           dialogueAssignedTo={dialogueData.assignedTo} 
-          dialogueRef={chatCollSnapshot.docs[0].ref}
+          dialogueSnap={dialogueSnap}
           source={source}
+          clientApplicationsSnaps={clientApplicationsSnaps}
         />
       </div>
-      <ul className="chat-messages" ref={allMessages}>
+      <ul className="chat__messages" ref={allMessages}>
         {dialogueMessages}
       </ul>
-      <div className="chat-footer" >
-        <ChatUpload 
-          chatDocRef={chatDocRef} 
-          messageText={text} 
-          applicantId={applicantId} 
-          setUploadingMessageWithAttachments={setUploadingMessageWithAttachments} 
-          messagesData={dialogueData.messages}
-        />
-        <Space.Compact size="large" style={{width:"100%"}}>
-          <Input 
-            value={text} 
-            onChange={handleChange} 
-            onPressEnter={handleSend}
-          />
-          <Button  
-            icon={
-              <SendOutlined 
-                style={{
-                  fontSize:"24px", 
-                  color:"#4DA1FF"
-                }}
-              />
-            }
-            onClick={handleSend}
-          />
-        </Space.Compact>
-      </div>
+      <ChatFooter dialogueSnap={dialogueSnap} dialogueData={dialogueData} applicantId={applicantId} setUploadingMessageWithAttachments={setUploadingMessageWithAttachments}/>
     </div>
   );
 };

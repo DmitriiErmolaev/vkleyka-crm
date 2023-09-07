@@ -1,11 +1,11 @@
 import {where} from "firebase/firestore";
-import { updateDoc,orderBy } from "firebase/firestore";
+import { updateDoc, orderBy } from "firebase/firestore";
 import { addZero } from "../../utils";
 import { getShortYear } from "../../utils";
-import { getDialogueRef } from "../chat/chat-data-processing";
+import { getDialogueSnap } from "../chat/chat-data-processing";
 
 // ====== Получают данные для отображение в таблице ======
-export const getApplicationId = (docId) => {
+export const getShortApplicationId = (docId) => {
   let id = docId.slice(0,4).toUpperCase();
   return id
 }
@@ -37,14 +37,16 @@ export const getFullCountryName = (countries, countryCode) => {
   return findedCountry.name_ru
 }
 
-export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot) => {
+export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot) => {
   return applications.reduce((accum, application) => {
     accum.push(
       {
         key: application.documentID,
-        id: getApplicationId(application.documentID),
+        clientId: application.UID,
+        appsCollSnapshot: appsCollSnapshot,
+        id: getShortApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),
-        dialogueRef: getDialogueRef(chatsCollSnapshot, application.UID),
+        dialogueSnap: getDialogueSnap(chatsCollSnapshot, application.UID),
         applicant: `${application.passports[0].first_name} ${application.passports[0].last_name}`,
         status: application.preparedInformation.preparationStatus,
         country: getFullCountryName(countries, application.country_code),
@@ -55,14 +57,14 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
   }, [])
 }
 
-export const getFilters = (country, status, column, authorizedOperator) => {
+export const getFilters = (country, status, column, authorizedUser) => {
   let filters = [
     where('paymentSuccessful', '==', true),
     orderBy("createdAt", "desc"),
   ];
   
-  if (authorizedOperator.role === 'operator') {
-    filters.push(where("preparedInformation.assignedTo", "==", authorizedOperator.id));
+  if (authorizedUser.role === 'operator') {
+    filters.push(where("preparedInformation.assignedTo", "==", authorizedUser.id));
   }
 
   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/

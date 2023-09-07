@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useContext } from 'react';
 import { Collapse, Layout } from 'antd';
 import { EditOutlined } from "@ant-design/icons";
 import Question from '../Question';
 import PassportInfoCollapseLabel from './PassportInfoCollapseLabel';
 import ApplyOrCancel from '../ApplyOrCancel';
 import { getPassportInfoQuestions, getPassportsInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
+import { ApplicationStatus } from '../../../models/context';
 
 const PassportInfo = ({passports, appId}) => {
+  const {curAppStatus} = useContext(ApplicationStatus);
   const [passportInfoIsEdit, setPassportInfoIsEdit] = useState(false); // для будущей фнкции редактирования
   const firstApplicantPassport = passports[0]
 
@@ -29,12 +31,14 @@ const PassportInfo = ({passports, appId}) => {
     />
   )
 
-  const passportsInfoLabelExtra = (
+  const passportsInfoLabelExtra = curAppStatus !== 2 ? (
     <EditOutlined 
       className="interactive-icons"
       style={{ fontSize: '22px', color: '#08c', marginLeft:"10px"}}
       onClick={() =>  setPassportInfoIsEdit(true)}
     /> 
+  ) : (
+    null
   )
 
   const PassportsInfoCollapseItem = getPassportsInfoCollapseItem(passportsInfoLabel, passportsInfoLabelExtra, passportsInfoPreparedData)

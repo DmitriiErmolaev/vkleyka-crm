@@ -31,7 +31,10 @@ export const getDocsRefs = (collSnap) => {
 
 export const updateDocField = async (ref, path, data) => {
   try {
-    await updateDoc(ref, {[path]: data})
+    // console.log('перед updateDoc')
+    const res = await updateDoc(ref, {[path]: data})
+    // console.log('результат updateDoc - ' + ' ' + res)
+    // console.log('после updateDoc')
   } catch (e) {
     // TODO: отобразить 
     console.log(e)

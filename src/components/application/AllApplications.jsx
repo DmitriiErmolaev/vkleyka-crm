@@ -22,7 +22,7 @@ const APPS_REF = getAppsCollRef();
 // const TABLE_PAGE_ITEMS_NUMBER = 10; // NOTE: Для пагинации
 
 const AllApplications = () => {
-  const {role, authorizedOperator} = useContext(ProgramContext);
+  const {role, authorizedUser} = useContext(ProgramContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(USERS_QUERY);
@@ -33,7 +33,7 @@ const AllApplications = () => {
   // const [firstApplicationRef, setFirstApplicationRef] = useState();  // NOTE: Для пагинации
   // const [lastApplicationRef, setLastApplicationRef] = useState();  // NOTE: Для пагинации
 
-  const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedOperator);
+  const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedUser);
   /* TODO: для пагинации: запрос на 10 документов коллекции
   * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));  // NOTE: Для пагинации
   */
@@ -67,7 +67,7 @@ const AllApplications = () => {
       applications = getDataFromCollSnapshot(appsCollSnapshot);
       const applicants = getDataFromCollSnapshot(usersCollSnapshot);
       countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
-      arrangedTableData = getDataForTable(applications, applicants, countries, chatsCollSnapshot);
+      arrangedTableData = getDataForTable(applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot);
       // refArray = getDocsRefs(appsCollSnapshot);  NOTE: Для пагинации
     }
   }

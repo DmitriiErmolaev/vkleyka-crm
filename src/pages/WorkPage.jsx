@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {Layout} from "antd";
 import {Outlet} from "react-router-dom";
 import Head from "../components/layout/Head";
@@ -16,25 +16,29 @@ const primeLayoutStyle = {
 
 const WorkPage = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const contentRef = useRef(null);
+  // console.log(drawerOpen)
+  // console.log('WorkPage')
 
   const handleMenuSelect = ({item, key, keyPath, selectedKeys, domEvent}) => {
     if (key === "/chat") setDrawerOpen((prev) => !prev)
   }
 
   return (
-    <div className="wrapper">
+    <div className="wrapper" >
       <Layout className="primary-container" style={primeLayoutStyle}>
         <Head />
         <Layout hasSider>
           <Aside handleMenuSelect={handleMenuSelect}/>
           <Content 
+            ref={contentRef}
             style={{
               backgroundColor:"#F8F8F8",
               position:"relative",
               overflow:"hidden",
             }}
           >
-            {drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/> : null}
+            {drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null}
             <Outlet />
           </Content>
         </Layout>
@@ -44,3 +48,4 @@ const WorkPage = () => {
 }
 
 export default WorkPage;
+

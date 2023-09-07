@@ -1,10 +1,10 @@
-import React,{useState, useContext} from 'react';
+import React,{useState, useContext, useEffect} from 'react';
 import { Collapse, Layout, Typography, Empty } from 'antd';
 import { EditOutlined } from "@ant-design/icons";
 import QuestionnaireItem from './QuestionnaireItem';
 import ApplyOrCancel from '../ApplyOrCancel';
 import { getCollapseItems, updateQuestionnaireAnswers } from '../../../models/applications/questionnaire/questionnaire';
-import { ProgramContext } from '../../../models/context';
+import { ProgramContext, ApplicationStatus } from '../../../models/context';
 import { openNotification } from '../../../models/notification/notification';
 import '../../../assets/application-questionnaire.scss'
 const {Title} = Typography;
@@ -14,6 +14,11 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   const [currentPanelOpened, setCurrentPanelOpened] = useState([]);
   const [answersToUpdate, setAnswersToUpdate] = useState([]);
   const {notificationApi} = useContext(ProgramContext)
+  const {curAppStatus} = useContext(ApplicationStatus);
+
+  useEffect(() => {
+    if (curAppStatus === 2) cancelChanges();
+  },[curAppStatus])
 
   const applyChanges = async (e) => {
     try {
@@ -83,7 +88,7 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
     <Layout style={{}}>
       <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
         <Title level={3}>Анкета</Title>
-        {questionnaire ?  (
+        {questionnaire && (curAppStatus !== 2) ?  (
           <EditOutlined 
             className="interactive-icons"
             style={{ fontSize: '22px', color: '#08c', marginLeft:"10px", marginRight:"10px"}}

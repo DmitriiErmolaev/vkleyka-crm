@@ -1,177 +1,145 @@
-import React, {useState, useContext} from 'react';
-import { Upload, Button , Row, Col  } from 'antd';
+import React, {useState, useContext, useEffect} from 'react';
+import { useParams } from 'react-router-dom';
+import { Upload, Button, Typography } from 'antd';
 import { uploadBytesResumable } from 'firebase/storage';
 import { UploadOutlined } from '@ant-design/icons';
-import { storageDocumentsPath } from '../../models/client_files/files';
 import { getFileRef } from '../../models/firebase';  
-import { Typography } from 'antd';
-import { updateDocField } from '../../models/data-processing';
+import { 
+  updateUploadedFilesInfo, 
+  getUpdatedExtraFileList, 
+  storageDocumentsPath, 
+  getArrayWithUpdatedPropById, 
+  updateUploadPath, 
+  deleteUploadedFile, 
+  getuploadedFileDownloadURL  
+} from '../../models/client_files/files';
 import { getAppRefById } from '../../models/applications/applications';
 import { getPercent } from '../../models/data-processing';
-import { getNewFileExtraProps } from '../../models/client_files/files';
-import { getNewUploadedDocs } from '../../models/client_files/files';
-import { deleteObject } from 'firebase/storage';
-import { ProgramContext } from '../../models/context';
+import { ProgramContext, ApplicationStatus } from '../../models/context';
 import { openNotification } from '../../models/notification/notification';
+import '../../assets/upload-section.scss';
 const { Title } = Typography;
 
-const allowedFileTypes = ["application/pdf",]
-
-const UploadSection = ({appId, uploadedDocs}) => {
-  const makeInitialFilesExtraProps = () => {
-    // Refactor: Для первого отображения уже загруженных документов. После загрузки нового файла эти данные перезапишутся
+const UploadSection = ({uploadedDocs}) => {
+  const createExtraFileList = () => {
+    //Для первого отображения уже загруженных документов.
     if(uploadedDocs.length === 0) {
-      return {};
-    } 
-    let obj = {};
-    uploadedDocs.forEach(doc => {
-      obj[doc.key] = [{name:doc.name, status:"done", uid:doc.key }]
+      return [];
+    }
+    
+    return uploadedDocs.map(doc => {
+      return {name:doc.name, status:'done', uid:doc.uid, url: doc.downloadURL}
     })
-    return obj
   }
-  
-  const [fileListState, setFileListState] = useState(makeInitialFilesExtraProps);
-  const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false)
-  const [clickedButton, setClickedButton] = useState(null);
+
+  const {appId} = useParams();
+  const {curAppStatus} = useContext(ApplicationStatus);
+  const [fileListState, setFileListState] = useState(createExtraFileList);
+  const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false);
   const APPLICATION_REF = getAppRefById(appId);
   const {notificationApi} = useContext(ProgramContext)
+  useEffect(() => {
+    setFileListState(createExtraFileList);
+  }, [uploadedDocs])
 
-  const handleClick = (e) => {
-    setClickedButton(e.currentTarget.dataset.doctype)
+  // useEffect(() => {
+  //   if (curAppStatus === 2) setUploadButtonIsDisabled(true);
+  // }, [curAppStatus])
+
+  let newUploadedFilesInfo = [];
+  let promises = [];
+  let newfilesInfoReady = uploadedDocs.length;
+
+  const handleDelete = async (file) => {
+    try {
+      await deleteUploadedFile(uploadedDocs, file.uid, APPLICATION_REF)
+      setFileListState((prev) => prev.filter(fileInfo => fileInfo.uid !== file.uid ))
+      openNotification(notificationApi, "success", 'deleteUploadedFile')
+    } catch(e) {
+      console.log(e)
+      openNotification(notificationApi, "error", 'deleteUploadedFile')
+      // Firebase Storage: Object 'documents/hJ1goDbnR8C8OMygvtm2-1690235227709.pdf' does not exist. (storage/object-not-found) - пример.
+    } 
+  }
+  // Вызывается для каждого файла из списка
+  const beforeUpload = (file, _fileList) => {
+    setUploadButtonIsDisabled(true);
+    setFileListState((prev) => getUpdatedExtraFileList(prev, file));
+    return false; // предотвращает загрузку по адресу в пропсе action. 
   }
 
-  const beforeUpload = (file, _filelist) => {
-    setUploadButtonIsDisabled(true)
-    if(!allowedFileTypes.includes(file.type)) {
-      openNotification(notificationApi, "error", "uploadFile")
-      setUploadButtonIsDisabled(false)
-      return Upload.LIST_IGNORE
-    }
-    const newFileExtraProps = getNewFileExtraProps(file.name, "uploading", clickedButton);
-    setFileListState({...fileListState, [clickedButton]:[{newFileExtraProps}]});
-    return false;
-  }
-
+  // Вызывается для каждого файла из списка при смене статуса файла (Если удаление - только для одного)
   const handleUploadChange  = async (uploadInfo) => {
-    // удаление---------------------------------------------------
+    // в случае удаления---------------------------------------------------
     if(uploadInfo.file.status === "removed") {
-      const docIndex = uploadedDocs.findIndex(doc => { // индекс всегда должен быть найден, т.к. мы удаляем документ который точно был загружен
-        return doc.key === uploadInfo.file.uid;
-      })
-      const storageFileRef = getFileRef(uploadedDocs[docIndex].link);
-      try {
-        await deleteObject(storageFileRef)
-        openNotification(notificationApi, "success", 'deleteUploadedFile')
-      } catch(e) {
-        console.log(e)
-        openNotification(notificationApi, "error", 'deleteUploadedFile')
-        // Firebase Storage: Object 'documents/hJ1goDbnR8C8OMygvtm2-1690235227709.pdf' does not exist. (storage/object-not-found) - пример.
-      }
-
-      const options = {
-        docType: uploadInfo.file.uid, 
-        uploadPath: null, 
-        fileName: null,
-      }
-
-      const newUploadedDocs = getNewUploadedDocs(uploadedDocs, options);
-      updateDocField(APPLICATION_REF, "preparedInformation.documents", newUploadedDocs);    
-      return
+      return;
     }
+
     // загрузка в storage---------------------------------------------------
-    const newFileName = uploadInfo.file.name;
-   
+    newUploadedFilesInfo.push({name: uploadInfo.file.name, link: '', uid: uploadInfo.file.uid, downloadURL:''})
     const uploadResult = uploadBytesResumable(getFileRef(`${storageDocumentsPath.visaDocuments}/${appId}-${Date.now()}.pdf`), uploadInfo.file);
+    promises.push(uploadResult)
+
     uploadResult.on('state_changed', (snapshot) => {
       const percentTransferred = getPercent(snapshot.bytesTransferred, snapshot.totalBytes);
-      const newFileExtraProps = getNewFileExtraProps(newFileName, "uploading", clickedButton, percentTransferred );
-      setFileListState({...fileListState, [clickedButton]:[newFileExtraProps]});
+      setFileListState((prev) => getArrayWithUpdatedPropById(prev, uploadInfo.file.uid, 'percent', percentTransferred ));
     }, error => {
       // TODO: обработать ошибки.
+      console.log(error)
     }, async () => {
-    
-    
-    // загрузка в бд---------------------------------------------------
-      const options = {
-        docType: clickedButton, 
-        uploadPath: uploadResult.snapshot.metadata.fullPath, 
-        fileName: newFileName,
+      newUploadedFilesInfo = updateUploadPath(newUploadedFilesInfo, uploadInfo.file.uid, uploadResult.snapshot.metadata.fullPath)
+      const downloadURL = await getuploadedFileDownloadURL(uploadResult.snapshot.metadata.fullPath);
+      setFileListState((prev) => getArrayWithUpdatedPropById(prev, uploadInfo.file.uid, 'url', downloadURL ))
+      newUploadedFilesInfo = getArrayWithUpdatedPropById(newUploadedFilesInfo, uploadInfo.file.uid, 'downloadURL', downloadURL)
+      ++newfilesInfoReady;
+
+      // загрузка информации в БД когда все объекты массива newUploadedFilesInfo будут готовы.
+      if (newfilesInfoReady === uploadInfo.fileList.length) {
+        try {
+          await Promise.all(promises);
+          const newUploadedDocs = [...uploadedDocs, ...newUploadedFilesInfo];
+          await updateUploadedFilesInfo(APPLICATION_REF, "preparedInformation.documents", newUploadedDocs);
+          openNotification(notificationApi, "success", "uploadFile")
+          setUploadButtonIsDisabled(false);
+        } catch (e) {
+          console.log(e)
+          openNotification(notificationApi, "error", 'deleteUploadedFile');
+          setUploadButtonIsDisabled(false);
+        }
       }
-      
-      const newUploadedDocs = getNewUploadedDocs(uploadedDocs, options )
-      await updateDocField(APPLICATION_REF, "preparedInformation.documents", newUploadedDocs)
-      const newFileExtraProps = getNewFileExtraProps(newFileName, "done", clickedButton);
-      setFileListState({...fileListState, [clickedButton] : [newFileExtraProps]})
-      openNotification(notificationApi, "success", "uploadFile")
-      setClickedButton(null)
-      setUploadButtonIsDisabled(false) 
     })
   }
-
-  const handleDelete = (file) => {
-    const updatedFileList = {...fileListState, [file.uid]:[]};
-    setFileListState(updatedFileList);
-  }
-
+  
+  const uploadPermanentlyDisabled = curAppStatus === 2;
   return (
-    <div>
+    <div className="uploaded-documents">
       <Typography>
         <Title level={5}>
           Готовые документы:
         </Title>
       </Typography>
-      <Row>
-        <Col span={12}>
-          <div style={{margin:"8px 0"}}>
-            <Upload 
-              disabled={uploadButtonIsDisabled}
-              progress={{
-                strokeColor: {
-                  '0%': '#108ee9',
-                  '100%': '#87d068',
-                },
-                size: [200, 4], 
-                showInfo: true,
-                format: (percent) => `${percent}%`,
-              }}
-              fileList={fileListState.application}
-              maxCount={1}
-              accept=".pdf, application/pdf"
-              beforeUpload={beforeUpload}
-              onChange={handleUploadChange}
-              onRemove={handleDelete}
-            >
-              <Button disabled={uploadButtonIsDisabled} onClick={handleClick} data-doctype="application" icon={<UploadOutlined/>}>Анкета &#40;консульство&#41;:</Button>
-            </Upload> 
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={12}>
-          <div style={{margin:"0"}}> {/* margin для upload, чтобы между Row элементами был видимый отступ */}
-            <Upload
-              disabled={uploadButtonIsDisabled}
-              progress={{
-                strokeColor: {
-                  '0%': '#108ee9',
-                  '100%': '#87d068',
-                },
-                size: [200, 4],
-                showInfo: true,
-                format: (percent) => `${percent}%`,
-              }}
-              fileList={fileListState.appointment}
-              maxCount={1}
-              accept=".pdf, application/pdf"
-              beforeUpload={beforeUpload}
-              onChange={handleUploadChange}
-              onRemove={handleDelete}
-            >
-              <Button disabled={uploadButtonIsDisabled} onClick={handleClick} data-doctype="appointment" icon={<UploadOutlined/>}>Запись в консульство:</Button>
-            </Upload>
-          </div>
-        </Col>
-      </Row>
+      <div className="uploaded-documents__upload-section">
+        <Upload 
+          disabled={uploadPermanentlyDisabled || uploadButtonIsDisabled}
+          progress={{
+            strokeColor: {
+              '0%': '#108ee9',
+              '100%': '#87d068',
+            },
+            size: [200, 4], 
+            showInfo: true,
+            format: (percent) => `${percent}%`,
+          }}
+          fileList={fileListState}
+          multiple
+          accept=".pdf, application/pdf"
+          beforeUpload={beforeUpload}
+          onChange={handleUploadChange}
+          onRemove={handleDelete}
+        >
+          <Button disabled={uploadPermanentlyDisabled || uploadButtonIsDisabled} icon={<UploadOutlined/>}>Загрузить файл</Button>
+        </Upload> 
+      </div>
     </div>
   );
 };

@@ -23,7 +23,7 @@ const id_object = {
     render: (text, record, _) => {
       return (
         <Link 
-          to={`/application/${record.key}`} 
+          to={`/application/${record.clientId}/${record.key}`} 
           style={{color:"#0EA5E9", fontWeight:"800"}}
         >
           {text}
@@ -84,9 +84,16 @@ const viser_object = {
     key: 'assignedTo',
     align: "center",
     render: (_test, record, _index) => {
-        const ref = getAppRefById(record.key);
-        const assignedTo = record.assignedTo;
-        return <SelectComponent collectionType={"operators"} data={{ref, assignedTo, dialogueRef:record.dialogueRef }}/> 
+      const assignedTo = record.assignedTo;
+      const clientApplicationsSnaps = record.appsCollSnapshot.docs.reduce((acc, docSnap) => {
+        if (docSnap.get("UID") === record.clientId) {
+          acc.push(docSnap);
+          return acc;
+        }
+        return acc;
+      }, [])
+      
+      return <SelectComponent collectionType={"operators"} data={{assignedTo, dialogueSnap: record.dialogueSnap.ref, clientApplicationsSnaps }}/> 
     }
   }
 }

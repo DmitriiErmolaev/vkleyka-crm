@@ -14,11 +14,10 @@ const  getChatsCollectionRef = () => {
   return collection(firestore, chatPaths.chatCollection);
 }
 
-export const getDialogueRef = (chatCollection, applicantId) => {
-  const docSnap = chatCollection.docs.find(docSnap => {
+export const getDialogueSnap = (chatCollection, applicantId) => {
+  return chatCollection.docs.find(docSnap => {
     return docSnap.get('UID') === applicantId;
   })
-  return docSnap.ref;
 }
 
 export const getChatQuery = () => {
@@ -27,9 +26,15 @@ export const getChatQuery = () => {
 
 export const getChatsQueryForDialoguesList = (authorizedUser) => {
   // INFO: запрос на диалоги, где assignedTo равен переданному айди или пустой строке.
+  // TODO: добавить where под категорию чата
+
   if(authorizedUser.role === "operator") {
-    return  query(getChatsCollectionRef(), where('assignedTo', 'in', [authorizedUser.id, '']));
+    return  query(getChatsCollectionRef(), where('active', '!=', false));
   }
+
+  // if(authorizedUser.role === "operator") {
+  //   return  query(getChatsCollectionRef(), where('assignedTo', 'in', [authorizedUser.id, '']));
+  // }
   if(authorizedUser.role === "admin") {
     return  query(getChatsCollectionRef());
   }

@@ -23,3 +23,15 @@ a:active, a:hover, a:visited {
     transform:scale(0.85);
   }
 }
+
+.interactive-icons-disabled {
+  transition: none;
+
+  &:hover {
+    cursor:not-allowed;
+  }
+
+  &:active {
+    transform:scale(0.85);
+  }
+}

@@ -1,0 +1,11 @@
+.application-exists__container {
+  display:flex;
+  align-items: center;
+  padding: 4.5px 8px;
+  background-color: #f6f6f6;
+  border-radius: 3px;
+
+  .application-exists__content {
+    margin-left:5px;
+  }
+}

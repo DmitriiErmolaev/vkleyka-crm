@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import Chat from './Chat';
 import { Drawer } from "antd";
 import '../../assets/chat/dialog.scss';
 
 
 const Dialog = ({users, dialogueWindowOpen, setDialogueWindowOpen, selectedDialogue}) => {
+  
   // когда открывается список чатов. Диалог тоже начинает рендерится.  
   // Данная проверка это предотвращает.
   if(!dialogueWindowOpen) {
@@ -26,11 +27,11 @@ const Dialog = ({users, dialogueWindowOpen, setDialogueWindowOpen, selectedDialo
         ? `${user.passports[0].first_name} ${user.passports[0].last_name}`
         : user.UID
     )
-
+  
   return (
     <Drawer
       bodyStyle={{padding:"0"}}
-      width={ 500}
+      width={600}
       rootClassName="dialog"
       placement="left"
       title="Чат"
@@ -40,7 +41,7 @@ const Dialog = ({users, dialogueWindowOpen, setDialogueWindowOpen, selectedDialo
       getContainer={false}
       zIndex={99}
     >
-      <Chat applicantName={userName} applicantId={selectedDialogue.dialogue.UID} unreadMessagesExist={selectedDialogue.unreadMessagesNumber} source="global-chat"/>
+      <Chat applicantName={userName} applicantId={selectedDialogue.dialogue.UID} unreadMessagesExist={selectedDialogue.unreadMessagesNumber} clientApplicationsSnaps={selectedDialogue.clientApplicationsSnaps} source="global-chat"/>
     </Drawer>
   );
 };

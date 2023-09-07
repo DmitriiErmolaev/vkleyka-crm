@@ -1,95 +1,87 @@
-import React, {useContext, useState} from 'react';
-import { ProgramContext } from '../../models/context';
-import { Spin, Card, ConfigProvider, Drawer } from 'antd';
+import React, {useContext, useRef, useEffect} from 'react';
+import { Card, Drawer } from 'antd';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { getChatsQueryForDialoguesList } from '../../models/chat/chat-data-processing';
-import { getDataFromCollSnapshot } from '../../models/data-processing';
-import { getUsersQuery } from '../../models/applicants/applicants';
 import Error from '../error/Error';
 import DialogueListItem from './DialogueListItem';
-import Dialog from './Dialog';
-import '../../assets/chat/dialogue-list.scss'
+import DialogueSearch from './DialogueSearch';
+import '../../assets/chat/dialogue-list.scss';
+import { getApplicationsBySetOfApplicantIDs } from '../../models/chat/dialogue-list/dialogue-list-data-processing';
+import { ProgramContext } from '../../models/context';
+import { dialogueListGroups } from '../../models/chat/dialogue-list/dialogue-list';
+import { getAdminDialogueData } from '../../models/chat/dialogue-list/dialogue-list';
+import { dialogListOperations } from '../../models/chat/dialogue-list/dialogue-list';
+import { getDialogueList } from '../../models/chat/dialogue-list/dialogue-list';
 
-const DialoguesList = ({drawerOpen, setDrawerOpen}) => {
-  const {authorizedOperator} = useContext(ProgramContext);
-  const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedOperator));
-  const [usersCollSnapshot, usersLoading, usersError] = useCollection(getUsersQuery());
-  const [selectedDialogue, setSelectedDialogue] = useState(null);
-  const [dialogueWindowOpen, setDialogueWindowOpen] = useState(false)
-  // TODO: из DialogueListItem можно в стейт записать весь диалог. Который потом передать в Dialog/Сhat. Но там свое скачивание. повторное
+const DialoguesList = ({drawerOpen, handleDrawerClose, chatsCollSnapshot, users, setSelectedDialogue, setDialogueWindowOpen, contentScrollTop}) => {
+  // TODO: прокинуть сюда лоадинг чатов и ждать пока они не загрузятся, но в этом время лист уже открытый и мы видим скелетон. То есть при нажатии на кнопку открывается глобал чат и грузится лист. При закрытии установить на загрытие лист, и следом закрыть глобал чат
   
-  const handleDrawerClose = () => {
-    setDrawerOpen(false)
-    setDialogueWindowOpen(false)
-  }
+  const {authorizedUser, role} = useContext(ProgramContext)
+  const drawerRef = useRef(null);
+  // console.log(chatsCollSnapshot.docs.length)
 
-  if(chatsLoading || usersLoading){
-    return (
-      <Drawer
-        bodyStyle={{paddingTop: "0"}}
-        rootClassName="drawer"
-        placement="left"
-        title="Чат"
-        open={drawerOpen}
-        onClose={handleDrawerClose}
-        getContainer={false}
-      >
-        <Spin />
-      </Drawer>
-    ) 
-  }
-
-  if(chatsError || usersError ) {
-    return <Error error={chatsError}/>
-  }
-
-  const dialogues = getDataFromCollSnapshot(chatsCollSnapshot);
-  const users = getDataFromCollSnapshot(usersCollSnapshot);
-  const dialoguesList = dialogues.map(dialogue => {
-    const unreadMessagesNumber = dialogue.messages.reduce((acc, elem) => {
-      return elem.sendState === 0 ? ++acc : acc
-    }, 0)
-
-    const user = users.find(user => {
-      return user.UID === dialogue.UID;
-    })
-    
-    return <DialogueListItem key={dialogue.UID} user={user} dialogue={dialogue} setSelectedDialogue={setSelectedDialogue} setDialogueWindowOpen={setDialogueWindowOpen} unreadMessagesNumber={unreadMessagesNumber}/>
+  const downloadedChatsApplicantIDs = chatsCollSnapshot.docs.map(docSnap => {
+    return docSnap.get('UID');
   })
+
+  const [appsCollSnapshot, appsLoading, appsError] = useCollection(getApplicationsBySetOfApplicantIDs(downloadedChatsApplicantIDs, authorizedUser.id, role));
+  // TODO: из DialogueListItem можно в стейт записать весь диалог. Который потом передать в Dialog/Сhat. Но там свое скачивание. повторное
+  // console.log('DialogueList')
   
+  // useEffect(() => {
+    // TODO: получить реф на дравер и устнаавливать стиль `top: ${windowScrollY}`
+  //   console.log(drawerRef)
+
+  //   if(!appsLoading && drawerOpen) {
+  //     console.log(windowScrollY)
+  //     console.log(drawerRef)
+  //     console.log(drawerRef.current.firstElementChild.setAttribute)
+  //     drawerRef.current.firstElementChild.setAttribute('style', `top: ${windowScrollY}`)
+  //   } 
+  // })
+
+  if(appsLoading) {
+    // console.log("качает заявки")
+    return
+  }
+
+  if(appsError) {
+    return <Error error={appsError}/>
+  }
+
+  const dialoguesList = getDialogueList(
+    authorizedUser, 
+    chatsCollSnapshot, 
+    users, 
+    appsCollSnapshot, 
+    {setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose}
+  );
+
+  // const windowScrollY = window.scrollY;
+
   return (
-    <>
+    <div 
+      ref={drawerRef}
+    >
       <Drawer 
         bodyStyle={{padding:"5px 0 10px 0"}}
         rootClassName="dialogues-list"
         placement="left"
-        title="Чат"
+        title={<DialogueSearch />}
         open={drawerOpen}
         mask={false}
         onClose={handleDrawerClose}
-        getContainer={false}
+        getContainer={false}  
         zIndex={100}
+        // onScroll={handleScroll}
       >
-        <ConfigProvider
-          theme={{
-            components:{
-              Card: {
-                actionsBg:"black"
-              }
-            }
-          }}
+        <Card
+          bordered={false}
+          bodyStyle={{padding:"0", borderRadius:"0", boxShadow:"none"}}
         >
-          <Card
-            bordered={false}
-            bodyStyle={{padding:"0", borderRadius:"0"}}
-
-          >
-            {dialoguesList}
-          </Card>
-        </ConfigProvider>
+          {dialoguesList}
+        </Card>
       </Drawer>
-      <Dialog users={users} dialogueWindowOpen={dialogueWindowOpen} setDialogueWindowOpen={setDialogueWindowOpen} selectedDialogue={selectedDialogue} />
-    </>
+    </div>
   );
 };
 
