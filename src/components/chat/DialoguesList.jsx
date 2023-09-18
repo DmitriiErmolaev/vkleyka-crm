@@ -1,78 +1,61 @@
-import React, {useContext, useRef, useLayoutEffect, useEffect, forwardRef} from 'react';
-import { Card, Drawer } from 'antd';
-import { useCollection } from 'react-firebase-hooks/firestore';
-import Error from '../error/Error';
-import DialogueListItem from './DialogueListItem';
-import DialogueSearch from './DialogueSearch';
-import '../../assets/chat/dialogue-list.scss';
-import { getApplicationsBySetOfApplicantIDs } from '../../models/chat/dialogue-list/dialogue-list-data-processing';
-import { ProgramContext } from '../../models/context';
-import { dialogueListGroups } from '../../models/chat/dialogue-list/dialogue-list';
-import { getAdminDialogueData } from '../../models/chat/dialogue-list/dialogue-list';
-import { dialogListOperations } from '../../models/chat/dialogue-list/dialogue-list';
+import React, { useContext, useLayoutEffect } from 'react';
+import { Card, Spin } from 'antd';
 import { getDialogueList } from '../../models/chat/dialogue-list/dialogue-list';
+import { ProgramContext, WorkPageContext } from '../../models/context';
+import { getDataFromCollSnapshot } from '../../models/data-processing';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { getApplicationsBySetOfApplicantIDs } from '../../models/chat/dialogue-list/dialogue-list-data-processing';
+import Error from '../error/Error';
+import '../../assets/loading.scss';
 
 
-const DialoguesList = ({drawerOpen, handleDrawerClose, chatsCollSnapshot, users, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen, contentScrollTop, setSearchFilters}) => {
-  // TODO: прокинуть сюда лоадинг чатов и ждать пока они не загрузятся, но в этом время лист уже открытый и мы видим скелетон. То есть при нажатии на кнопку открывается глобал чат и грузится лист. При закрытии установить на загрытие лист, и следом закрыть глобал чат
-  const dialoguesListContainerRef = useRef(null)
-  const {authorizedUser, role} = useContext(ProgramContext)
-
-  const downloadedChatsApplicantIDs = chatsCollSnapshot.docs.map(docSnap => {
-    return docSnap.get('UID');
-  })
-
-  const [appsCollSnapshot, appsLoading, appsError] = useCollection(getApplicationsBySetOfApplicantIDs(downloadedChatsApplicantIDs, authorizedUser.id, role));
-  // TODO: из DialogueListItem можно в стейт записать весь диалог. Который потом передать в Dialog/Сhat. Но там свое скачивание. повторное
-
+const DialoguesList = ({chatsCollSnapshot, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose, dialoguesListContainerRef}) => {
+  const {clientsCollSnapshot} = useContext(WorkPageContext);
+  const {authorizedUser, role} = useContext(ProgramContext);
+  const [appsCollSnapshot, appsLoading, appsError] = useCollection(getApplicationsBySetOfApplicantIDs(chatsCollSnapshot, authorizedUser.id, role));
+  
   useLayoutEffect(() => {
     if (!appsLoading) {
       dialoguesListContainerRef.current.style.top = `${window.scrollY}px` 
     }
-  }, [appsLoading])
+  }, [appsLoading, dialoguesListContainerRef])
 
-  if(appsLoading) {
-    return
+  if (appsLoading) {
+    return (
+      <div className="loading">
+        <div className="loading__spinner">
+          <Spin />
+        </div>
+        <p className="loading__text">
+          Загрузка...
+        </p>
+      </div>
+    )
   }
 
-  if(appsError) {
+  if (appsError) {
     return <Error error={appsError}/>
   }
+
+  const clients = getDataFromCollSnapshot(clientsCollSnapshot);
 
   const dialoguesList = getDialogueList(
     authorizedUser, 
     chatsCollSnapshot, 
-    users, 
+    clients, 
     appsCollSnapshot, 
     selectedDialogue,
     {setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose}
-  );
+  )
 
   return (
-    <div
-      ref={dialoguesListContainerRef}
-      style={{position:'relative'}}
+    <Card
+      bordered={false}
+      bodyStyle={{padding:"0", borderRadius:"0", boxShadow:"none"}}
     >
-      <Drawer 
-        bodyStyle={{padding:"5px 0 10px 0"}}
-        rootClassName="dialogues-list"
-        placement="left"
-        title={<DialogueSearch setSearchFilters={setSearchFilters}/>}
-        open={drawerOpen}
-        mask={false}
-        onClose={handleDrawerClose}
-        getContainer={false}  
-        zIndex={100}
-      >
-        <Card
-          bordered={false}
-          bodyStyle={{padding:"0", borderRadius:"0", boxShadow:"none"}}
-        >
-          {dialoguesList}
-        </Card>
-      </Drawer>
-    </div>
+      {dialoguesList}
+    </Card>
   );
-}
+};
 
 export default DialoguesList;

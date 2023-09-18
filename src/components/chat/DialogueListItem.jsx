@@ -1,15 +1,20 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Card, Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { useCollection } from 'react-firebase-hooks/firestore';
 import '../../assets/chat/dialog-list-item.scss'
 import DialogueListItemTitle from './DialogueListItemTitle';
 import DialogueListItemFooter from './DialogueListItemFooter';
 import { getlastMessageTime } from '../../models/chat/dialogue-list/dialogue-list-item-title';
+import { ProgramContext } from '../../models/context';
 const {Meta} = Card;
 
-const DialogueListItem = ({user, dialogue, dialogueSnap, selectedDialogue, functions, clientApplicationsSnaps, unreadMessagesNumber}) => {
+const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, functions, clientApplicationsSnaps, unreadMessagesNumber}) => {
   const { clientId } = useParams();
+  // const {authorizedUser, role} = useContext(ProgramContext)
+
+  // const [appsCollSnapshot, appsLoading, appsError] = useCollection(clientId, authorizedUser.id, role);
   const navigate = useNavigate();
   // console.log('DialogueListItem')
 
@@ -29,12 +34,12 @@ const DialogueListItem = ({user, dialogue, dialogueSnap, selectedDialogue, funct
   }
 
   // у клиента имени может не быть. Вывести айди если его нет.
-  const applicantName = user?.name 
-    ? user.name 
+  const applicantName = client?.name 
+    ? client.name 
     : (
-        user?.passports[0]?.first_name 
-          ? `${user.passports[0].first_name} ${user.passports[0].last_name}`
-          : user?.UID
+      client?.passports[0]?.first_name 
+          ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
+          : client?.UID
       )
   // console.log(applicantName)
   const lastMessage = !dialogue.messages.length

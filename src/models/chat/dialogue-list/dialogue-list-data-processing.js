@@ -10,14 +10,21 @@ export const getDialogueListFilters = (searchStr) => {
 }
   
 // запрос на получение всех заявок клиентов. 
-export const getApplicationsBySetOfApplicantIDs = (clientsIDs, authorizedUserId, role) => {
-  if (clientsIDs.length === 0) {
+export const getApplicationsBySetOfApplicantIDs = (chatsCollSnapshot, authorizedUserId, role) => {
+ 
+
+  const downloadedChatsApplicantIDs = chatsCollSnapshot.docs.map(docSnap => {
+    return docSnap.get('UID');
+  })
+
+  if (downloadedChatsApplicantIDs.length === 0) {
     // where ('UID', "in", clientsIDs) не должен принимать пустой массив. иначе будет ошибка.
     return null;
   }
+
   const constraints = [
     where('paymentSuccessful', '==', true),
-    where('UID', "in", clientsIDs), 
+    where('UID', "in", downloadedChatsApplicantIDs), 
     orderBy("createdAt", "asc")
   ]
 

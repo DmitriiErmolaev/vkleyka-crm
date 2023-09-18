@@ -1,11 +1,14 @@
-import React, {useEffect, useLayoutEffect, useRef} from 'react';
+import React, {useContext, useEffect, useLayoutEffect, useRef} from 'react';
 import Chat from './Chat';
 import { Drawer } from "antd";
 import '../../assets/chat/dialog.scss';
+import { WorkPageContext } from '../../models/context';
+import { getDataFromCollSnapshot } from '../../models/data-processing';
 
 
-const Dialogue = ({users, setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}) => {
+const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}) => {
   const dialogueContainerRef = useRef(null);
+  const {clientsCollSnapshot} = useContext(WorkPageContext);
 
   useLayoutEffect(() => {
     console.log(dialogueContainerRef.current)
@@ -25,16 +28,17 @@ const Dialogue = ({users, setDialogueWindowOpen, selectedDialogue, setSelectedDi
 
   }
 
-  const user = users.find(user => {
+  const clients = getDataFromCollSnapshot(clientsCollSnapshot);
+  const client = clients.find(user => {
     return user.UID === selectedDialogue.dialogue.UID;
   })
 
-  const userName = user.name 
-  ? user.name 
+  const userName = client.name 
+  ? client.name 
   : (
-      user.passports[0]?.first_name 
-        ? `${user.passports[0].first_name} ${user.passports[0].last_name}`
-        : user.UID
+      client.passports[0]?.first_name 
+        ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
+        : client.UID
     )
   
   return (

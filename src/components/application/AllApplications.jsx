@@ -9,14 +9,14 @@ import { findAuthorizedOperatorName } from "../../models/operator/operators-data
 import SelectComponent from "../selectors/SelectComponent";
 import Error from "../error/Error";
 import {ProgramContext} from "../../models/context.js";
-import {getUsersQuery} from "../../models/applicants/applicants"
+import { getClientsQuery } from "../../models/clients/clients";
 import {getAppsCollRef} from "../../models/applications/applications"
 import {getAllCountriesRef} from "../../models/countries/countries"
 import {getSingleFieldFromDocSnapshot, getDataFromCollSnapshot, getQueryWithConstraints} from "../../models/data-processing";
 import { getChatQuery } from "../../models/chat/chat-data-processing";
 
 const ALL_COUNTRIES_REF = getAllCountriesRef();
-const USERS_QUERY = getUsersQuery();
+const CLIENTS_QUERY = getClientsQuery();
 const APPS_REF = getAppsCollRef();
 
 // const TABLE_PAGE_ITEMS_NUMBER = 10; // NOTE: Для пагинации
@@ -25,7 +25,7 @@ const AllApplications = () => {
   const {role, authorizedUser} = useContext(ProgramContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
-  const [usersCollSnapshot, usersLoading, usersError] = useCollection(USERS_QUERY);
+  const [usersCollSnapshot, usersLoading, usersError] = useCollection(CLIENTS_QUERY);
   const [selectedCountry, setSelectedCountry] = useState({value:null, label:null});
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);

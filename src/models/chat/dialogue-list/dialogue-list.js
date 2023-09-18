@@ -1,3 +1,4 @@
+import { Skeleton, Spin } from "antd";
 import DialogueListItem from "../../../components/chat/DialogueListItem";
   // TODO: рефакторинг
 
@@ -26,14 +27,15 @@ export const dialogListOperations = {
   }
 }
 
-export function getDialogueList(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions) {
+export function getDialogueList(authorizedUser, chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
-  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions);
-  if(authorizedUser.role === 'admin') return getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions);
+  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, chatsCollSnapshot,  clients, appsCollSnapshot, selectedDialogue, functions);
+  if(authorizedUser.role === 'admin') return getAdminDialogueData(chatsCollSnapshot, clients,  appsCollSnapshot, selectedDialogue, functions);
 }
 
-function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions) {
+function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
+
   const dialoguesListGroups = chatsCollSnapshot.docs.reduce((acc, dialogueSnap) => {
     const dialogue = dialogueSnap.data();
 
@@ -44,7 +46,7 @@ function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsC
       return acc;
     }, 0)
 
-    const user = users.find(user => {
+    const client = clients.find(user => {
       return user.UID === dialogue.UID;
     })
     
@@ -60,7 +62,7 @@ function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsC
     const dialogueListItem = (
       <DialogueListItem 
         key={dialogue.UID} 
-        user={user} 
+        client={client} 
         dialogue={dialogue} 
         selectedDialogue={selectedDialogue}
         functions={functions}
@@ -105,8 +107,7 @@ function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsC
   return dialoguesList;
 }
 
-function getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions) {
-  // console.log(users)
+function getAdminDialogueData(chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
   const dialoguesList = chatsCollSnapshot.docs.map(dialogueSnap => {
     // if (dialogueSnap.get('UID') === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') { // TODO: обход бага. Решить с Жангиром
@@ -122,7 +123,7 @@ function getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, select
     //   return acc;
     // }, 0)
 
-    const user = users.find(user => {
+    const client = clients.find(user => {
       return user.UID === dialogue.UID;
     })
     
@@ -137,7 +138,7 @@ function getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, select
     return (
       <DialogueListItem 
         key={dialogue.UID} 
-        user={user} 
+        client={client} 
         dialogue={dialogue} 
         dialogueSnap={dialogueSnap}
         selectedDialogue={selectedDialogue}
