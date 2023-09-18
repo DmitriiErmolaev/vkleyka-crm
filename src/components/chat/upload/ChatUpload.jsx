@@ -10,7 +10,7 @@ import { ApplicationStatus, ChatAttachmentsContext, ProgramContext } from '../..
 import { sendMessage, chatPaths } from '../../../models/chat/chat-data-processing';
 import { getFileExtension } from '../../../utils';
 
-const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessageWithAttachments, messagesData}) => {
+const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessageWithAttachments, messagesData, disabled}) => {
   const [ chatUploadAttachmentList, setChatUploadAttachmentList ] = useState([])
   const [ modalIsOpened, setModalIsOpened ] = useState(false)
   const [ attachmentText, setAttachmentText] = useState(messageText)
@@ -63,7 +63,7 @@ const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessage
     })
 
     Promise.all(promises).then(() => {
-      sendMessage(attachmentText, authorizedUser.name, dialogueSnap.ref, messagesData, uploadingAttachments); // ошибка
+      sendMessage(attachmentText, authorizedUser, dialogueSnap.ref, messagesData, uploadingAttachments); // ошибка
     }).finally(() => {
       setUploadingMessageWithAttachments([]);
     })
@@ -72,7 +72,7 @@ const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessage
   return (
     <div className="chat-upload-button__container">
       <Upload
-        disabled={curAppStatus === 2}
+        disabled={disabled}
         showUploadList={false}
         beforeUpload={beforeUpload}
         fileList={chatUploadAttachmentList}

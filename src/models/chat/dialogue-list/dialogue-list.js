@@ -26,20 +26,22 @@ export const dialogListOperations = {
   }
 }
 
-export function getDialogueList(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, functions) {
+export function getDialogueList(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
-  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, functions);
-  if(authorizedUser.role === 'admin') return getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, functions);
+  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions);
+  if(authorizedUser.role === 'admin') return getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions);
 }
 
-function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, functions) {
-  console.log(chatsCollSnapshot)
+function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
   const dialoguesListGroups = chatsCollSnapshot.docs.reduce((acc, dialogueSnap) => {
     const dialogue = dialogueSnap.data();
 
     const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
-      return message.sendState === 0 ? ++acc : acc
+      if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+        ++acc;
+      }
+      return acc;
     }, 0)
 
     const user = users.find(user => {
@@ -60,6 +62,7 @@ function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsC
         key={dialogue.UID} 
         user={user} 
         dialogue={dialogue} 
+        selectedDialogue={selectedDialogue}
         functions={functions}
         unreadMessagesNumber={unreadMessagesNumber} 
         clientApplicationsSnaps={clientApplicationsSnaps}// т.к. если у клиента нет оплаченной заявки - то будет undefined.
@@ -102,14 +105,22 @@ function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, users, appsC
   return dialoguesList;
 }
 
-function getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, functions) {
+function getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, selectedDialogue, functions) {
+  // console.log(users)
   // TODO: рефакторинг
   const dialoguesList = chatsCollSnapshot.docs.map(dialogueSnap => {
+    // if (dialogueSnap.get('UID') === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') { // TODO: обход бага. Решить с Жангиром
+    //   return false;
+    // }
+
     const dialogue = dialogueSnap.data();
 
-    const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
-      return message.sendState === 0 ? ++acc : acc
-    }, 0)
+    // const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
+    //   if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+    //     ++acc;
+    //   }
+    //   return acc;
+    // }, 0)
 
     const user = users.find(user => {
       return user.UID === dialogue.UID;
@@ -129,13 +140,14 @@ function getAdminDialogueData(chatsCollSnapshot, users, appsCollSnapshot, functi
         user={user} 
         dialogue={dialogue} 
         dialogueSnap={dialogueSnap}
+        selectedDialogue={selectedDialogue}
         functions={functions}
-        unreadMessagesNumber={unreadMessagesNumber} 
-        clientApplicationsSnaps={clientApplicationsSnaps}// т.к. если у клиента нет оплаченной заявки - то будет undefined.
+        // unreadMessagesNumber={unreadMessagesNumber} 
+        clientApplicationsSnaps={clientApplicationsSnaps}
       />
     ) 
   })
-
+  // console.log(dialoguesList)  
   if(dialoguesList.length === 0) {
     dialoguesList.push(
       <div key='dialoguesAreAbsent' style={{textAlign:'center', color:'#b8b8b8', fontStyle:'italic'}}>

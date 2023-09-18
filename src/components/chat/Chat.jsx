@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useContext} from 'react';
+import React, {useState, useEffect, useRef, useContext, useLayoutEffect} from 'react';
 import {useCollection} from "react-firebase-hooks/firestore";
 import { Spin } from "antd";
 import { getAllFieldsFromDocSnapshot } from '../../models/data-processing.js';
@@ -12,33 +12,28 @@ import ChatFooter from './ChatFooter.jsx';
 import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
 
-const Chat = ({ applicantName, applicantId, unreadMessagesExist, source, clientApplicationsSnaps }) => {
+const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) => {
   const {authorizedUser, role} = useContext(ProgramContext)
   const allMessages = useRef(null);
   const [uploadingMessageWithAttachments, setUploadingMessageWithAttachments] = useState([]);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot. 
   const [chatCollSnapshot, chatLoading, chatError] = useCollection(getChatQueryForApplication(applicantId));
 
-  useEffect(()=> {
+  useLayoutEffect(()=> {
     if(!chatLoading){
       allMessages.current.scrollTop = 9999;
     }
-  })
+  },[chatLoading])
 
-  useEffect(() => {
-    if(unreadMessagesExist && !chatLoading && !chatError) {
-      // при размонтировании компонента, возвращаемая функция меняет статус всех сообщений на 1 ("прочитано") и отправлет в бд.
-      return () => {
-        const readMessages = dialogueData.messages.map(message => {
-          if(message.sendState === 0) {
-            return {...message, sendState: 1};
-          }
-          return message;
-        })
-        readUnreadMessages(dialogueSnap.ref, readMessages);
+  useLayoutEffect(() => {
+    if(!chatLoading) {
+      const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
+      if(!Math.floor(scrollBottom) && unreadMessagesNumber) {
+        readUnreadMessages(dialogueSnap.ref, dialogueData, authorizedUser);
       }
     }
-  })
+    
+  },)
 
   if(chatLoading){
     return (
@@ -58,9 +53,25 @@ const Chat = ({ applicantName, applicantId, unreadMessagesExist, source, clientA
     // TODO:  ошибка. Т.к. должен вывестись только 1 чат. 
   }
 
+  const scrollHandle = (e) => {
+    const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
+    console.log(unreadMessagesNumber)
+    if(Math.floor(scrollBottom) < 5 && unreadMessagesNumber) {
+      console.log("читка")
+      readUnreadMessages(dialogueSnap.ref, dialogueData, authorizedUser);
+    }
+  }
+ 
   const dialogueSnap = chatCollSnapshot.docs[0]; 
   const dialogueData = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
-  const dialogueMessages = getChatMessages(dialogueData.messages, uploadingMessageWithAttachments);
+  const dialogueMessages = getChatMessages(dialogueData.messages, uploadingMessageWithAttachments, authorizedUser, allMessages);
+  
+  const unreadMessagesNumber = dialogueData.messages.reduce((acc, message) => {
+    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+      ++acc;
+    }
+    return acc;
+  }, 0)
 
   // const operatorSelectDisabled = (role === 'admin' || dialogueData.assignedTo === authorizedUser.id) ? false : true;
   const operatorSelectDisabled = (role === 'operator' && (dialogueData.assignedTo !== authorizedUser.id)) ? true : false;
@@ -90,10 +101,10 @@ const Chat = ({ applicantName, applicantId, unreadMessagesExist, source, clientA
           clientApplicationsSnaps={clientApplicationsSnaps}
         />
       </div>
-      <ul className="chat__messages" ref={allMessages}>
+      <ul className="chat__messages" ref={allMessages} onScroll={scrollHandle}>
         {dialogueMessages}
       </ul>
-      <ChatFooter dialogueSnap={dialogueSnap} dialogueData={dialogueData} applicantId={applicantId} setUploadingMessageWithAttachments={setUploadingMessageWithAttachments}/>
+      <ChatFooter allMessages={allMessages} dialogueSnap={dialogueSnap} dialogueData={dialogueData} applicantId={applicantId} setUploadingMessageWithAttachments={setUploadingMessageWithAttachments}/>
     </div>
   );
 };

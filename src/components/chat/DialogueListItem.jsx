@@ -8,7 +8,7 @@ import DialogueListItemFooter from './DialogueListItemFooter';
 import { getlastMessageTime } from '../../models/chat/dialogue-list/dialogue-list-item-title';
 const {Meta} = Card;
 
-const DialogueListItem = ({user, dialogue, dialogueSnap, functions, clientApplicationsSnaps, unreadMessagesNumber}) => {
+const DialogueListItem = ({user, dialogue, dialogueSnap, selectedDialogue, functions, clientApplicationsSnaps, unreadMessagesNumber}) => {
   const { clientId } = useParams();
   const navigate = useNavigate();
   // console.log('DialogueListItem')
@@ -21,20 +21,22 @@ const DialogueListItem = ({user, dialogue, dialogueSnap, functions, clientApplic
       functions.handleDrawerClose();
       return
     }
-
-    functions.setSelectedDialogue({dialogue, unreadMessagesNumber, clientApplicationsSnaps});
+    if (selectedDialogue?.dialogue.UID === dialogue.UID) {
+      return false
+    }
+    functions.setSelectedDialogue({dialogue, clientApplicationsSnaps});
     functions.setDialogueWindowOpen(true);
   }
 
   // у клиента имени может не быть. Вывести айди если его нет.
-  const applicantName = user.name 
+  const applicantName = user?.name 
     ? user.name 
     : (
-        user.passports[0]?.first_name 
+        user?.passports[0]?.first_name 
           ? `${user.passports[0].first_name} ${user.passports[0].last_name}`
-          : user.UID
+          : user?.UID
       )
-
+  // console.log(applicantName)
   const lastMessage = !dialogue.messages.length
     ? ''
     : ( dialogue.messages[dialogue.messages.length - 1].content === ''
@@ -58,7 +60,7 @@ const DialogueListItem = ({user, dialogue, dialogueSnap, functions, clientApplic
             style={{backgroundColor:"transparent",border:"none", alignItems:"center",marginBottom:"15px"}}
             avatar={
               <Avatar 
-                shape="sircle" 
+                shape="circle" 
                 icon={<UserOutlined />} 
                 alt="avatar" 
                 size={50}
@@ -66,7 +68,7 @@ const DialogueListItem = ({user, dialogue, dialogueSnap, functions, clientApplic
             }
             title={
               <DialogueListItemTitle 
-                applicantName={applicantName} 
+                applicantName={applicantName || <i style={{color:'#8A8A8A', fontWeight:'400'}}>Аккаунт удален</i>} // TODO: временное решение. Ждем изменений от Жангира
                 unreadMessagesNumber={unreadMessagesNumber} 
                 messageCreationTime={messageCreationTime}
               />

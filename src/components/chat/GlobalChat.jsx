@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef, useLayoutEffect} from 'react';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import DialoguesList from './DialoguesList';
-import Dialog from './Dialog';
+import Dialogue from './Dialogue';
 import { getChatsQueryForDialoguesList } from '../../models/chat/chat-data-processing';
 import { ProgramContext } from '../../models/context';
 import { getDataFromCollSnapshot } from '../../models/data-processing';
@@ -13,11 +13,15 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
   const [dialogueWindowOpen, setDialogueWindowOpen] = useState(false)
   const [selectedDialogue, setSelectedDialogue] = useState(null);
   const [contentScrollTop, setContentScrollTop] = useState(0);
-  const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedUser));
+  const [searchFilters, setSearchFilters ] = useState('');
+  const dialoguesListRef = useRef(null)
+  const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilters));
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(getUsersQuery());
+  const bodyClientWidth = useRef(document.body.clientWidth);
 
   useEffect(() => {
     document.body.setAttribute('style', 'overflow: hidden');
+    document.body.setAttribute('style', `overflow: hidden; padding-right: ${document.body.clientWidth - bodyClientWidth.current}px`);
     return () => document.body.setAttribute('style', 'overflow: auto');
   })
 
@@ -36,7 +40,7 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
   }
   
   const users = getDataFromCollSnapshot(usersCollSnapshot);
-
+  
   return (
     <>
       <DialoguesList 
@@ -44,16 +48,25 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
         handleDrawerClose={handleDrawerClose} 
         chatsCollSnapshot={chatsCollSnapshot} 
         users={users} 
+        selectedDialogue={selectedDialogue}
         setSelectedDialogue={setSelectedDialogue} 
         setDialogueWindowOpen={setDialogueWindowOpen} 
         contentScrollTop={contentScrollTop}
+        setSearchFilters={setSearchFilters}
       />
-      <Dialog 
-        users={users} 
-        dialogueWindowOpen={dialogueWindowOpen} 
-        setDialogueWindowOpen={setDialogueWindowOpen} 
-        selectedDialogue={selectedDialogue} 
-      />
+      {
+        dialogueWindowOpen ? (
+          <Dialogue 
+            users={users} 
+            // dialogueWindowOpen={dialogueWindowOpen} 
+            setDialogueWindowOpen={setDialogueWindowOpen} 
+            selectedDialogue={selectedDialogue} 
+            setSelectedDialogue={setSelectedDialogue}
+          />
+        ) : (
+          null
+        )
+      }
     </>
   );
 };

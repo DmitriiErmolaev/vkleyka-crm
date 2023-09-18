@@ -4,46 +4,34 @@ import {Outlet} from "react-router-dom";
 import Head from "../components/layout/Head";
 import Aside from "../components/layout/Aside";
 import GlobalChat from "../components/chat/GlobalChat";
+import '../assets/workpage.scss';
 
 const {Content} = Layout;
-
-const primeLayoutStyle = {
-  width:"100%", 
-  minHeight:"100vh",
-  margin:"0 auto", 
-  background:"#F8F8F8 !important" ,
-}
 
 const WorkPage = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const contentRef = useRef(null);
-  // console.log(drawerOpen)
-  // console.log('WorkPage')
 
   const handleMenuSelect = ({item, key, keyPath, selectedKeys, domEvent}) => {
     if (key === "/chat") setDrawerOpen((prev) => !prev)
   }
 
+  const globalChatComponent = drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null
+
   return (
-    <div className="wrapper" >
-      <Layout className="primary-container" style={primeLayoutStyle}>
-        <Head />
-        <Layout hasSider>
-          <Aside handleMenuSelect={handleMenuSelect}/>
-          <Content 
-            ref={contentRef}
-            style={{
-              backgroundColor:"#F8F8F8",
-              position:"relative",
-              overflow:"hidden",
-            }}
-          >
-            {drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null}
-            <Outlet />
-          </Content>
-        </Layout>
+    <Layout className="workpage">
+      <Head />
+      <Layout className="main" hasSider>
+        <Aside handleMenuSelect={handleMenuSelect}/>
+        <Content 
+          ref={contentRef}
+          className="content"
+        >
+          {globalChatComponent}
+          <Outlet />
+        </Content>
       </Layout>
-    </div>
+    </Layout>
   )
 }
 

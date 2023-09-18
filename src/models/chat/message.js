@@ -37,8 +37,9 @@ const memoizedCreationDate = () => {
   }
 }
 
-export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
+export const getChatMessages = (messages, uploadingMessageWithAttachments, authorizedUser, allMessages) => {
   // пустой контейнер, который заполнит диалоговое окно, пока нет новых сообщений.
+  // рефакторить в reduce.
   let result = [
     <li key={"invisible-container"} className="invisible-container">
       <div className="invisible-message"></div>
@@ -58,7 +59,10 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
         <DateDivider key={messageCreationDate} date={messageCreationDate} />
       )
     } 
-    if(message.sendState === 0 && !unreadMessageExist) {
+
+    // const scrollBottom = allMessages?.current?.scrollHeight - allMessages?.current?.scrollTop - allMessages?.current?.clientHeight
+  
+    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
       result.push(<div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>)
       unreadMessageExist = true;
     }
@@ -99,6 +103,6 @@ export const createNewMessageObject = (text, operatorName, attachmentsArray = []
     sender: operatorName,
     time: time,
     type: "message",
-    key: nanoid(),
+    // key: nanoid(),
   }
 }

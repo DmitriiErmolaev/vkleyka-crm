@@ -12,33 +12,27 @@ const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assi
   const {notificationApi} = useContext(ProgramContext)
   const {curAppStatus} = useContext(ApplicationStatus); // если рендерится из ApplicationForm - получает статус заявки.
 
-  const unFinishedAppsExist = currentClientApplications.some(appSnap => {
-    return appSnap.get('preparedInformation.preparationStatus') !== 2;
-  })
-
-  useEffect(() => {
-    // если все заявки клиента завершены, то сбрасываем чат.
-    if (!unFinishedAppsExist) {
-      const finishChat = async () => {
-        await updateDocField(dialogueSnap.ref, 'assignedTo',  '');
-        await updateDocField(dialogueSnap.ref, 'active',  false);
-      }
-      finishChat();
-    }
-  },[dialogueSnap, unFinishedAppsExist])
+  const unFinishedAppsCount = currentClientApplications.reduce((acc, appSnap) => {
+    if (appSnap.get('preparedInformation.preparationStatus') !== 2) ++acc;
+    return acc;
+  }, 0)
 
   const handleSelect = async (_value, option) => {
     if (curAppStatus === option.value) {
       return false;
     }
   
-
     const appDocRef = getAppRefById(appDocId)
     // Меняем статус заявки
     try {
       await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)  
+      // Сброс визовика с чата, если он закрывает последнюю заявку клиента.
+      if ( unFinishedAppsCount === 1 ) {
+        await updateDocField(dialogueSnap.ref, 'assignedTo',  '');
+        await updateDocField(dialogueSnap.ref, 'active',  false);
+      }
       // При возврате заявки в работу, назначаем на чат визовика данной заявки.
-      if ((!unFinishedAppsExist && curAppStatus === 2 && option.value === 0) || (!unFinishedAppsExist && curAppStatus === 2 && option.value === 1)) {
+      if ((!unFinishedAppsCount && curAppStatus === 2 && option.value === 0) || (!unFinishedAppsCount && curAppStatus === 2 && option.value === 1)) {
         await updateDocField(dialogueSnap.ref, 'active',  true) ;
         await updateDocField(dialogueSnap.ref, 'assignedTo', assignedTo);
       }    

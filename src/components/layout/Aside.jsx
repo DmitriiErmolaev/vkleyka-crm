@@ -12,11 +12,7 @@ const Aside = ({handleMenuSelect}) => {
 
   return (
     <Sider 
-      style={{
-        backgroundColor:"#182A67", 
-        position:"relative",
-        zIndex:"100",
-      }}
+      className="aside"
     >
       <Menu 
         mode="inline" 

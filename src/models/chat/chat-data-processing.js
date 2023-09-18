@@ -24,37 +24,52 @@ export const getChatQuery = () => {
   return query(getChatsCollectionRef())
 }
 
-export const getChatsQueryForDialoguesList = (authorizedUser) => {
-  // INFO: запрос на диалоги, где assignedTo равен переданному айди или пустой строке.
-  // TODO: добавить where под категорию чата
-
+export const getChatsQueryForDialoguesList = (authorizedUser, searchFilters) => {
+  // const searchQuery = query(getChatsCollectionRef())
   if(authorizedUser.role === "operator") {
+    if(searchFilters) {
+      // return query(getChatsCollectionRef(), where('preparedInformation.assignedTo', '==', authorizedUser.id), where('UID',  ));
+    }
     return  query(getChatsCollectionRef(), where('active', '!=', false));
   }
-
-  // if(authorizedUser.role === "operator") {
-  //   return  query(getChatsCollectionRef(), where('assignedTo', 'in', [authorizedUser.id, '']));
-  // }
-  if(authorizedUser.role === "admin") {
+  if(authorizedUser.role === 'admin') {
+    if(searchFilters) {
+      return query(getChatsCollectionRef(), where('UID', '>=', searchFilters ))
+    }
     return  query(getChatsCollectionRef());
   }
-
 }
 // ищет документ в коллекции, в котором поле UID содержит искомый айди юзера.
 export const getChatQueryForApplication = (applicantId) => {
     return query(getChatsCollectionRef(), where("UID", "==", applicantId))
 }
 
-export  const sendMessage = async (text, operatorName, docRef, messageData, attachmentsArray) => {
-  const newMessage = createNewMessageObject(text, operatorName, attachmentsArray);
-  const newMessagesToUpload = [...messageData, newMessage];
-  await updateDocField(docRef, chatPaths.userChatDocumentField, newMessagesToUpload);
+export const sendMessage = async (text, authorizedUser, chatDocRef, dialogue, attachmentsArray) => {
+  const newMessage = createNewMessageObject(text, authorizedUser.name, attachmentsArray);
+  const readMessages = dialogue.messages.map(message => {
+    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+      return {...message, sendState: 1};
+    }
+    return message;
+  })
+  const newMessagesToUpload = [...readMessages, newMessage];
+  await updateDocField(chatDocRef, chatPaths.userChatDocumentField, newMessagesToUpload);
 }
 
 export const getAssignedOperator = (admins, operatorId) => {
   return operatorId ? findOperatorName(admins, operatorId) : 'Не назначен';
 }
 
-export const readUnreadMessages = async (chatDocRef, data) => {
- await updateDocField(chatDocRef, 'messages', data)
+export const readUnreadMessages = async (chatDocRef, dialogue, authorizedUser) => {
+  let notMyUnreadMessagesExist = false;
+  const readMessages = dialogue.messages.map(message => {
+    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+      notMyUnreadMessagesExist = true;
+      return {...message, sendState: 1};
+    }
+    return message;
+  })
+  if (notMyUnreadMessagesExist) {
+    await updateDocField(chatDocRef, 'messages', readMessages)
+  }
 }

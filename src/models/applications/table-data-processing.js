@@ -39,6 +39,9 @@ export const getFullCountryName = (countries, countryCode) => {
 
 export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot) => {
   return applications.reduce((accum, application) => {
+    // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
+    //   return accum // TODO: обход бага. Решить с Жангиром
+    // }
     accum.push(
       {
         key: application.documentID,
