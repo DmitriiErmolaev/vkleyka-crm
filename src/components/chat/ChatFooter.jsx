@@ -5,7 +5,7 @@ import ChatUpload from './upload/ChatUpload';
 import { ApplicationStatus, ProgramContext } from '../../models/context';
 import { sendMessage } from '../../models/chat/chat-data-processing';
 
-const ChatFooter = ({allMessages, dialogueSnap, dialogueData, applicantId, setUploadingMessageWithAttachments}) => {
+const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUploadingMessageWithAttachments}) => {
   const {authorizedUser, role} = useContext(ProgramContext);
   const {curAppStatus} = useContext(ApplicationStatus); 
   const [text, setText] = useState("");
@@ -18,7 +18,7 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogueData, applicantId, setUp
     if(!text) {
       return
     }
-    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogueData)
+    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue)
     allMessages.current.scrollTop = 9999;
     setText("")
   }
@@ -28,7 +28,7 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogueData, applicantId, setUp
     disabled = curAppStatus === 2
   }
   if (role === 'operator') {
-    disabled = dialogueData.assignedTo !== authorizedUser.id || (curAppStatus === 2 && dialogueData.assignedTo !== authorizedUser.id)
+    disabled = dialogue.assignedTo !== authorizedUser.id || (curAppStatus === 2 && dialogue.assignedTo !== authorizedUser.id)
   }
 
 
@@ -39,7 +39,7 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogueData, applicantId, setUp
         messageText={text} 
         applicantId={applicantId} 
         setUploadingMessageWithAttachments={setUploadingMessageWithAttachments} 
-        messagesData={dialogueData.messages}
+        messages={dialogue.messages}
         disabled={disabled}
       />
       <Space.Compact size="large" style={{width:"100%"}}>

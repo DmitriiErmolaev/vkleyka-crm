@@ -29,14 +29,12 @@ const ALL_COUNTRIES_REF = getAllCountriesRef();
 const ApplicationForm = ({clientId }) => {
   const {appId} = useParams();
   const applicationFormRef = useRef(null);
-  const curAppClientId = useRef(clientId);
   const { authorizedUser, role } = useContext(ProgramContext);
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
   const [allClientAppsCollSnapshot, allClientAppsCollSnapshotLoading, allClientAppsCollSnapshotError] = useCollection(getAllClientApplications(clientId, authorizedUser.id, role));
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
-  // console.log('ререндер')
+
   if ( countriesLoading || chatsLoading || allClientAppsCollSnapshotLoading) {
-    // console.log("грузится")
     return (
       <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
         <Spin size="large"/>
@@ -47,16 +45,9 @@ const ApplicationForm = ({clientId }) => {
   if(allClientAppsCollSnapshotError || countriesError || chatsError ) {
     return <Error error={allClientAppsCollSnapshotError || countriesError || chatsError }/>
   }
-  // console.log(clientId)
-  // console.log(appId)
-  // console.log(countriesDocSnapshot)
-  // console.log(allClientAppsCollSnapshot.docs.map(doc => doc.data()))
-  // console.log(chatsCollSnapshot.docs.map(doc => doc.data()))
 
   const curApplicationSnap = allClientAppsCollSnapshot.docs.find(docSnap => docSnap.id === appId);
   const currentClientApplications = allClientAppsCollSnapshot.docs;
-  // console.log(curApplicationSnap)
-  // console.log(currentClientApplications)
   const application = getAllFieldsFromDocSnapshot(curApplicationSnap)
   const countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries");
   const countryNameRu = getFullCountryName(countries, application.country_code) 
@@ -79,6 +70,7 @@ const ApplicationForm = ({clientId }) => {
               appRef={curApplicationSnap.ref}
               dialogueSnap={dialogueSnap}
               currentClientApplications={currentClientApplications}
+              questionnaire={application.questionnary?.answers}
             />
             <QuestionnaireSection 
               questionnaire={application.questionnary?.answers} 

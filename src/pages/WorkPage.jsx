@@ -9,6 +9,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { getClientsQuery } from "../models/clients/clients";
 import Error from "../components/error/Error";
 import { WorkPageContext } from "../models/context";
+import { incomeMessageNotification } from "../models/income-message/income-message";
 
 const {Content} = Layout;
 
@@ -26,7 +27,7 @@ const WorkPage = () => {
   const handleMenuSelect = ({item, key, keyPath, selectedKeys, domEvent}) => {
     if (key === "/chat") setDrawerOpen((prev) => !prev)
   }
-
+  
   const globalChatComponent = drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null
 
   return (

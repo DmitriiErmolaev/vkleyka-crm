@@ -12,7 +12,7 @@ const {Title} = Typography;
 const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   const [isEdit, setIsEdit] = useState(false);
   const [currentPanelOpened, setCurrentPanelOpened] = useState([]);
-  const [answersToUpdate, setAnswersToUpdate] = useState([]);
+  const [answersToUpdate, setAnswersToUpdate] = useState([]); // {newResponse: any, index: number,}
   const {notificationApi} = useContext(ProgramContext)
   const {curAppStatus} = useContext(ApplicationStatus);
 
@@ -88,15 +88,17 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
     <Layout style={{}}>
       <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
         <Title level={3}>Анкета</Title>
-        {questionnaire && (curAppStatus !== 2) ?  (
-          <EditOutlined 
-            className="interactive-icons"
-            style={{ fontSize: '22px', color: '#08c', marginLeft:"10px", marginRight:"10px"}}
-            onClick={() =>  setIsEdit(true)}
-          />
-        ) : (
-          null
-        )}
+        {
+          questionnaire && (curAppStatus !== 2) ?  (
+            <EditOutlined 
+              className="interactive-icons"
+              style={{ fontSize: '22px', color: '#08c', marginLeft:"10px", marginRight:"10px"}}
+              onClick={() =>  setIsEdit(true)}
+            />
+          ) : (
+            null
+          )
+        }
       </div>
       {questionnaireToRender}
       <ApplyOrCancel 

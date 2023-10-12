@@ -29,7 +29,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
     if(!chatLoading) {
       const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
       if(!Math.floor(scrollBottom) && unreadMessagesNumber) {
-        readUnreadMessages(dialogueSnap.ref, dialogueData, authorizedUser);
+        readUnreadMessages(dialogueSnap.ref, dialogue, authorizedUser);
       }
     }
     
@@ -58,15 +58,15 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
     console.log(unreadMessagesNumber)
     if(Math.floor(scrollBottom) < 5 && unreadMessagesNumber) {
       console.log("читка")
-      readUnreadMessages(dialogueSnap.ref, dialogueData, authorizedUser);
+      readUnreadMessages(dialogueSnap.ref, dialogue, authorizedUser);
     }
   }
  
   const dialogueSnap = chatCollSnapshot.docs[0]; 
-  const dialogueData = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
-  const dialogueMessages = getChatMessages(dialogueData.messages, uploadingMessageWithAttachments, authorizedUser, allMessages);
+  const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
+  const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages);
   
-  const unreadMessagesNumber = dialogueData.messages.reduce((acc, message) => {
+  const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
     if(message.sendState === 0 && message.sender !== authorizedUser.name) {
       ++acc;
     }
@@ -74,7 +74,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
   }, 0)
 
   // const operatorSelectDisabled = (role === 'admin' || dialogueData.assignedTo === authorizedUser.id) ? false : true;
-  const operatorSelectDisabled = (role === 'operator' && (dialogueData.assignedTo !== authorizedUser.id)) ? true : false;
+  const operatorSelectDisabled = (role === 'operator' && (dialogue.assignedTo !== authorizedUser.id)) ? true : false;
   return (
     <div className="chat__container" >
       <div className="chat__info">
@@ -89,13 +89,13 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
                   Отв-ный: 
                 </div>
                 <div className="operator-name">
-                  <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogueData.assignedTo, disabledProp:operatorSelectDisabled}}/>
+                  <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogue.assignedTo, disabledProp:operatorSelectDisabled}}/>
                 </div>
               </div>
             )
         }
         <ChatActiveStatus 
-          dialogueAssignedTo={dialogueData.assignedTo} 
+          dialogueAssignedTo={dialogue.assignedTo} 
           dialogueSnap={dialogueSnap}
           source={source}
           clientApplicationsSnaps={clientApplicationsSnaps}
@@ -104,7 +104,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
       <ul className="chat__messages" ref={allMessages} onScroll={scrollHandle}>
         {dialogueMessages}
       </ul>
-      <ChatFooter allMessages={allMessages} dialogueSnap={dialogueSnap} dialogueData={dialogueData} applicantId={applicantId} setUploadingMessageWithAttachments={setUploadingMessageWithAttachments}/>
+      <ChatFooter allMessages={allMessages} dialogueSnap={dialogueSnap} dialogue={dialogue} applicantId={applicantId} setUploadingMessageWithAttachments={setUploadingMessageWithAttachments}/>
     </div>
   );
 };

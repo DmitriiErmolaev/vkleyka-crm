@@ -70,7 +70,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         form = {form}
         onFinish = {handleSubmit}
         onFinishFailed = {handleSubmitFail}
-        onValuesChange= {handleValuesChange}
+        onValuesChange = {handleValuesChange}
       >
         <Form.Item
           hasFeedback="true"
@@ -118,9 +118,10 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
-          size="large" 
-          allowClear  
-          placeholder="e-mail"/>
+            size="large" 
+            allowClear  
+            placeholder="e-mail"
+          />
         </Form.Item>
         <Form.Item 
           hasFeedback="true"

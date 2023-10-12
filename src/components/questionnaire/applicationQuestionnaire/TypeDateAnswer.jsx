@@ -9,7 +9,7 @@ const TypeDateAnswer = ({questionData, questionIndex, setAnswersToUpdate, answer
     // получаем новый timestamp для firebase из милисекунд, полученных из дейтпикера
     // дейтпикер возвращает dayJsObject, из которого методом valueOf() получаем милисекунды выбранной даты.
     // Если в датапикере нажать крестик для сброса даты - то метод вернет null
-    const newTimestamp =  dayJsObject !== null ? Timestamp.fromMillis(dayJsObject.valueOf()) : {seconds: '', nanoseconds: 0} // запишем в seconds пустую строку, чтобы дата пикер отображал пустое поле с placegolder "select date"
+    const newTimestamp =  dayJsObject === null ? {seconds: '', nanoseconds: 0} : Timestamp.fromMillis(dayJsObject.valueOf()) // запишем в seconds пустую строку, чтобы дата пикер отображал пустое поле с placegolder "select date"
     const preparedChanges = prepareChanges(answersToUpdate, newTimestamp, questionIndex);
     setAnswersToUpdate(preparedChanges)
   }

@@ -8,7 +8,7 @@ import { getFileRef } from '../../models/firebase';
 import { getFileUrl } from '../../models/applications/applications';
 import { ApplicationStatus } from '../../models/context';
 
-const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, dialogueSnap, currentClientApplications}) => {
+const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, dialogueSnap, currentClientApplications, questionnaire}) => {
   const [progressPercent, setProgressPercent] = useState();
   const [progressColor, setProgressColor] = useState();
   const [flagUrl, setFlagUrl] = useState(null)
@@ -34,15 +34,13 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
     // TODO: показать скелетон или спиннер на всей карте.
   }
 
-
-  
-
   return (
     <Layout style={{marginBottom:"10px"}}>
       <Card
         headStyle={{padding:"42px 27px 0", backgroundColor:"#182A67", font:"500 20px Jost, sans-serif", color:"#fff", borderRadius:"0"}}
         bodyStyle={{padding:"44px 27px 22px", backgroundColor:"#182A67", borderRadius:"0"}}
         title={<CardTitle data={{cardTitle: cardTitle, flagUrl: flagUrl}}/>}
+        // extra={<QuestionnaireFillPercentage />} 
       >
         <Progress 
           percent = {progressPercent}

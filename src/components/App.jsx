@@ -61,8 +61,8 @@ const RoutesComponent = () => {
       <ProgramContext.Provider value = {{authorizedUser, role, admins, notificationApi:api}}>
         {contextHolder}
         <Routes>
-          <Route path="/" element={<WorkPage />}>
-            <Route index element={< AllApplications/>}/>
+          <Route path="/" element={ <WorkPage /> }>
+            <Route index element={ <AllApplications/> }/>
             <Route path="application/:clientId/:appId" element={< ApplicationContainer />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>

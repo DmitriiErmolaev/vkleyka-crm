@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 export const prepareChanges = (changedFields, newResponse, questionIndex, nestedOptions = {isNested: false}) => {
   if(changedFields.length === 0) {
     // TODO: Добавить поле об обязательности заполнения. Из newResponse наверно.
-    return [{index: questionIndex, newResponse: newResponse}]
+    return [{newResponse: newResponse, index: questionIndex,}]
   }
 
   const changedAnswerIndex = changedFields.findIndex((elem) => {
@@ -14,15 +14,15 @@ export const prepareChanges = (changedFields, newResponse, questionIndex, nested
   })
 
   if(changedAnswerIndex === -1) {
-    return [...changedFields,{index: questionIndex, newResponse: newResponse}];
+    return [...changedFields, {newResponse: newResponse, index: questionIndex,}];
   } else {
-    const copyChangedFields = [...changedFields];
+    const changedFieldsCopy = [...changedFields];
     if(nestedOptions.isNested) {
-      copyChangedFields[changedAnswerIndex].newResponse.answers[nestedOptions.nestedQuestionIndex].answer = newResponse // для вложенных текстовых ответов
+      changedFieldsCopy[changedAnswerIndex].newResponse.answers[nestedOptions.nestedQuestionIndex].answer = newResponse // для вложенных текстовых ответов
     } else {
-      copyChangedFields[changedAnswerIndex].newResponse = newResponse;
+      changedFieldsCopy[changedAnswerIndex].newResponse = newResponse;
     }
-    return copyChangedFields;
+    return changedFieldsCopy;
   }
 }
 
@@ -122,6 +122,11 @@ export const getPassportInfoQuestions = () => {
       questionTitle: "ИИН",
       propWithAnswer: "IIN",
     },
+    {
+      key:nanoid(),
+      questionTitle: 'Фото паспорта',
+      propWithAnswer: 'image_url',
+    }
   ]
 }
 

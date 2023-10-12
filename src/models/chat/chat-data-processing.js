@@ -44,9 +44,10 @@ export const getChatQueryForApplication = (applicantId) => {
     return query(getChatsCollectionRef(), where("UID", "==", applicantId))
 }
 
-export const sendMessage = async (text, authorizedUser, chatDocRef, dialogue, attachmentsArray) => {
+export const sendMessage = async (text, authorizedUser, chatDocRef, messages, attachmentsArray) => {
   const newMessage = createNewMessageObject(text, authorizedUser.name, attachmentsArray);
-  const readMessages = dialogue.messages.map(message => {
+  console.log(messages)
+  const readMessages = messages.map(message => {
     if(message.sendState === 0 && message.sender !== authorizedUser.name) {
       return {...message, sendState: 1};
     }
