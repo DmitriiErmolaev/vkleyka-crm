@@ -62,7 +62,7 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments, autho
 
     // const scrollBottom = allMessages?.current?.scrollHeight - allMessages?.current?.scrollTop - allMessages?.current?.clientHeight
   
-    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+    if(message.sendState === 0 && !unreadMessageExist && message.sender !== authorizedUser.name) {
       result.push(<div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>)
       unreadMessageExist = true;
     }
@@ -97,12 +97,12 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments, autho
 export const createNewMessageObject = (text, operatorName, attachmentsArray = [], isSttachmentsLoading) => {
   const time = isSttachmentsLoading ? Date.now() : Timestamp.now(); // для отображения загружающегося сообщения в чате на фронте или сообщения. принятого из firebase.
   return {
+    id: nanoid(),
     attachments: attachmentsArray,
     content: text,
     sendState: 0,
     sender: operatorName,
     time: time,
     type: "message",
-    // key: nanoid(),
   }
 }

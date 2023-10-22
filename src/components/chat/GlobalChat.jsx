@@ -13,8 +13,6 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
   const [dialogueWindowOpen, setDialogueWindowOpen] = useState(false);
   const [selectedDialogue, setSelectedDialogue] = useState(null);
   const bodyClientWidth = useRef(document.body.clientWidth);
-  console.log(drawerOpen)
-
 
   useEffect(() => {
     document.body.setAttribute('style', 'overflow: hidden');
@@ -26,6 +24,8 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
     setDrawerOpen(false)
     setDialogueWindowOpen(false)
   }
+
+  
   
   return (
     <>
@@ -36,24 +36,15 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
         setSelectedDialogue={setSelectedDialogue} 
         setDialogueWindowOpen={setDialogueWindowOpen}
       />
-      {/* <DialoguesListContainer 
-        drawerOpen={drawerOpen} 
-        handleDrawerClose={handleDrawerClose}  
-        selectedDialogue={selectedDialogue}
-        setSelectedDialogue={setSelectedDialogue} 
-        setDialogueWindowOpen={setDialogueWindowOpen} 
-      /> */}
-      {
-        dialogueWindowOpen ? (
-          <Dialogue 
-            setDialogueWindowOpen={setDialogueWindowOpen} 
-            selectedDialogue={selectedDialogue} 
-            setSelectedDialogue={setSelectedDialogue}
-          />
-        ) : (
-          null
-        )
-      }
+      {dialogueWindowOpen ? (
+        <Dialogue 
+          setDialogueWindowOpen={setDialogueWindowOpen} 
+          selectedDialogue={selectedDialogue} 
+          setSelectedDialogue={setSelectedDialogue}
+        />
+      ) : (
+        null
+      )}
     </>
   );
 };

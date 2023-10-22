@@ -23,6 +23,16 @@ const notifications = {
       description: 'Произошла ошибка при создании нового аккаунта!',
     },
   },
+  updateAdmin: {
+    success: {
+      title: "Операция выполнена успешно!",
+      description: "Данные профиля успешно изменены!",
+    }, 
+    error: {
+      title: 'Произошла ошибка!',
+      description: 'Произошла ошибка изменении данных профиля!',
+    },
+  },
   uploadFile:{
     success: {
       title: "Операция выполнена успешно!",

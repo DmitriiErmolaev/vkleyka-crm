@@ -6,7 +6,7 @@ import {roleBasedContent} from "../../models/role-based-rules.js";
 import "../../assets/aside.scss"
 const {Sider} = Layout;
 
-const Aside = ({handleMenuSelect}) => {
+const Aside = ({handleMenuSelect, totalUnreadMessages}) => {
   const { role } = useContext(ProgramContext)
   const location = useLocation()
 
@@ -18,7 +18,7 @@ const Aside = ({handleMenuSelect}) => {
         mode="inline" 
         theme="dark" 
         selectedKeys={[location.pathname]} 
-        items={roleBasedContent[role].siderMenuItems} 
+        items={roleBasedContent[role].getSiderMenuItems(totalUnreadMessages)} 
         style={{backgroundColor:"transparent", color:"white", marginTop:"50px"}} 
         onSelect={handleMenuSelect}
       />

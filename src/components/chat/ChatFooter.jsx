@@ -2,13 +2,15 @@ import React,{useState, useContext} from 'react';
 import { Space, Input, Button } from 'antd';
 import {SendOutlined } from "@ant-design/icons"
 import ChatUpload from './upload/ChatUpload';
-import { ApplicationStatus, ProgramContext } from '../../models/context';
+import { ApplicationStatus, ProgramContext, WorkPageContext } from '../../models/context';
 import { sendMessage } from '../../models/chat/chat-data-processing';
 
 const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUploadingMessageWithAttachments}) => {
   const {authorizedUser, role} = useContext(ProgramContext);
   const {curAppStatus} = useContext(ApplicationStatus); 
   const [text, setText] = useState("");
+  const { setUnreadMessagesToNotify } = useContext(WorkPageContext); 
+
 
   const handleChange = (e)=> {
     setText(e.target.value);
@@ -18,7 +20,7 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUpload
     if(!text) {
       return
     }
-    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue)
+    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue, setUnreadMessagesToNotify)
     allMessages.current.scrollTop = 9999;
     setText("")
   }

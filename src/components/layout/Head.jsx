@@ -2,6 +2,7 @@ import React from "react";
 import {Layout, Menu, Row, Col, Button} from "antd";
 import {signOut} from "firebase/auth";
 import {auth} from "../../models/firebase";
+import { Link } from "react-router-dom";
 const {Header} = Layout;
 
 const headerStyle = 
@@ -18,7 +19,7 @@ const headerStyle =
 const topMenuItems = 
 [
   {key:"notifications", label:(<a href="#">Уведомления</a>),},
-  {key:"profile", label:(<a href="#">Профиль</a>),},
+  {key:"profile", label:(<Link to='/user-profile'>Профиль</Link>),},
 ]
 
 const Head = ()=> {

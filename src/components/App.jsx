@@ -17,6 +17,7 @@ import { getAdminsRef } from "../models/operator/operators";
 import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
 import { getAuthorizedOperator } from "../models/operator/operators-data-processing";
+import Profile from "./profile/Profile";
 
 const RoutesComponent = () => {
   const [api, contextHolder] = notification.useNotification();
@@ -63,6 +64,7 @@ const RoutesComponent = () => {
         <Routes>
           <Route path="/" element={ <WorkPage /> }>
             <Route index element={ <AllApplications/> }/>
+            <Route path="user-profile" element={< Profile />}/>
             <Route path="application/:clientId/:appId" element={< ApplicationContainer />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
@@ -79,6 +81,7 @@ const RoutesComponent = () => {
           <Route path="/" element={<WorkPage />}>
             <Route index element={< AllApplications />}/>
             <Route path="users-manager" element={< Operators/>}/>
+            <Route path="user-profile" element={< Profile />}/>
             <Route path="application/:clientId/:appId" element={< ApplicationContainer />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>

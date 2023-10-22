@@ -92,8 +92,18 @@ const viser_object = {
         }
         return acc;
       }, [])
-      
-      return <SelectComponent collectionType={"operators"} data={{assignedTo, dialogueSnap: record.dialogueSnap.ref, clientApplicationsSnaps }}/> 
+      const operatorSelectDisabled = record.status
+      return (
+        <SelectComponent 
+          collectionType={"operators"} 
+          data={{
+            assignedTo, 
+            dialogueSnap: record.dialogueSnap, 
+            clientApplicationsSnaps,
+            disabledProp: record.status === 2 ? true : false,
+          }}
+        /> 
+      )
     }
   }
 }

@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef, useContext, useLayoutEffect} from 'r
 import {useCollection} from "react-firebase-hooks/firestore";
 import { Spin } from "antd";
 import { getAllFieldsFromDocSnapshot } from '../../models/data-processing.js';
-import { ApplicationStatus, ProgramContext} from '../../models/context.js';
+import { ApplicationStatus, ProgramContext, WorkPageContext} from '../../models/context.js';
 import { getChatMessages } from '../../models/chat/message.js';
 import { getChatQueryForApplication, readUnreadMessages } from '../../models/chat/chat-data-processing.js';
 import { getCollectionFirstDocRef } from '../../utils.js';
@@ -18,6 +18,8 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
   const [uploadingMessageWithAttachments, setUploadingMessageWithAttachments] = useState([]);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot. 
   const [chatCollSnapshot, chatLoading, chatError] = useCollection(getChatQueryForApplication(applicantId));
+  const { setUnreadMessagesToNotify } = useContext(WorkPageContext); 
+
 
   useLayoutEffect(()=> {
     if(!chatLoading){
@@ -27,13 +29,22 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
 
   useLayoutEffect(() => {
     if(!chatLoading) {
+      //TODO: рефакторить компонент, т.к. функции дублируются тут и перед рендерои. Спустить эффект вниз.. Вычисления сделать выше.
+      const dialogueSnap = chatCollSnapshot.docs[0]; 
+      const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
+      const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
+        if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+          ++acc;
+        }
+        return acc;
+      }, 0)
       const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
       if(!Math.floor(scrollBottom) && unreadMessagesNumber) {
-        readUnreadMessages(dialogueSnap.ref, dialogue, authorizedUser);
+        readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
       }
     }
     
-  },)
+  },[chatCollSnapshot, chatLoading, authorizedUser, setUnreadMessagesToNotify])
 
   if(chatLoading){
     return (
@@ -55,10 +66,10 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
 
   const scrollHandle = (e) => {
     const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
-    console.log(unreadMessagesNumber)
+    // console.log(unreadMessagesNumber)
     if(Math.floor(scrollBottom) < 5 && unreadMessagesNumber) {
       console.log("читка")
-      readUnreadMessages(dialogueSnap.ref, dialogue, authorizedUser);
+      readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
     }
   }
  

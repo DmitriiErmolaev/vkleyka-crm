@@ -6,7 +6,7 @@ import { getFileRef } from '../../../models/firebase';
 import {createNewMessageObject} from '../../../models/chat/message'
 import { prepareAttachmentsInfo, addPathToDownload } from '../../../models/chat/attachment';
 import SelectedAttachmentsPopup from './SelectedAttachmentsPopup';
-import { ApplicationStatus, ChatAttachmentsContext, ProgramContext } from '../../../models/context';
+import { ApplicationStatus, ChatAttachmentsContext, ProgramContext, WorkPageContext } from '../../../models/context';
 import { sendMessage, chatPaths } from '../../../models/chat/chat-data-processing';
 import { getFileExtension } from '../../../utils';
 
@@ -15,7 +15,7 @@ const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessage
   const [ modalIsOpened, setModalIsOpened ] = useState(false)
   const [ attachmentText, setAttachmentText] = useState(messageText)
   const { authorizedUser } = useContext(ProgramContext)
-  const {curAppStatus} = useContext(ApplicationStatus); 
+  const { curAppStatus } = useContext(ApplicationStatus);
 
   useEffect(()=>{
     setAttachmentText(messageText)
@@ -63,7 +63,7 @@ const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessage
     })
 
     Promise.all(promises).then(() => {
-      sendMessage(attachmentText, authorizedUser, dialogueSnap.ref, messages, uploadingAttachments); // ошибка
+      sendMessage(attachmentText, authorizedUser, dialogueSnap.ref, messages, uploadingAttachments);
     }).finally(() => {
       setUploadingMessageWithAttachments([]);
     })

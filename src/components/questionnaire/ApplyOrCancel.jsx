@@ -1,6 +1,6 @@
 import React from 'react';
 import {Layout, Space, Button} from "antd";
-const ApplyOrCancel = ({isEdit, applyChanges, cancelChanges }) => {
+const ApplyOrCancel = ({isEdit, applyChanges, cancelChanges, loading }) => {
   // TODO: приклеить к низу экрана кнопки.
   return isEdit ? (
     <Layout
@@ -9,7 +9,7 @@ const ApplyOrCancel = ({isEdit, applyChanges, cancelChanges }) => {
       }}
     >
       <Space size="large">
-        <Button type="primary" onClick={applyChanges}>
+        <Button type="primary" onClick={applyChanges} loading={loading} >
           Сохранить
         </Button>
         <Button onClick={cancelChanges}>

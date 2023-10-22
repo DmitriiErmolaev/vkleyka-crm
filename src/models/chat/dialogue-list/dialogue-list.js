@@ -26,19 +26,31 @@ export const dialogListOperations = {
     }
   }
 }
-
+const getOrderedDialoguesSnapshots = (chatsCollSnapshot) => {
+  return chatsCollSnapshot.docs.sort((a, b) => {
+    const firstDialogueLastMessageTime = a.get('messages')[a.get('messages').length - 1].time.nanoseconds;
+    const secondDialogueLastMessageTime = b.get('messages')[b.get('messages').length - 1].time.nanoseconds;
+    if (firstDialogueLastMessageTime > secondDialogueLastMessageTime) {
+      return 1;
+    } if (firstDialogueLastMessageTime < secondDialogueLastMessageTime) {
+      return -1;
+    } else {
+      return 0;
+    }
+  })
+}
 export function getDialogueList(authorizedUser, chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
-  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, chatsCollSnapshot,  clients, appsCollSnapshot, selectedDialogue, functions);
-  if(authorizedUser.role === 'admin') return getAdminDialogueData(chatsCollSnapshot, clients,  appsCollSnapshot, selectedDialogue, functions);
+  const orderedDialoguesSnapshots = getOrderedDialoguesSnapshots(chatsCollSnapshot)
+  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots,  clients, appsCollSnapshot, selectedDialogue, functions);
+  if(authorizedUser.role === 'admin') return getAdminDialogueData(orderedDialoguesSnapshots, clients,  appsCollSnapshot, selectedDialogue, functions);
 }
 
-function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
+function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
-
-  const dialoguesListGroups = chatsCollSnapshot.docs.reduce((acc, dialogueSnap) => {
+  const dialoguesListGroups = orderedDialoguesSnapshots.reduce((acc, dialogueSnap) => {
     const dialogue = dialogueSnap.data();
-
+  
     const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
       if(message.sendState === 0 && message.sender !== authorizedUser.name) {
         ++acc;
@@ -107,9 +119,9 @@ function getOperatorDialogueData(authorizedUser, chatsCollSnapshot, clients, app
   return dialoguesList;
 }
 
-function getAdminDialogueData(chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
+function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
-  const dialoguesList = chatsCollSnapshot.docs.map(dialogueSnap => {
+  const dialoguesList = orderedDialoguesSnapshots.map(dialogueSnap => {
     // if (dialogueSnap.get('UID') === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') { // TODO: обход бага. Решить с Жангиром
     //   return false;
     // }

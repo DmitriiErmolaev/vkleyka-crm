@@ -50,7 +50,7 @@ export const findOperatorName = (admins, userID) => {
 export const createNewUser = async (values, admins) => {
   try {
     const newUser = await createNewAuth(values.email, values.pass);
-    createDbOperatorObject(admins, ADMINS_REF, values, newUser )
+    createDbOperatorObject(admins, values, newUser )
   } catch(e) {
     console.log(e)
     throw e
@@ -76,16 +76,21 @@ const createNewAuth = (email, pass) => {
   })
 }
 
-const createDbOperatorObject = async (admins, ref, newOperatorFormValues, newUser ) => {
+const createDbOperatorObject = async (admins, newOperatorFormValues, newUser ) => {
   const updatedAdmins = [...admins, {
     id: newUser.uid,
     name: `${newOperatorFormValues.name} ${newOperatorFormValues.surname}`,
     role: GLOBAL_ROLES.operator,
     phoneNumber: newOperatorFormValues.tel,
     email: newUser.email,
-    appsNew: 0,
-    appsInProgress: 0,
-    appsFinished: 0,
   }]
-  await updateDoc(ref,{admins: updatedAdmins } );
+  await updateDoc(ADMINS_REF, {admins: updatedAdmins } );
+}
+
+export const updateOperator = async (updatedAdmins) => {
+  try {
+    await updateDoc(ADMINS_REF, {admins: updatedAdmins});
+  } catch (e) {
+    throw e;
+  }
 }
