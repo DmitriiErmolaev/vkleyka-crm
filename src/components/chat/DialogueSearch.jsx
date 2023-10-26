@@ -1,25 +1,21 @@
-import React, {useState} from 'react';
+import React, { useContext } from 'react';
 import { Input } from 'antd';
+import { WorkPageContext } from '../../models/context';
 const { Search } = Input;
 
-const DialogueSearch = ({setSearchFilters}) => {
-  const [searchText, setSearchText] = useState('');
+const DialogueSearch = () => {
+  const { searchFilter, setSearchFilters } = useContext(WorkPageContext);
 
-  const handleSearchChange = (e) => {
-    setSearchText(e.target.value);
+  const handleValueChange = (e) => {
     setSearchFilters(e.target.value);
-  }
-  const handleSearch = (value, event) => {
-    //NOTE: аргументом передается  value, т.е. свой стейт можно теоретически убрать
-  }
-
+ }
+ 
   return (
     <Search
       allowClear
       size={"large"}
-      // onSearch={}
-      onChange={handleSearchChange}
-      value={searchText}
+      onChange={handleValueChange}
+      value={searchFilter}
       style={{
         width: "100%",
       }}

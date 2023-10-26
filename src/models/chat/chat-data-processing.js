@@ -24,20 +24,35 @@ export const getChatQuery = () => {
   return query(getChatsCollectionRef())
 }
 
-export const getChatsQueryForDialoguesList = (authorizedUser, searchFilters) => {
-  // const searchQuery = query(getChatsCollectionRef())
-  if(authorizedUser.role === "operator") {
-    if(searchFilters) {
-      // return query(getChatsCollectionRef(), where('preparedInformation.assignedTo', '==', authorizedUser.id), where('UID',  ));
-    }
-    return  query(getChatsCollectionRef(), where('active', '!=', false), where('assignedTo', 'in', [authorizedUser.id, '']));
+export const getChatsQueryForDialoguesList = (authorizedUser, searchFilter) => {
+  console.log(searchFilter)
+  console.log(typeof searchFilter)
+  const constraints = {
+    operator: [
+      where('active', '==', true),
+      where('assignedTo', 'in', [authorizedUser.id, '']),
+    ],
+    admin: [],
   }
-  if(authorizedUser.role === 'admin') {
-    if(searchFilters) {
-      return query(getChatsCollectionRef(), where('UID', '>=', searchFilters ))
-    }
-    return  query(getChatsCollectionRef());
+  if (searchFilter) {
+    constraints[authorizedUser.role].push(where('UID', '>=', searchFilter))
+    constraints[authorizedUser.role].push(where('UID', '<=', searchFilter + '\uf8ff'))
+    // constraints[authorizedUser.role].push(where('phoneNumber', '>=', searchFilter))
+    // constraints[authorizedUser.role].push(where('phoneNumber', '<=', searchFilter + '\uf8ff'))
   }
+  return  query(getChatsCollectionRef(), ...constraints[authorizedUser.role]);
+   
+  
+  // if(authorizedUser.role === "operator") {
+    
+  //   return  query(getChatsCollectionRef(), where('active', '!=', false), where('assignedTo', 'in', [authorizedUser.id, '']));
+  // }
+  // if(authorizedUser.role === 'admin') {
+  //   if(searchFilter) {
+  //     return query(getChatsCollectionRef(), where('UID', '>=', searchFilter ))
+  //   }
+  //   return  query(getChatsCollectionRef());
+  // }
 }
 // ищет документ в коллекции, в котором поле UID содержит искомый айди юзера.
 export const getChatQueryForApplication = (applicantId) => {

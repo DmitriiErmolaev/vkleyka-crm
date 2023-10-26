@@ -1,20 +1,11 @@
 import React from "react";
-import {Layout, Menu, Row, Col, Button} from "antd";
-import {signOut} from "firebase/auth";
-import {auth} from "../../models/firebase";
+import { Layout, Menu, Button } from "antd";
+import { signOut } from "firebase/auth";
+import { auth } from "../../models/firebase";
 import { Link } from "react-router-dom";
+import HeadSearch from "./HeadSearch";
+import '../../assets/header/head.scss';
 const {Header} = Layout;
-
-const headerStyle = 
-{
-  position:'fixed',
-  top:'0',
-  left:'0',
-  zIndex:'100',
-  width:'100%',
-  display:"flex",
-  backgroundColor:"#fff",
-}
 
 const topMenuItems = 
 [
@@ -23,27 +14,29 @@ const topMenuItems =
 ]
 
 const Head = ()=> {
+
   return (
     <Header 
-      style={headerStyle} 
+      className='head'
     >
-      <div className="logo" style={{width:"150px", height:"100%"}}></div>
-      <Row justify="end" style={{width:"calc(100% - 150px)"}}>
-        <Col span={8} >
+      <div className="head__logo" ></div>
+      <div className='head__content'>
+        <div className='apps-search-bar__container'>
+          <HeadSearch />
+        </div>
+        <div>
           <Menu 
             theme="light" 
             style={{
-              justifyContent:"center", 
+              justifyContent: "center", 
               marginLeft: "auto"
             }} 
             items={topMenuItems} 
             mode="horizontal"
           />
-        </Col>
-        <Col span={1} style={{}}>
-          <Button type="primary" onClick={() => signOut(auth)}>Выйти</Button>
-        </Col>
-      </Row>
+        </div>
+        <Button type="primary" onClick={() => signOut(auth)}>Выйти</Button>
+      </div>
     </Header>
   )
 }

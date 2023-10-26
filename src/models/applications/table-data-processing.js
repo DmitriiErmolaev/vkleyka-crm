@@ -60,14 +60,19 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
   }, [])
 }
 
-export const getFilters = (country, status, column, authorizedUser) => {
+export const getFilters = (country, status, column, authorizedUser, appsSearchFilter) => {
   let filters = [
-    where('paymentSuccessful', '==', true),
+    where('paymentSuccessful', '==', true), 
+    orderBy("UID"),
     orderBy("createdAt", "desc"),
   ];
-  
+
   if (authorizedUser.role === 'operator') {
     filters.push(where("preparedInformation.assignedTo", "==", authorizedUser.id));
+  }
+  if (appsSearchFilter) {
+    filters.push(where('UID', '>=', appsSearchFilter))
+    filters.push(where('UID', '<=', appsSearchFilter + '\uf8ff'))
   }
 
   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/
@@ -83,5 +88,6 @@ export const getFilters = (country, status, column, authorizedUser) => {
   if((status && status !== "allStatuses") || status === 0) {
     filters.push(where("preparedInformation.preparationStatus", "==", status))
   }
+  
   return filters;
 }

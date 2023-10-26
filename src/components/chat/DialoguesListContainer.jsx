@@ -15,15 +15,10 @@ import '../../assets/loading.scss';
 
 const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen}) => {
   const dialoguesListContainerRef = useRef(null)
-  const [searchFilters, setSearchFilters ] = useState('');
-  const {authorizedUser, role} = useContext(ProgramContext)
-  const {chatsCollSnapshot, chatsLoading} = useContext(WorkPageContext)
-  // const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilters));
-
-  // if (chatsError) {
-  //   return <Error error={chatsError}/>
-  // }
-
+  const [ searchFilters, setSearchFilters ] = useState('');
+  const { authorizedUser, role } = useContext(ProgramContext);
+  const { chatsCollSnapshot, chatsLoading } = useContext(WorkPageContext);
+  
   return (
     <div
       ref={dialoguesListContainerRef}
@@ -33,11 +28,11 @@ const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue
         bodyStyle={{padding:"5px 0 10px 0"}}
         rootClassName="dialogues-list"
         placement="left"
-        title={<DialogueSearch setSearchFilters={setSearchFilters}/>}
+        title={<DialogueSearch setSearchFilters={setSearchFilters} />}
         open={drawerOpen}
         mask={false}
         onClose={handleDrawerClose}
-        getContainer={false}  
+        getContainer={false}
         zIndex={100}
       >
         {chatsLoading ? (

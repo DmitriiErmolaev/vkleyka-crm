@@ -1,0 +1,33 @@
+.head {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  padding: 0;
+  background-color: #fff;
+  
+  .head__logo {
+    width: 200px; 
+    height: 100%;
+  }
+
+  .head__content {
+    width:calc(100% - 200px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  
+    .apps-search-bar__container {
+      display: flex;
+      align-items: center;
+      width: 47%;
+    }
+  }
+}
+
+
+
+
+

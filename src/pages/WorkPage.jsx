@@ -17,12 +17,15 @@ const {Content} = Layout;
 const WorkPage = () => {
   const [ drawerOpen, setDrawerOpen ] = useState(false);
   const { authorizedUser, role } = useContext(ProgramContext);
-  const [ searchFilters, setSearchFilters ] = useState('');
+  const [ searchFilter, setSearchFilters ] = useState('');
+  const [ appsSearchFilter, setAppsSearchFilter ] = useState('');
   const contentRef = useRef(null);
   const [ notificationsWillBeNotShown, setNotificationsWillBeNotShown ] = useState(null);
   const [ clientsCollSnapshot, clientsLoading, clientsError ] = useCollection(getClientsQuery());
-  const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilters));
+  const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilter));
 
+  console.log(appsSearchFilter)
+  
   useEffect(() => {
     if(!chatsLoading) {
       const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
@@ -43,8 +46,8 @@ const WorkPage = () => {
     }
   },[chatsCollSnapshot, chatsLoading ])
 
-  if (clientsLoading || chatsLoading) {
-    return 
+  if(clientsLoading) {
+    return
   }
 
   if (clientsError || chatsError) {
@@ -56,13 +59,13 @@ const WorkPage = () => {
   }
   
   const globalChatComponent = drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null
-  const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
+  const dialoguesData = chatsCollSnapshot?.docs.map(docSnap => {
     return docSnap.data();
   })
 
   return (
-    <WorkPageContext.Provider value={{clientsCollSnapshot, chatsCollSnapshot, chatsLoading }}>
-        {notificationsWillBeNotShown && <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/>}
+    <WorkPageContext.Provider value={{clientsCollSnapshot, chatsCollSnapshot, chatsLoading, searchFilter, setSearchFilters, appsSearchFilter, setAppsSearchFilter }}>
+        {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
       <Layout className="workpage">
         <Head />
         <Layout className="main" hasSider>

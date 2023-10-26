@@ -11,8 +11,6 @@ export const getDialogueListFilters = (searchStr) => {
   
 // запрос на получение всех заявок клиентов. 
 export const getApplicationsBySetOfApplicantIDs = (chatsCollSnapshot, authorizedUserId, role) => {
- 
-
   const downloadedChatsApplicantIDs = chatsCollSnapshot.docs.map(docSnap => {
     return docSnap.get('UID');
   })
@@ -32,6 +30,3 @@ export const getApplicationsBySetOfApplicantIDs = (chatsCollSnapshot, authorized
 
   return query(getAppsCollRef(), ...constraints)
 }
-
-
-

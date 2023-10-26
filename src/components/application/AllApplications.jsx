@@ -8,7 +8,7 @@ import { getFilters, getDataForTable} from "../../models/applications/table-data
 import { findAuthorizedOperatorName } from "../../models/operator/operators-data-processing";
 import SelectComponent from "../selectors/SelectComponent";
 import Error from "../error/Error";
-import {ProgramContext} from "../../models/context.js";
+import {ProgramContext, WorkPageContext} from "../../models/context.js";
 import { getClientsQuery } from "../../models/clients/clients";
 import {getAppsCollRef} from "../../models/applications/applications"
 import {getAllCountriesRef} from "../../models/countries/countries"
@@ -23,6 +23,7 @@ const APPS_REF = getAppsCollRef();
 
 const AllApplications = () => {
   const {role, authorizedUser} = useContext(ProgramContext);
+  const {appsSearchFilter} = useContext(WorkPageContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
   const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
   const [usersCollSnapshot, usersLoading, usersError] = useCollection(CLIENTS_QUERY);
@@ -32,8 +33,8 @@ const AllApplications = () => {
   // const [curTablePage, setCurTablePage] = useState();  // NOTE: Для пагинации
   // const [firstApplicationRef, setFirstApplicationRef] = useState();  // NOTE: Для пагинации
   // const [lastApplicationRef, setLastApplicationRef] = useState();  // NOTE: Для пагинации
-
-  const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedUser);
+  console.log(appsSearchFilter)
+  const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedUser, appsSearchFilter);
   /* TODO: для пагинации: запрос на 10 документов коллекции
   * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));  // NOTE: Для пагинации
   */
