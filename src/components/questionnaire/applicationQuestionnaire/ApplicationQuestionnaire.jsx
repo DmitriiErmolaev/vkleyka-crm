@@ -44,7 +44,7 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   
   let questionnaireToRender = null;
 
-  if (!questionnaire) {
+  if (!questionnaire || questionnaire.length === 0) {
     questionnaireToRender = (
       <Empty  
         description={<span>Анкета пока не заполнена...</span>}
