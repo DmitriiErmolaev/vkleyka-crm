@@ -111,6 +111,7 @@ const UploadSection = ({uploadedDocs}) => {
   }
   
   const uploadPermanentlyDisabled = curAppStatus === 2;
+  
   return (
     <div className="uploaded-documents">
       <Typography>

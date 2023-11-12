@@ -18,6 +18,7 @@ import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
 import { getAuthorizedOperator } from "../models/operator/operators-data-processing";
 import Profile from "./profile/Profile";
+import NotificationsBoard from "./notifications/NotificationsBoard";
 
 const RoutesComponent = () => {
   const [api, contextHolder] = notification.useNotification();
@@ -40,13 +41,12 @@ const RoutesComponent = () => {
   if(!user) {
     return (
       <Routes>
-        <Route path="login" element={<EntryPage />}>
-          <Route index element={<AuthForm/>}/>
-        </Route>
+        <Route path="login" element={<EntryPage />} />
         <Route path="*" element={<Navigate to="login" replace={true}/>} />
       </Routes>
     )
   }
+  
   let authorizedUser = null
   let role = null;
   let admins = [];
@@ -59,12 +59,13 @@ const RoutesComponent = () => {
 
   if(role === GLOBAL_ROLES.operator) {
     return  (
-      <ProgramContext.Provider value = {{authorizedUser, role, admins, notificationApi:api}}>
+      <ProgramContext.Provider value = {{user, authorizedUser, role, admins, notificationApi:api}}>
         {contextHolder}
         <Routes>
           <Route path="/" element={ <WorkPage /> }>
             <Route index element={ <AllApplications/> }/>
             <Route path="user-profile" element={< Profile />}/>
+            <Route path="notifications" element={< NotificationsBoard />}/>
             <Route path="application/:clientId/:appId" element={< ApplicationContainer />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
@@ -72,16 +73,17 @@ const RoutesComponent = () => {
       </ProgramContext.Provider>
     )
   }
-    
+
   if(role === GLOBAL_ROLES.admin) {
     return  (
-      <ProgramContext.Provider value = {{authorizedUser, role, admins, notificationApi:api}}>
+      <ProgramContext.Provider value = {{user, authorizedUser, role, admins, notificationApi:api}}>
         {contextHolder}
         <Routes>
           <Route path="/" element={<WorkPage />}>
             <Route index element={< AllApplications />}/>
             <Route path="users-manager" element={< Operators/>}/>
             <Route path="user-profile" element={< Profile />}/>
+            <Route path="notifications" element={< NotificationsBoard />}/>
             <Route path="application/:clientId/:appId" element={< ApplicationContainer />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
@@ -91,4 +93,4 @@ const RoutesComponent = () => {
   }
 }
 
-export default RoutesComponent
+export default RoutesComponent;

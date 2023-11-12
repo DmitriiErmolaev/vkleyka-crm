@@ -1,8 +1,8 @@
 import React, {useState, useRef, useEffect, useContext} from "react";
-import {Layout} from "antd";
+import {ConfigProvider, Layout} from "antd";
 import {Outlet} from "react-router-dom";
-import Head from "../components/layout/Head";
-import Aside from "../components/layout/Aside";
+import Head from "../components/layout/head/Head";
+import Aside from "../components/layout/sider/Aside";
 import GlobalChat from "../components/chat/GlobalChat";
 import '../assets/workpage.scss';
 import '../assets/notification/notification.scss';
@@ -24,8 +24,6 @@ const WorkPage = () => {
   const [ clientsCollSnapshot, clientsLoading, clientsError ] = useCollection(getClientsQuery());
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilter));
 
-  console.log(appsSearchFilter)
-  
   useEffect(() => {
     if(!chatsLoading) {
       const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
@@ -55,30 +53,40 @@ const WorkPage = () => {
   }
 
   const handleMenuSelect = ({item, key, keyPath, selectedKeys, domEvent}) => {
-    if (key === "/chat") setDrawerOpen((prev) => !prev)
+    if (key === "/chat") {
+      setDrawerOpen((prev) => !prev)
+    }
   }
-  
+
   const globalChatComponent = drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null
   const dialoguesData = chatsCollSnapshot?.docs.map(docSnap => {
     return docSnap.data();
   })
 
   return (
-    <WorkPageContext.Provider value={{clientsCollSnapshot, chatsCollSnapshot, chatsLoading, searchFilter, setSearchFilters, appsSearchFilter, setAppsSearchFilter }}>
-        {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
-      <Layout className="workpage">
-        <Head />
-        <Layout className="main" hasSider>
-          <Aside handleMenuSelect={handleMenuSelect} totalUnreadMessages={notificationsWillBeNotShown?.length}/>
-          <Content 
-            ref={contentRef}
-            className="content"
-          >
-            {globalChatComponent}
-            <Outlet />
-          </Content>
+    <WorkPageContext.Provider value={{clientsCollSnapshot, chatsCollSnapshot, chatsLoading, searchFilter, setSearchFilters, appsSearchFilter, setAppsSearchFilter, unreadMessagesArray: notificationsWillBeNotShown }}>
+      {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
+      <ConfigProvider
+        theme={{
+          token: {
+            colorBgLayout: '#F8F8F8',
+          },
+        }}
+      >
+        <Layout className="workpage">
+          <Head />
+          <Layout className="main" hasSider>
+            <Aside handleMenuSelect={handleMenuSelect} drawerOpen={drawerOpen}/>
+            <Content
+              ref={contentRef}
+              className="content"
+            >
+              {globalChatComponent}
+              <Outlet />
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
+      </ConfigProvider>
     </WorkPageContext.Provider>
   )
 }

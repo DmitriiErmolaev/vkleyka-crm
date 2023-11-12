@@ -18,13 +18,13 @@ const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue
   const [ searchFilters, setSearchFilters ] = useState('');
   const { authorizedUser, role } = useContext(ProgramContext);
   const { chatsCollSnapshot, chatsLoading } = useContext(WorkPageContext);
-  
+
   return (
     <div
       ref={dialoguesListContainerRef}
       style={{position:'relative'}}
     >
-      <Drawer 
+      <Drawer
         bodyStyle={{padding:"5px 0 10px 0"}}
         rootClassName="dialogues-list"
         placement="left"
@@ -45,12 +45,12 @@ const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue
             </p>
           </div>
         ) : (
-          <DialoguesList 
-            chatsCollSnapshot={chatsCollSnapshot} 
-            selectedDialogue={selectedDialogue} 
-            setSelectedDialogue={setSelectedDialogue} 
-            setDialogueWindowOpen={setDialogueWindowOpen} 
-            handleDrawerClose={handleDrawerClose} 
+          <DialoguesList
+            chatsCollSnapshot={chatsCollSnapshot}
+            selectedDialogue={selectedDialogue}
+            setSelectedDialogue={setSelectedDialogue}
+            setDialogueWindowOpen={setDialogueWindowOpen}
+            handleDrawerClose={handleDrawerClose}
             dialoguesListContainerRef={dialoguesListContainerRef}
           />
         )}

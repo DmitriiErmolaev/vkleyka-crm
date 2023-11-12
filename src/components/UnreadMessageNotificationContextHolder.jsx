@@ -7,10 +7,9 @@ import { WorkPageContext } from '../models/context';
 const UnreadMessageNotificationContextHolder = ({dialoguesData, notificationsWillBeNotShown}) => {
   const { clientsCollSnapshot } = useContext(WorkPageContext)
   const [api, contextHolder] = notification.useNotification(notificationGlobConfig);
-  console.log("UnreadMessageNotificationContextHolder")
 
   useEffect(() => {
-    
+
     // if(dialoguesData) {
       // показывает непрочитанное сообщение, кроме тех, которые уже были показаны, либо были получены оффлайн. Они записаны в notificationsWillBeNotShown
       dialoguesData.forEach(dialogue => {

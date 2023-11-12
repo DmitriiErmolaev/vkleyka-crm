@@ -1,44 +1,43 @@
 import React, { useContext } from 'react';
 import { ProgramContext } from '../../models/context';
-import { Avatar, Card, ConfigProvider } from 'antd';
+import { Avatar, Button, Card, ConfigProvider, theme } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import '../../assets/profile/profile.scss'
 import ProfileForm from './ProfileForm';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../models/firebase';
+const { useToken } = theme;
 const { Meta } = Card;
 
 
 const Profile = () => {
   const { authorizedUser } = useContext(ProgramContext)
-
+  const { token } = useToken();
+  
   return (
     <div className='profile'>
       <div className='profile__container'>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorBgContainer: '#f8f8f8',
-            },
+        <Card
+          bodyStyle={{
+            padding:'0',
+            backgroundColor: token.colorBgLayout,
           }}
+          bordered={false}
+          style={{boxShadow:'none'}}
         >
-          <Card 
-            bodyStyle={{padding:'0', boxShadow:'none'}}
-            bordered={false}
-            style={{boxShadow:'none'}}
-          >
-            <Meta 
-              avatar={
-                <Avatar 
-                  shape="circle" 
-                  icon={<UserOutlined />} 
-                  alt="avatar" 
-                  size={50}
-                />
-              }
-              title={`ID пользователя: ${authorizedUser.id}`}
-              description={<ProfileForm />}
-            />
-          </Card>
-        </ConfigProvider>
+          <Meta
+            avatar={
+              <Avatar
+                shape="circle"
+                icon={<UserOutlined />}
+                alt="avatar"
+                size={50}
+              />
+            }
+            title={`ID пользователя: ${authorizedUser.id}`}
+            description={<ProfileForm />}
+          />
+        </Card>
       </div>
     </div>
   );

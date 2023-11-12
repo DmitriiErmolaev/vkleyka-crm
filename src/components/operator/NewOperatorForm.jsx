@@ -6,10 +6,10 @@ import { ProgramContext} from '../../models/context.js';
 import { AuthErrorCodes } from 'firebase/auth';
 import { openNotification } from '../../models/notification/notification.js';
 // const initialFeedbackStatus = {
-//   name: "validating", 
+//   name: "validating",
 //   surname: "validating",
 //   tel: "validating",           // для управляемой сигнализации валидации
-//   phone: "validating", 
+//   phone: "validating",
 //   email: "validating",
 //   pass: "validating",
 //   confirm: "validating",
@@ -52,7 +52,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
       }
       setErrorMessageHidden(false)
       setButtonLoadingState(false);
-    } 
+    }
   }
 
   const handleSubmitFail = (_values, _errorFields, _outOfDate) => {
@@ -61,9 +61,9 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
   }
 
   const handleValuesChange = () => {
-    setErrorMessageHidden(true)  
+    setErrorMessageHidden(true)
   }
-  
+
   return (
     <Layout style={{margin:"15px", backgroundColor:"inherit"}}>
       <Form
@@ -71,6 +71,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         onFinish = {handleSubmit}
         onFinishFailed = {handleSubmitFail}
         onValuesChange = {handleValuesChange}
+        autoComplete="off"
       >
         <Form.Item
           hasFeedback="true"
@@ -79,7 +80,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
-            size="large" 
+            size="large"
             placeholder="Имя"
             allowClear="true"
           >

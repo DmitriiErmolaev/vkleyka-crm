@@ -7,12 +7,18 @@ const PassportImg = ({path}) => {
   const [url, setUrl] = useState();
 
   useEffect(() => {
-    const func = async () => {
-      const url = await getDownloadURL(getFileRef(path));
-      setUrl(url)
+    if(path) {
+      const func = async () => {
+        const url = await getDownloadURL(getFileRef(path));
+        setUrl(url)
+      }
+      func()
     }
-    func()
-  },[])
+  }, [url, path])
+  
+  if (!path) {
+    return;
+  }
 
   return (
     <Image

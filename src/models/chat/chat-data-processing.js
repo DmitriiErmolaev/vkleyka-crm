@@ -25,8 +25,7 @@ export const getChatQuery = () => {
 }
 
 export const getChatsQueryForDialoguesList = (authorizedUser, searchFilter) => {
-  console.log(searchFilter)
-  console.log(typeof searchFilter)
+
   const constraints = {
     operator: [
       where('active', '==', true),
@@ -34,17 +33,18 @@ export const getChatsQueryForDialoguesList = (authorizedUser, searchFilter) => {
     ],
     admin: [],
   }
+
   if (searchFilter) {
     constraints[authorizedUser.role].push(where('UID', '>=', searchFilter))
     constraints[authorizedUser.role].push(where('UID', '<=', searchFilter + '\uf8ff'))
     // constraints[authorizedUser.role].push(where('phoneNumber', '>=', searchFilter))
     // constraints[authorizedUser.role].push(where('phoneNumber', '<=', searchFilter + '\uf8ff'))
   }
+
   return  query(getChatsCollectionRef(), ...constraints[authorizedUser.role]);
-   
-  
+
   // if(authorizedUser.role === "operator") {
-    
+
   //   return  query(getChatsCollectionRef(), where('active', '!=', false), where('assignedTo', 'in', [authorizedUser.id, '']));
   // }
   // if(authorizedUser.role === 'admin') {
@@ -65,9 +65,9 @@ export const getAssignedOperator = (admins, operatorId) => {
 
 /**
  * Returns messages array with all read messages inside. Otherwise - returns false
- * @param {*} messages 
- * @param {*} authorizedUser 
- * @returns 
+ * @param {*} messages
+ * @param {*} authorizedUser
+ * @returns
  */
 const makeAllMessagesReadIfTheyAreNot = (messages, authorizedUser) => {
   let notMyUnreadMessagesExist = false;
@@ -86,11 +86,11 @@ const makeAllMessagesReadIfTheyAreNot = (messages, authorizedUser) => {
 
 /**
  * Prepares new messages instance and upoads it to the firebase.
- * @param {*} text 
- * @param {*} authorizedUser 
- * @param {*} chatDocRef 
- * @param {*} messages 
- * @param {*} attachmentsArray 
+ * @param {*} text
+ * @param {*} authorizedUser
+ * @param {*} chatDocRef
+ * @param {*} messages
+ * @param {*} attachmentsArray
  */
 export const sendMessage = async (text, authorizedUser, chatDocRef, messages, attachmentsArray) => {
   const newMessage = createNewMessageObject(text, authorizedUser.name, attachmentsArray);
@@ -101,9 +101,9 @@ export const sendMessage = async (text, authorizedUser, chatDocRef, messages, at
 
 /**
  * If there were unread messages - upload them to the firestore, otherwise do nothing.
- * @param {*} chatDocRef 
- * @param {*} messages 
- * @param {*} authorizedUser 
+ * @param {*} chatDocRef
+ * @param {*} messages
+ * @param {*} authorizedUser
  */
 export const readUnreadMessages = async (chatDocRef, messages, authorizedUser, setUnreadMessagesToNotify) => {
   const allReadMessagesOrFalse = makeAllMessagesReadIfTheyAreNot(messages, authorizedUser, setUnreadMessagesToNotify)

@@ -83,6 +83,7 @@ const createDbOperatorObject = async (admins, newOperatorFormValues, newUser ) =
     role: GLOBAL_ROLES.operator,
     phoneNumber: newOperatorFormValues.tel,
     email: newUser.email,
+    
   }]
   await updateDoc(ADMINS_REF, {admins: updatedAdmins } );
 }

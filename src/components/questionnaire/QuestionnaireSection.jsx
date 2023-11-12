@@ -13,16 +13,16 @@ import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQues
 const QuestionnaireSection = ({questionnaire, passports, appRef, appId}) => {
 
   return (
-    <Layout style={{backgroundColor:"white", color:"#0F6CA5"}}>
-      <PassportInfo 
-        passports={passports} 
-        appId={appId} 
+    <div style={{ color:"#0F6CA5"}}>
+      <PassportInfo
+        passports={passports}
+        appId={appId}
       />
-      <ApplicationQuestionnaire 
-        questionnaire={questionnaire} 
+      <ApplicationQuestionnaire
+        questionnaire={questionnaire}
         appRef={appRef}
       />
-    </Layout>
+    </div>
   );
 };
 

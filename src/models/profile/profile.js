@@ -1,9 +1,10 @@
+import { verifyBeforeUpdateEmail } from "firebase/auth"
 import { auth } from "../firebase"
 import { updateOperator } from "../operator/operators-data-processing"
 
 export const getProfileFormFields = (authorizedUser) => {
-  return [
-    {
+  return {
+    regularProfileData: [{
       name: 'name',
       value: authorizedUser.name,
     },
@@ -14,26 +15,36 @@ export const getProfileFormFields = (authorizedUser) => {
     {
       name: 'email',
       value: authorizedUser.email,
-    },
-  ]
+    }],
+    email: [
+      {
+        name: 'email',
+        value: authorizedUser.email,
+      },
+    ]
+  }
 }
 
-export const updateOperatorProfile = async (authorizedUser, admins, formState) => {
-  const updatedAdminInfoProperties = formState.reduce((acc, property) => {
-    acc[property.name] = property.value;
-    return acc
-  }, {})
-  console.log(updatedAdminInfoProperties)
-  
+export const updateOperatorProfile = async (user, authorizedUser, admins, values) => {
+  // const updatedAdminInfo = {...authorizedUser, ...values}; // Удалить если не надо
+  console.log(values)
   const updatedAdmins = admins.map(admin => {
     if (admin.id === authorizedUser.id) {
-      return {...admin, ...updatedAdminInfoProperties}
+      return {...authorizedUser, ...values};
     }
     return admin;
   })
 
+  // const prevEmail = fields.find((field) => field.name === 'email').value;
+  // const newEmail = formState.find((field) => field.name === 'email').value;
+  // console.log(prevEmail);
+  // console.log(newEmail);
   try {
+    // if (prevEmail !== newEmail) {
+    //   await verifyBeforeUpdateEmail(user, newEmail)
+    // }
     await updateOperator(updatedAdmins);
+    console.log('готово')
   } catch (e) {
     throw e;
   }

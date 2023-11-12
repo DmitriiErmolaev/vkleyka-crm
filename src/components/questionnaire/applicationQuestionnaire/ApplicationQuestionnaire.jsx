@@ -1,5 +1,5 @@
 import React,{useState, useContext, useEffect} from 'react';
-import { Collapse, Layout, Typography, Empty } from 'antd';
+import { Collapse, Layout, Typography, Empty, theme, ConfigProvider } from 'antd';
 import { EditOutlined } from "@ant-design/icons";
 import QuestionnaireItem from './QuestionnaireItem';
 import ApplyOrCancel from '../ApplyOrCancel';
@@ -7,6 +7,7 @@ import { getCollapseItems, updateQuestionnaireAnswers } from '../../../models/ap
 import { ProgramContext, ApplicationStatus } from '../../../models/context';
 import { openNotification } from '../../../models/notification/notification';
 import '../../../assets/application-questionnaire.scss'
+const { useToken } = theme;
 const {Title} = Typography;
 
 const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
@@ -15,6 +16,7 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   const [answersToUpdate, setAnswersToUpdate] = useState([]); // {newResponse: any, index: number,}
   const {notificationApi} = useContext(ProgramContext)
   const {curAppStatus} = useContext(ApplicationStatus);
+  const {token} = useToken();
 
   useEffect(() => {
     if (curAppStatus === 2) cancelChanges();
@@ -41,16 +43,14 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
     setCurrentPanelOpened(panel)
   }
 
-  
   let questionnaireToRender = null;
 
   if (!questionnaire) {
     questionnaireToRender = (
-      <Empty  
+      <Empty
         description={<span>Анкета пока не заполнена...</span>}
         rootClassName="empty"
       />
-      
     )
   } else {
     let questionnairePreparedData = {};
@@ -58,39 +58,54 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
       if(!questionnairePreparedData[question.section]) {
         questionnairePreparedData[question.section] = [];
       }
-    
+
       questionnairePreparedData[question.section].push(
-        <QuestionnaireItem 
+        <QuestionnaireItem
           key={questionIndex}
-          question={question} 
-          questionIndex={questionIndex} 
-          setAnswersToUpdate={setAnswersToUpdate} 
-          answersToUpdate={answersToUpdate} 
+          question={question}
+          questionIndex={questionIndex}
+          setAnswersToUpdate={setAnswersToUpdate}
+          answersToUpdate={answersToUpdate}
           isEdit={isEdit}
         />
       )
     })
-  
+
     const questionnaireItems = getCollapseItems(questionnairePreparedData);
 
     questionnaireToRender = (
-      <Collapse 
-        activeKey={currentPanelOpened}
-        items={questionnaireItems} 
-        size={"middle"}
-        onChange={panelOpen}
-      /> 
+      <ConfigProvider
+        theme={{
+          token: {
+            // colorBorder: '',
+          },
+          // components: {
+          //   Collapse: {
+          //     headerBg: '#E9F3FF',
+          //     contentBg: '#fff',
+          //   }
+          // },
+        }}
+      >
+        <Collapse
+          bordered={false}
+          activeKey={currentPanelOpened}
+          items={questionnaireItems}
+          size={"middle"}
+          onChange={panelOpen}
+        />
+      </ConfigProvider>
     )
   }
 
-  
+
   return (
     <Layout style={{}}>
       <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
         <Title level={3}>Анкета</Title>
         {
           questionnaire && (curAppStatus !== 2) ?  (
-            <EditOutlined 
+            <EditOutlined
               className="interactive-icons"
               style={{ fontSize: '22px', color: '#08c', marginLeft:"10px", marginRight:"10px"}}
               onClick={() =>  setIsEdit(true)}
@@ -101,10 +116,10 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
         }
       </div>
       {questionnaireToRender}
-      <ApplyOrCancel 
-        isEdit={isEdit} 
-        setIsEdit={setIsEdit} 
-        applyChanges={applyChanges} 
+      <ApplyOrCancel
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        applyChanges={applyChanges}
         cancelChanges={cancelChanges}
       />
     </Layout>

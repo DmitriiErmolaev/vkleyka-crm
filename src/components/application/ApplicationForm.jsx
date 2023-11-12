@@ -79,7 +79,7 @@ const ApplicationForm = ({clientId }) => {
               appId={appId}
             />
           </Col>
-          <Col  span={12} style={{height:"100%", overflowY:"auto", borderLeft:"1px solid #0000002c"}}>
+          <Col  span={12} style={{height:"100%", overflowY:"auto"}}>
             <div className="chat-section">
               <Chat applicantName={applicantName} clientApplicationsSnaps={currentClientApplications} applicantId={application.UID} source="application"/>
             </div>

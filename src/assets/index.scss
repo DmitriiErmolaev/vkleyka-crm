@@ -37,3 +37,20 @@ a:active, a:hover, a:visited {
     transform:scale(0.85);
   }
 }
+// Scroll bar
+::-webkit-scrollbar {
+  width:6px;
+}
+
+::-webkit-scrollbar-track {
+  display:none;
+  width:1px;
+  background-color: #b8d5ff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  width:6px;
+  background-color: #1677ff;
+  border-radius: 10px;
+}

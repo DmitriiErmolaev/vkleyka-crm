@@ -1,90 +1,101 @@
-import { Form, Input } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
-import { ProgramContext } from '../../models/context';
+import { Button, Form, Modal } from 'antd';
+import React, { useContext, useState } from 'react';
+import { ProfileContext, ProgramContext } from '../../models/context';
 import { getProfileFormFields, updateOperatorProfile } from '../../models/profile/profile';
-import ApplyOrCancel from '../questionnaire/ApplyOrCancel';
 import { openNotification } from '../../models/notification/notification';
-import { library } from '../../lib';
+import { EmailAuthProvider, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth';
+import { auth } from '../../models/firebase';
+import RegularDataForm from './RegularDataForm';
+import EmailForm from './EmailForm';
+import '../../assets/profile/profile-form.scss';
+import Auth from '../auth/Auth';
 
 const ProfileForm = () => {
-  const [isEdit, setIsEdit] = useState(false)
-  const {authorizedUser, notificationApi, admins} = useContext(ProgramContext)
+  const [regularDataIsEdit, setRegularDataIsEdit] = useState(false)
+  const [emailIsEdit, setEmailIsEdit] = useState(false)
+  const {user, authorizedUser, notificationApi, admins} = useContext(ProgramContext)
   const fields = getProfileFormFields(authorizedUser);
-  const [form] = Form.useForm();
-  const [formState, setFormState] = useState(fields)
-  const [dataLoading, setDataLoading] = useState(false)
+  const [ loading, setLoading ] = useState(false);
+  const [ curEditingForm, setCurEditingForm ] = useState('')
+  const [ authModalOpened, setAuthModalOpened ] = useState(false);
+  const [emailState, setEmailState] = useState(fields) // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider из-за асинхронности.
 
-  const applyChanges = () => {
-    form.submit();
+  const handleModalClose = () => {
+    setAuthModalOpened(false)
   }
 
-  const cancelChanges = () => {
-    setIsEdit(false);
-  }
-
-  const handleValuesChange = (changedValues, allValues) => {
-    const entries = Object.entries(changedValues)
-    setFormState(formState.map(field => {
-      if(field.name === entries[0][0]) {
-        return {...field, value: entries[0][1]}
-      }
-      return field
-    }))
-    if (!isEdit) {
-      setIsEdit(true);
-    } 
-  }
-
-  const handleFinish = async () => {
-    try {
-      setDataLoading(true)
-      await updateOperatorProfile(authorizedUser, admins, formState)
-    } catch (e) {
-      console.log(e);
-      openNotification(notificationApi, 'error', 'updateAdmin')
-    } finally {
-      setDataLoading(false)
-      setIsEdit(false);
+  const reauthenticate = async (email, password) => {
+    try { 
+      const credential = EmailAuthProvider.credential(email, password); // связываем email и пароль с текущим firebase acc и получаем credential.
+      await reauthenticateWithCredential(user, credential) // реавторизация
+      await updateEmail(user, fields.email[0].value); // изменяем firebase acc
+      await updateOperatorProfile(user, authorizedUser, admins, {[emailState[0].name]: emailState[0].value}) // изменяем firestore запись
       openNotification(notificationApi, 'success', 'updateAdmin')
+      setAuthModalOpened(false)
+    } catch (e) {
+      console.log(e)
+      throw e;
     }
   }
-  
+  // const modalConfig = {
+  //   closeIcon: 	<CloseOutlined />,
+  //   icon: null,
+  //   footer:null,
+  //   centered: true,
+  //   width: '30%',
+  //   content: <Auth onFinish={reauthenticate}/>,  TODO: УДАЛИТЬ если не поднадобится
+  //   onClose: (cancel) => () => false
+  // }
+
+  const handleFormProvider = async (formName, { values, forms }) => {
+    try {
+      setLoading(true)
+      if (formName === 'regularDataForm') {
+        await updateOperatorProfile(user, authorizedUser, admins, values)
+        openNotification(notificationApi, 'success', 'updateAdmin')
+      }
+      if(formName === 'emailForm') {
+        setAuthModalOpened(true)
+        // const confirmed = await modal.confirm(modalConfig);  TODO: УДАЛИТЬ если не поднадобится
+      }
+    } catch (e) {
+      console.log(e)
+      openNotification(notificationApi, 'error', 'updateAdmin')
+    } finally {
+      setCurEditingForm('')
+      setLoading(false)
+    }
+  }
+
   return (
-    <div className='profile__apdate-form' style={{marginTop:'5%'}}>
-      <Form
-        layout='horizontal'
-        fields={isEdit ? formState : fields}
-        labelCol={{span: 6}}
-        wrapperCol={{span: 10}}
-        labelAlign='left'
-        onValuesChange={handleValuesChange}
-        form={form}
-        onFinish={handleFinish}
+    <ProfileContext.Provider value={{loading, setLoading, curEditingForm, setCurEditingForm}}>
+      <div className='profile__update-form' style={{marginTop:'5%'}}>
+        <Form.Provider
+          onFormFinish={handleFormProvider}
+        >
+          <RegularDataForm name='regularDataForm' regularDataIsEdit={regularDataIsEdit} setRegularDataIsEdit={setRegularDataIsEdit}/>
+          <EmailForm name='emailForm' emailIsEdit={emailIsEdit} setEmailIsEdit={setEmailIsEdit} emailState={emailState} setEmailState={setEmailState} />
+          {/* <PasswordForm applyChanges={applyChanges} /> */}
+          <Button danger onClick={() => signOut(auth)}>Выйти из аккаунта</Button>
+        </Form.Provider>
+      </div>
+      {/* {contextHolder} TODO: УДАЛИТЬ если не поднадобится*/ }
+      <Modal
+        open={authModalOpened}
+        classNames={{
+          body: 'modal-body'
+        }}
+        onCancel={handleModalClose}
+        footer={null}
+        // maskStyle={{backgroundColor:"#0000009C"}}
+        width="30%"
+        wrapClassName='modal-wrapper'
+        centered
+        destroyOnClose
       >
-        <Form.Item
-          name='name'
-          label='Имя'
-          rules={[{ required: true, message: library.validationErrorMessages.requiredField }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name='phoneNumber'
-          label='Телефон'
-          rules={[{ required: true, message: library.validationErrorMessages.requiredField }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name='email'
-          label='Email'
-          rules={[{ required: true, message: library.validationErrorMessages.requiredField }]}
-        >
-          <Input />
-        </Form.Item>
-        <ApplyOrCancel isEdit={isEdit} applyChanges={applyChanges} cancelChanges={cancelChanges} loading={dataLoading} />
-      </Form>
-    </div>
+        <Auth onFinish={reauthenticate} />
+      </Modal>
+    </ProfileContext.Provider>
   )
 };
 

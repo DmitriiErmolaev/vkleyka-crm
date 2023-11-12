@@ -33,7 +33,6 @@ const AllApplications = () => {
   // const [curTablePage, setCurTablePage] = useState();  // NOTE: Для пагинации
   // const [firstApplicationRef, setFirstApplicationRef] = useState();  // NOTE: Для пагинации
   // const [lastApplicationRef, setLastApplicationRef] = useState();  // NOTE: Для пагинации
-  console.log(appsSearchFilter)
   const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedUser, appsSearchFilter);
   /* TODO: для пагинации: запрос на 10 документов коллекции
   * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));  // NOTE: Для пагинации
@@ -71,7 +70,7 @@ const AllApplications = () => {
       arrangedTableData = getDataForTable(applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot);
       // refArray = getDocsRefs(appsCollSnapshot);  NOTE: Для пагинации
     }
-  }
+  } 
   
   /* TODO: для пагинации: запоминание ссылки на 1 и 10 документы
   * let firstDocRef = refArray[0];  // NOTE: Для пагинации

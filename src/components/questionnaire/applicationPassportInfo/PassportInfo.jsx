@@ -48,17 +48,17 @@ const PassportInfo = ({passports, appId}) => {
 
   const passportsInfoLabel = (
     <PassportInfoCollapseLabel 
-      appId={appId} 
+      appId={appId}
       passportsLength={passports.length}
     />
   )
 
   const passportsInfoLabelExtra = curAppStatus !== 2 ? (
-    <EditOutlined 
+    <EditOutlined
       className="interactive-icons"
       style={{ fontSize: '22px', color: '#08c', marginLeft:"10px"}}
       onClick={() =>  setPassportInfoIsEdit(true)}
-    /> 
+    />
   ) : (
     null
   )
@@ -67,7 +67,8 @@ const PassportInfo = ({passports, appId}) => {
 
   return (
     <Layout style={{marginBottom:"10px"}}>
-      <Collapse 
+      <Collapse
+        bordered={false}
         items={[passportsInfoCollapseItems]}
         size={"middle"}
         defaultActiveKey={"personalInfo"}

@@ -21,11 +21,11 @@ const QuestionnaireItem = ({question, questionIndex, setAnswersToUpdate, answers
   return (
     <div className="questionnary-item__container">
       <Question question={question.name} />
-      <Component 
-        questionData={question} 
-        questionIndex={questionIndex} 
-        setAnswersToUpdate={setAnswersToUpdate} 
-        answersToUpdate={answersToUpdate} 
+      <Component
+        questionData={question}
+        questionIndex={questionIndex}
+        setAnswersToUpdate={setAnswersToUpdate}
+        answersToUpdate={answersToUpdate}
         isEdit={isEdit}
       />
     </div>

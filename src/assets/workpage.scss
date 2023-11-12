@@ -3,10 +3,8 @@
   width: 100%; 
   min-height: 100vh;
   margin: 0 auto; 
-  background: #F8F8F8 !important;
 
   .main {
-    // margin-top: 64px;
     position:relative;
     top:64px;
     min-height: calc(100vh - 64px);
@@ -15,7 +13,6 @@
       position: relative;
       margin-left: 200px;
       overflow: hidden;
-      background-color: #F8F8F8;
     }
   }
 }
