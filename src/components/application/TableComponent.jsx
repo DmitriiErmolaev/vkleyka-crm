@@ -70,9 +70,11 @@ const TableComponent = ({
         if((col.key !== sorter.columnKey) && col.sortOrder) {
           return {...col, sortOrder: undefined}
         }
+
         if(col.key === sorter.columnKey) {
           return {...col, sortOrder: sorter.order}
         }
+        
         return col
       }))
     }

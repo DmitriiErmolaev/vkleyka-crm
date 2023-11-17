@@ -20,7 +20,7 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUpload
     if(!text) {
       return
     }
-    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue, setUnreadMessagesToNotify)
+    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue.messages, setUnreadMessagesToNotify)
     allMessages.current.scrollTop = 9999;
     setText("")
   }
