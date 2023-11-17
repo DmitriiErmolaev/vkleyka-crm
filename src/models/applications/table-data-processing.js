@@ -1,4 +1,4 @@
-import {where} from "firebase/firestore";
+import {limit, startAfter, where} from "firebase/firestore";
 import { updateDoc, orderBy } from "firebase/firestore";
 import { addZero } from "../../utils";
 import { getShortYear } from "../../utils";
@@ -37,8 +37,10 @@ export const getFullCountryName = (countries, countryCode) => {
   return findedCountry.name_ru
 }
 
-export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot) => {
-  return applications.reduce((accum, application) => {
+export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot, savedData) => {
+  // console.log(savedData)
+
+  const newApps = applications.reduce((accum, application) => {
     // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
     //   return accum // TODO: обход бага. Решить с Жангиром
     // }
@@ -58,7 +60,32 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
     )
     return accum;
   }, [])
+
+  return [...savedData, ...newApps]
 }
+
+// export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot) => {
+//   return applications.reduce((accum, application) => {
+//     // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
+//     //   return accum // TODO: обход бага. Решить с Жангиром
+//     // }
+//     accum.push(
+//       {
+//         key: application.documentID,
+//         clientId: application.UID,
+//         appsCollSnapshot: appsCollSnapshot,
+//         id: getShortApplicationId(application.documentID),
+//         date: getApplicationCreationDate(application.createdAt),
+//         dialogueSnap: getDialogueSnap(chatsCollSnapshot, application.UID),
+//         applicant: `${application.passports[0].first_name} ${application.passports[0].last_name}`,
+//         status: application.preparedInformation.preparationStatus,
+//         country: getFullCountryName(countries, application.country_code),
+//         assignedTo: application.preparedInformation.assignedTo,
+//       }
+//     )
+//     return accum;
+//   }, [])
+// }
 
 // export const getFilters = (country, status, column, authorizedUser, appsSearchFilter) => {
 //   let filters = [
@@ -92,7 +119,7 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
 //   return filters;
 // }
 
-export const getFilters = (country, status, column, authorizedUser, appsSearchFilter) => {
+export const getFilters = (country, status, column, authorizedUser, appsSearchFilter, lastDoc) => { // Новый с пагинацией
   let filters = [
     where('paymentSuccessful', '==', true),
   ];
@@ -100,6 +127,7 @@ export const getFilters = (country, status, column, authorizedUser, appsSearchFi
   if (authorizedUser.role === 'operator') {
     filters.push(where("preparedInformation.assignedTo", "==", authorizedUser.id));
   }
+
   if (appsSearchFilter) {
     // при добавлении диапазонных ограничителей, если есть так же и упорядочивающие ограничители - первым идет упорядочивание по свойству, по которому стоит диапазонное ограничение. Затем указываются остальные упорядочивающие.
     filters.push(where('UID', '>=', appsSearchFilter))
@@ -114,14 +142,56 @@ export const getFilters = (country, status, column, authorizedUser, appsSearchFi
   // } else {
   //   filters.push(orderBy("date", "desc"))
   // }
+
   if(country.value) {
     filters.push(where("country_code", "==", country.value));
   }
   if((status && status !== "allStatuses") || status === 0) {
     filters.push(where("preparedInformation.preparationStatus", "==", status))
   }
-  
+
   filters.push(orderBy("createdAt", "desc"))
+  
+  if (lastDoc) {
+    filters.push(startAfter(lastDoc))
+  }
+
+  // filters.push(limit(2))
 
   return filters;
 }
+
+// export const getFilters = (country, status, column, authorizedUser, appsSearchFilter) => { // Стандартный список
+//   let filters = [
+//     where('paymentSuccessful', '==', true),
+//   ];
+
+//   if (authorizedUser.role === 'operator') {
+//     filters.push(where("preparedInformation.assignedTo", "==", authorizedUser.id));
+//   }
+
+//   if (appsSearchFilter) {
+//     // при добавлении диапазонных ограничителей, если есть так же и упорядочивающие ограничители - первым идет упорядочивание по свойству, по которому стоит диапазонное ограничение. Затем указываются остальные упорядочивающие.
+//     filters.push(where('UID', '>=', appsSearchFilter))
+//     filters.push(where('UID', '<=', appsSearchFilter + '\uf8ff'))
+//     filters.push(orderBy("UID"))
+//   }
+
+//   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/
+
+//   // if(selectedColumn && selectedColumn.order) {
+//   //   filters.push(orderBy(selectedColumn.column, selectedColumn.order))
+//   // } else {
+//   //   filters.push(orderBy("date", "desc"))
+//   // }
+//   if(country.value) {
+//     filters.push(where("country_code", "==", country.value));
+//   }
+//   if((status && status !== "allStatuses") || status === 0) {
+//     filters.push(where("preparedInformation.preparationStatus", "==", status))
+//   }
+  
+//   filters.push(orderBy("createdAt", "desc"))
+
+//   return filters;
+// }

@@ -23,7 +23,7 @@ const getRegularDataFormFields = (authorizedUser) => {
 
 const RegularDataForm = ({ name }) => {
   const { authorizedUser } = useContext(ProgramContext)
-  const { loading, curEditingForm, setCurEditingForm } = useContext(ProfileContext)
+  const { profileUpdating, curEditingForm, setCurEditingForm } = useContext(ProfileContext)
   const fields = getRegularDataFormFields(authorizedUser);
   const [regularFormState, setRegularFormState] = useState(fields)
   const [regularDataFormInstance] = Form.useForm();
@@ -68,7 +68,7 @@ const RegularDataForm = ({ name }) => {
         labelAlign='left'
         onValuesChange={handleValuesChange}
         form={regularDataFormInstance}
-        disabled={loading && !isEditing}
+        disabled={profileUpdating && !isEditing}
       >
         <Form.Item
           name='name'
@@ -84,11 +84,22 @@ const RegularDataForm = ({ name }) => {
         >
           <Input />
         </Form.Item>
+        {/* {authorizedUser.role !== 'admin' ? (
+          <Form.Item
+            name='email'
+            label='Email'
+            rules={[{ required: true, message: library.validationErrorMessages.requiredField }]}
+          >
+            <Input />
+          </Form.Item>
+        ) : (
+          null
+        )} */}
         <ApplyOrCancel
           isEdit={isEditing}
           applyChanges={applyChanges}
           cancelChanges={cancelChanges}
-          loading={loading}
+          loading={profileUpdating}
         />
       </Form>
     </div>

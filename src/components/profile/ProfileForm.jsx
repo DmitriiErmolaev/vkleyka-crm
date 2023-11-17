@@ -9,31 +9,34 @@ import RegularDataForm from './RegularDataForm';
 import EmailForm from './EmailForm';
 import '../../assets/profile/profile-form.scss';
 import Auth from '../auth/Auth';
+import ReAuthModalTitle from './ReAuthModalTitle';
 
 const ProfileForm = () => {
   const [regularDataIsEdit, setRegularDataIsEdit] = useState(false)
   const [emailIsEdit, setEmailIsEdit] = useState(false)
   const {user, authorizedUser, notificationApi, admins} = useContext(ProgramContext)
   const fields = getProfileFormFields(authorizedUser);
-  const [ loading, setLoading ] = useState(false);
+  const [ profileUpdating, setProfileUpdating ] = useState(false);
   const [ curEditingForm, setCurEditingForm ] = useState('')
   const [ authModalOpened, setAuthModalOpened ] = useState(false);
-  const [emailState, setEmailState] = useState(fields) // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider из-за асинхронности.
-
+  const [emailState, setEmailState] = useState(fields) // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider функции handleFormProvider, т.к. не реализован вызов модалки асинхронно из фукнции. 
   const handleModalClose = () => {
     setAuthModalOpened(false)
   }
 
   const reauthenticate = async (email, password) => {
-    try { 
+    // TODO: спустить в функцию handleFormProvider, если сделаю асинхронный вызов модалки.
+    try {
       const credential = EmailAuthProvider.credential(email, password); // связываем email и пароль с текущим firebase acc и получаем credential.
-      await reauthenticateWithCredential(user, credential) // реавторизация
-      await updateEmail(user, fields.email[0].value); // изменяем firebase acc
-      await updateOperatorProfile(user, authorizedUser, admins, {[emailState[0].name]: emailState[0].value}) // изменяем firestore запись
-      openNotification(notificationApi, 'success', 'updateAdmin')
-      setAuthModalOpened(false)
+      const userCredential = await reauthenticateWithCredential(user, credential); // реавторизация
+      await updateEmail(userCredential.user, emailState[0].value); // изменяем firebase acc
+      await updateOperatorProfile(authorizedUser, admins, {[emailState[0].name]: emailState[0].value}); // изменяем firestore запись. 
+      openNotification(notificationApi, 'success', 'updateAdmin');
+      setAuthModalOpened(false);
+      setCurEditingForm('');
+      setProfileUpdating(false);
     } catch (e) {
-      console.log(e)
+      console.log(e);
       throw e;
     }
   }
@@ -48,10 +51,11 @@ const ProfileForm = () => {
   // }
 
   const handleFormProvider = async (formName, { values, forms }) => {
+    // TODO: придумать асинзронный вызов модалки с формой
     try {
-      setLoading(true)
+      setProfileUpdating(true)
       if (formName === 'regularDataForm') {
-        await updateOperatorProfile(user, authorizedUser, admins, values)
+        await updateOperatorProfile(authorizedUser, admins, values)
         openNotification(notificationApi, 'success', 'updateAdmin')
       }
       if(formName === 'emailForm') {
@@ -59,16 +63,17 @@ const ProfileForm = () => {
         // const confirmed = await modal.confirm(modalConfig);  TODO: УДАЛИТЬ если не поднадобится
       }
     } catch (e) {
+      // INFO: придумать асинхронный вызов модалки с формой. Сейчас ловятся ошибки только для "regularDataForm".
       console.log(e)
       openNotification(notificationApi, 'error', 'updateAdmin')
     } finally {
       setCurEditingForm('')
-      setLoading(false)
+      setProfileUpdating(false)
     }
   }
 
   return (
-    <ProfileContext.Provider value={{loading, setLoading, curEditingForm, setCurEditingForm}}>
+    <ProfileContext.Provider value={{profileUpdating, setProfileUpdating, curEditingForm, setCurEditingForm}}>
       <div className='profile__update-form' style={{marginTop:'5%'}}>
         <Form.Provider
           onFormFinish={handleFormProvider}
@@ -87,11 +92,11 @@ const ProfileForm = () => {
         }}
         onCancel={handleModalClose}
         footer={null}
-        // maskStyle={{backgroundColor:"#0000009C"}}
         width="30%"
         wrapClassName='modal-wrapper'
         centered
         destroyOnClose
+        title={<ReAuthModalTitle />}
       >
         <Auth onFinish={reauthenticate} />
       </Modal>

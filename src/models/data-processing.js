@@ -1,4 +1,4 @@
-import {query} from "firebase/firestore";
+import {limit, query} from "firebase/firestore";
 import { updateDoc } from "firebase/firestore";
 
 export const getSingleFieldFromDocSnapshot = (docSnapshot, fieldName) => {
@@ -19,7 +19,7 @@ export const getDataFromCollSnapshot = (collSnap) => {
 }
 
 export const getQueryWithConstraints = (ref,constraints) => {
-  return query(ref, ...constraints)
+  return query(ref, ...constraints, limit(2))
 }
 
 export const getDocsRefs = (collSnap) => {

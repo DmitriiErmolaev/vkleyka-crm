@@ -25,7 +25,7 @@ const RoutesComponent = () => {
   const [user, loading, error] = useAuthState(auth);
   const ADMINS_REF = getAdminsRef();
   const [adminsDocSnapshot, adminsLoading, adminsError] = useDocument(ADMINS_REF)
-
+  console.log(user)
   if(loading || adminsLoading) {
     return (
       <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Table} from "antd";
+import {Statistic, Table} from "antd";
 import {getColumnsConfig} from "../../models/applications/table-columns-config";
 
 //TODO: рефакторинг после завершения пагинации
@@ -12,7 +12,7 @@ const total = (total, range)=>{
 const paginationDoc = {
   // current: 1, // NOTE: для пагинации
   defaultCurrent: 1,
-  defaultPageSize: 10, 
+  defaultPageSize: 2, 
   position: ["bottomCenter ", "topCenter "],
   showTotal: total,
 }
@@ -85,20 +85,25 @@ const TableComponent = ({
         loading
         dataSource={tableDataBeforeChanging} 
         columns={columnsSettings} 
-        pagination={paginationSettings} 
+        // pagination={paginationSettings} 
+        pagination={false}
         onChange={handleTableChange} 
       />
     )
   }
 
   return (
-    <Table 
-      size="small"
-      dataSource={arrangedTableData} 
-      columns={columnsSettings} 
-      pagination={paginationSettings} 
-      onChange={handleTableChange} 
-    />
+    <>
+      <Table
+        size="small"
+        dataSource={arrangedTableData} 
+        columns={columnsSettings} 
+        pagination={false}
+        // pagination={paginationSettings} 
+        onChange={handleTableChange} 
+      />
+    </>
+    
   );
 };
 

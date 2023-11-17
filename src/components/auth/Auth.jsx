@@ -28,6 +28,10 @@ const Auth = ({onFinish}) => {
         setAuthError("Отсутствует соединение с интернетом");
         return
       }
+      if(e.code === AuthErrorCodes.CREDENTIAL_TOO_OLD_LOGIN_AGAIN) {
+        setAuthError("Требуется реавторизация");
+        return
+      }
       setAuthError("Ошибка авторизации");
     } finally {
       setSignInLoading(false);

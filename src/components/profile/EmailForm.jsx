@@ -16,7 +16,7 @@ const getEmailFormField = (authorizedUser) => {
 
 const EmailForm = ({name, emailState, setEmailState}) => {
   const { authorizedUser } = useContext(ProgramContext)
-  const { loading, curEditingForm, setCurEditingForm } = useContext(ProfileContext)
+  const { profileUpdating, curEditingForm, setCurEditingForm } = useContext(ProfileContext)
   const fields = getEmailFormField(authorizedUser);
   const [emailFormInstance] = Form.useForm();
   const { token } = useToken();
@@ -64,9 +64,9 @@ const EmailForm = ({name, emailState, setEmailState}) => {
           label='Email'
           rules={[{ required: true, message: library.validationErrorMessages.requiredField }]}
         >
-          <Input disabled={loading && !isEditing}/>
+          <Input disabled={(authorizedUser.role !== 'admin') || (profileUpdating && !isEditing)}/>
         </Form.Item>
-        <ApplyOrCancel isEdit={isEditing} applyChanges={applyChanges} cancelChanges={cancelChanges} loading={loading} />
+        <ApplyOrCancel isEdit={isEditing} applyChanges={applyChanges} cancelChanges={cancelChanges} loading={profileUpdating} />
       </Form>
     </div>
   );

@@ -25,9 +25,8 @@ export const getProfileFormFields = (authorizedUser) => {
   }
 }
 
-export const updateOperatorProfile = async (user, authorizedUser, admins, values) => {
-  // const updatedAdminInfo = {...authorizedUser, ...values}; // Удалить если не надо
-  console.log(values)
+export const updateOperatorProfile = async (authorizedUser, admins, values) => {
+  // Универсальная функция для обновления объекта админа или визовика коллекции admins.
   const updatedAdmins = admins.map(admin => {
     if (admin.id === authorizedUser.id) {
       return {...authorizedUser, ...values};
@@ -35,14 +34,7 @@ export const updateOperatorProfile = async (user, authorizedUser, admins, values
     return admin;
   })
 
-  // const prevEmail = fields.find((field) => field.name === 'email').value;
-  // const newEmail = formState.find((field) => field.name === 'email').value;
-  // console.log(prevEmail);
-  // console.log(newEmail);
   try {
-    // if (prevEmail !== newEmail) {
-    //   await verifyBeforeUpdateEmail(user, newEmail)
-    // }
     await updateOperator(updatedAdmins);
     console.log('готово')
   } catch (e) {
