@@ -37,9 +37,9 @@ export const getFullCountryName = (countries, countryCode) => {
   return findedCountry.name_ru
 }
 
-export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot, savedData) => {
+export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot, tableDataBeforeChanging) => {
   // console.log(savedData)
-
+  debugger
   const newApps = applications.reduce((accum, application) => {
     // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
     //   return accum // TODO: обход бага. Решить с Жангиром
@@ -61,7 +61,7 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
     return accum;
   }, [])
 
-  return [...savedData, ...newApps]
+  return [...tableDataBeforeChanging, ...newApps]
 }
 
 // export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot) => {
@@ -152,9 +152,9 @@ export const getFilters = (country, status, column, authorizedUser, appsSearchFi
 
   filters.push(orderBy("createdAt", "desc"))
   
-  if (lastDoc) {
-    filters.push(startAfter(lastDoc))
-  }
+  // if (lastDoc) {
+  //   filters.push(startAfter(lastDoc))
+  // }
 
   // filters.push(limit(2))
 
