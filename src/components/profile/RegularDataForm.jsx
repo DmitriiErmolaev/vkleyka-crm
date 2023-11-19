@@ -29,7 +29,12 @@ const RegularDataForm = ({ name }) => {
   const [regularDataFormInstance] = Form.useForm();
   const { token } = useToken();
 
-  const isEditing = curEditingForm === 'regularDataForm';
+  const isEditing = curEditingForm === name;
+
+  const cancelChanges = () => {
+    setCurEditingForm('');
+    setRegularFormState(fields);
+  }
 
   const handleValuesChange = (changedValues, _allValues) => {
     setCurEditingForm(name);
@@ -46,10 +51,6 @@ const RegularDataForm = ({ name }) => {
     regularDataFormInstance.submit();
   }
 
-  const cancelChanges = () => {
-    setCurEditingForm('')
-  }
-
   return (
     <div
       style={{
@@ -63,8 +64,8 @@ const RegularDataForm = ({ name }) => {
         name={name}
         layout='horizontal'
         fields={isEditing ? regularFormState : fields}
-        labelCol={{span: 6}}
-        wrapperCol={{span: 10}}
+        labelCol={{span: 10}}
+            wrapperCol={{span: 14}}
         labelAlign='left'
         onValuesChange={handleValuesChange}
         form={regularDataFormInstance}

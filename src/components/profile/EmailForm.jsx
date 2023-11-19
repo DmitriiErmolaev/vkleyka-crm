@@ -21,15 +21,18 @@ const EmailForm = ({name, emailState, setEmailState}) => {
   const [emailFormInstance] = Form.useForm();
   const { token } = useToken();
 
-  const isEditing = curEditingForm === 'emailForm';
+  const isEditing = curEditingForm === name;
 
   const applyChanges = () => {
     emailFormInstance.submit();
   }
 
   const cancelChanges = () => {
-    setCurEditingForm('')
+    setCurEditingForm('');
+    setEmailState();
   }
+
+ 
 
   const handleValuesChange = (changedValues, _allValues) => {
     setCurEditingForm('emailForm')
@@ -53,8 +56,8 @@ const EmailForm = ({name, emailState, setEmailState}) => {
         name={name}
         fields={isEditing ? emailState : fields}
         layout='horizontal'
-        labelCol={{span: 6}}
-        wrapperCol={{span: 10}}
+        labelCol={{span: 10}}
+            wrapperCol={{span: 14}}
         labelAlign='left'
         onValuesChange={handleValuesChange}
         form={emailFormInstance}

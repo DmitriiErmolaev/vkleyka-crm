@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Statistic, Table} from "antd";
 import {getColumnsConfig} from "../../models/applications/table-columns-config";
+import AppsPaginator from './AppsPaginator';
 
 //TODO: рефакторинг после завершения пагинации
 // const total = (total, range)=>{
@@ -18,11 +19,11 @@ import {getColumnsConfig} from "../../models/applications/table-columns-config";
 // }
 
 const TableComponent = ({
-  tableLoading,
-  arrangedTableData,
+  tableData,
   setSelectedColumn,
-  tableDataBeforeChanging,
-  role, }) => {
+  role,
+  currentAppsCount,
+  totalAppsCount }) => {
 
   let columns = getColumnsConfig(role) || [];
   const [columnsSettings, setColumnsSettings] = useState(columns)
@@ -56,14 +57,19 @@ const TableComponent = ({
 
   return (
     <>
-      <Table
-        size="small"
-        dataSource={tableLoading ? tableDataBeforeChanging : arrangedTableData}
-        columns={columnsSettings}
-        pagination={false}
-        onChange={handleTableChange}
-      />
+      <AppsPaginator currentAppsCount={currentAppsCount} totalAppsCount={totalAppsCount} />
+        <Table
+          size="small"
+          // dataSource={tableLoading ? tableDataBeforeChanging : tableData}
+          dataSource={tableData}
+          columns={columnsSettings}
+          pagination={false}
+          onChange={handleTableChange}
+        />
+      <AppsPaginator currentAppsCount={currentAppsCount} totalAppsCount={totalAppsCount} />
     </>
+    
+
   );
 };
 

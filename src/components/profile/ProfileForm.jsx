@@ -3,23 +3,26 @@ import React, { useContext, useState } from 'react';
 import { ProfileContext, ProgramContext } from '../../models/context';
 import { getProfileFormFields, updateOperatorProfile } from '../../models/profile/profile';
 import { openNotification } from '../../models/notification/notification';
-import { EmailAuthProvider, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth';
+import { EmailAuthProvider, reauthenticateWithCredential, signOut, updateEmail, updatePassword } from 'firebase/auth';
 import { auth } from '../../models/firebase';
 import RegularDataForm from './RegularDataForm';
 import EmailForm from './EmailForm';
+import PasswordForm from './PasswordForm';
 import '../../assets/profile/profile-form.scss';
 import Auth from '../auth/Auth';
 import ReAuthModalTitle from './ReAuthModalTitle';
 
 const ProfileForm = () => {
-  const [regularDataIsEdit, setRegularDataIsEdit] = useState(false)
-  const [emailIsEdit, setEmailIsEdit] = useState(false)
   const {user, authorizedUser, notificationApi, admins} = useContext(ProgramContext)
-  const fields = getProfileFormFields(authorizedUser);
+  // const fields = getProfileFormFields(authorizedUser);
   const [ profileUpdating, setProfileUpdating ] = useState(false);
   const [ curEditingForm, setCurEditingForm ] = useState('')
   const [ authModalOpened, setAuthModalOpened ] = useState(false);
-  const [emailState, setEmailState] = useState(fields) // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider функции handleFormProvider, т.к. не реализован вызов модалки асинхронно из фукнции. 
+  const [emailState, setEmailState] = useState() // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider функции handleFormProvider, т.к. не реализован вызов модалки асинхронно из фукнции. 
+  const [passwordState, setPasswordState] = useState([{name: 'pass', value: ''}, {name: 'confirm', value: ''}]) // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider функции handleFormProvider, т.к. не реализован вызов модалки асинхронно из фукнции. 
+  console.log(passwordState)
+ 
+  
   const handleModalClose = () => {
     setAuthModalOpened(false)
   }
@@ -29,8 +32,15 @@ const ProfileForm = () => {
     try {
       const credential = EmailAuthProvider.credential(email, password); // связываем email и пароль с текущим firebase acc и получаем credential.
       const userCredential = await reauthenticateWithCredential(user, credential); // реавторизация
-      await updateEmail(userCredential.user, emailState[0].value); // изменяем firebase acc
-      await updateOperatorProfile(authorizedUser, admins, {[emailState[0].name]: emailState[0].value}); // изменяем firestore запись. 
+      console.log(curEditingForm)
+      if (curEditingForm === 'emailForm') {
+        await updateEmail(userCredential.user, emailState[0].value); // изменяем firebase acc
+        await updateOperatorProfile(authorizedUser, admins, {[emailState[0].name]: emailState[0].value});// изменяем firestore запись.
+      }
+      if (curEditingForm === 'passwordForm') {
+        await updatePassword(userCredential.user, passwordState[0].value); // изменяем firebase acc
+      }
+      
       openNotification(notificationApi, 'success', 'updateAdmin');
       setAuthModalOpened(false);
       setCurEditingForm('');
@@ -51,6 +61,7 @@ const ProfileForm = () => {
   // }
 
   const handleFormProvider = async (formName, { values, forms }) => {
+    console.log(values)
     // TODO: придумать асинзронный вызов модалки с формой
     try {
       setProfileUpdating(true)
@@ -58,7 +69,7 @@ const ProfileForm = () => {
         await updateOperatorProfile(authorizedUser, admins, values)
         openNotification(notificationApi, 'success', 'updateAdmin')
       }
-      if(formName === 'emailForm') {
+      if(formName === 'emailForm' || formName === 'passwordForm') {
         setAuthModalOpened(true)
         // const confirmed = await modal.confirm(modalConfig);  TODO: УДАЛИТЬ если не поднадобится
       }
@@ -66,9 +77,6 @@ const ProfileForm = () => {
       // INFO: придумать асинхронный вызов модалки с формой. Сейчас ловятся ошибки только для "regularDataForm".
       console.log(e)
       openNotification(notificationApi, 'error', 'updateAdmin')
-    } finally {
-      setCurEditingForm('')
-      setProfileUpdating(false)
     }
   }
 
@@ -78,9 +86,9 @@ const ProfileForm = () => {
         <Form.Provider
           onFormFinish={handleFormProvider}
         >
-          <RegularDataForm name='regularDataForm' regularDataIsEdit={regularDataIsEdit} setRegularDataIsEdit={setRegularDataIsEdit}/>
-          <EmailForm name='emailForm' emailIsEdit={emailIsEdit} setEmailIsEdit={setEmailIsEdit} emailState={emailState} setEmailState={setEmailState} />
-          {/* <PasswordForm applyChanges={applyChanges} /> */}
+          <RegularDataForm name='regularDataForm' />
+          <EmailForm name='emailForm'  emailState={emailState} setEmailState={setEmailState} />
+          {authorizedUser.role === 'admin' ? <PasswordForm name='passwordForm' passwordState={passwordState} setPasswordState={setPasswordState}/> : null }
           <Button danger onClick={() => signOut(auth)}>Выйти из аккаунта</Button>
         </Form.Provider>
       </div>

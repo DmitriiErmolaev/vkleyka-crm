@@ -37,10 +37,8 @@ export const getFullCountryName = (countries, countryCode) => {
   return findedCountry.name_ru
 }
 
-export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot, tableDataBeforeChanging) => {
-  // console.log(savedData)
-  debugger
-  const newApps = applications.reduce((accum, application) => {
+export const getDataForTable = (applications, countries, chatsCollSnapshot, appsCollSnapshot ) => {
+  return applications.reduce((accum, application) => {
     // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
     //   return accum // TODO: обход бага. Решить с Жангиром
     // }
@@ -60,8 +58,6 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
     )
     return accum;
   }, [])
-
-  return [...tableDataBeforeChanging, ...newApps]
 }
 
 // export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot, appsCollSnapshot) => {
@@ -119,7 +115,7 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
 //   return filters;
 // }
 
-export const getFilters = (country, status, column, authorizedUser, appsSearchFilter, lastDoc) => { // Новый с пагинацией
+export const getFilters = (country, status, column, authorizedUser, appsSearchFilter) => { // Новый с пагинацией
   let filters = [
     where('paymentSuccessful', '==', true),
   ];

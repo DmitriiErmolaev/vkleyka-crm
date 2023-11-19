@@ -18,13 +18,14 @@ export const getDataFromCollSnapshot = (collSnap) => {
   })
 }
 
-export const getQueryForAppsWithLimit = (ref, constraints, lastDoc) => {
-  if (lastDoc) constraints.push(startAfter(lastDoc));
+export const getQueryForAppsWithLimit = (ref, filters, lastDoc) => {
+  // Фильтры нельзя мутировать, т.к. в функции getQueryForAppsWithoutLimit фильтры не должны быть измененными
+  const constraints = lastDoc ? [...filters, startAfter(lastDoc)] : filters;
   return query(ref, ...constraints, limit(2))
 }
 
-export const getQueryForAppsWithoutLimit = (ref, constraints) => {
-  return query(ref, ...constraints)
+export const getQueryForAppsWithoutLimit = (ref, filters) => {
+  return query(ref, ...filters)
 }
 
 export const getDocsRefs = (collSnap) => {
