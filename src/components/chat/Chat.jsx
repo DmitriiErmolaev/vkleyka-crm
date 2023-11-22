@@ -13,12 +13,12 @@ import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
 
 const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) => {
-  const {authorizedUser, role} = useContext(ProgramContext)
+  const { authorizedUser, role } = useContext(ProgramContext)
   const allMessages = useRef(null);
-  const [uploadingMessageWithAttachments, setUploadingMessageWithAttachments] = useState([]);
-  // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot. 
-  const [chatCollSnapshot, chatLoading, chatError] = useCollection(getChatQueryForApplication(applicantId));
-  const { setUnreadMessagesToNotify } = useContext(WorkPageContext); 
+  const [ uploadingMessageWithAttachments, setUploadingMessageWithAttachments ] = useState([]);
+  // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot.
+  const [ chatCollSnapshot, chatLoading, chatError ] = useCollection(getChatQueryForApplication(applicantId));
+  const { setUnreadMessagesToNotify } = useContext(WorkPageContext);
 
 
   useLayoutEffect(()=> {
@@ -30,7 +30,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
   useLayoutEffect(() => {
     if(!chatLoading) {
       //TODO: рефакторить компонент, т.к. функции дублируются тут и перед рендерои. Спустить эффект вниз.. Вычисления сделать выше.
-      const dialogueSnap = chatCollSnapshot.docs[0]; 
+      const dialogueSnap = chatCollSnapshot.docs[0];
       const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
       const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
         if(message.sendState === 0 && message.sender !== authorizedUser.name) {
@@ -50,7 +50,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
     return (
       <div style={{backgroundColor:"white", width:"100%", height:"400px", marginTop:"30px", boxShadow:"2px 2px 10px rgba(0, 0, 0, 0.10)"}}>
         <ul>
-          <Spin size="large"/>  
+          <Spin size="large"/>
         </ul>
       </div>
     )
@@ -61,7 +61,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
   }
 
   if(chatCollSnapshot.size !== 1) {
-    // TODO:  ошибка. Т.к. должен вывестись только 1 чат. 
+    // TODO:  ошибка. Т.к. должен вывестись только 1 чат.
   }
 
   const scrollHandle = (e) => {
@@ -73,7 +73,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
     }
   }
  
-  const dialogueSnap = chatCollSnapshot.docs[0]; 
+  const dialogueSnap = chatCollSnapshot.docs[0];
   const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
   const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages);
   
@@ -97,7 +97,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
           : (
               <div className="chat__operator-info">
                 <div className="operator-title">
-                  Отв-ный: 
+                  Отв-ный:
                 </div>
                 <div className="operator-name">
                   <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogue.assignedTo, disabledProp:operatorSelectDisabled}}/>
@@ -105,8 +105,8 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
               </div>
             )
         }
-        <ChatActiveStatus 
-          dialogueAssignedTo={dialogue.assignedTo} 
+        <ChatActiveStatus
+          dialogueAssignedTo={dialogue.assignedTo}
           dialogueSnap={dialogueSnap}
           source={source}
           clientApplicationsSnaps={clientApplicationsSnaps}

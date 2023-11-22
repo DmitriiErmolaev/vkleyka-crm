@@ -21,7 +21,7 @@ const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
   const options = getCountriesOptions(countries);
 
   return (
-    <Select 
+    <Select
       showSearch
       filterOption = {filterOption}
       allowClear="true"
@@ -34,6 +34,7 @@ const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
         width: 180,
       }}
       size="large"
+      loading={countries.length === 0}
     />
   );
 };

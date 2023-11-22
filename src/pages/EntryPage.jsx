@@ -15,12 +15,12 @@ const primeLayoutStyle = {
   backgroundColor:"white",
 }
 
-const EntryPage = () => {
+const EntryPage = ({children}) => {
  
   return (
     <Layout className="wrapper" >
       <Content className='entry-page__primary-container'>
-        <AuthContainer />
+        {children}
       </Content>
     </Layout>
   )

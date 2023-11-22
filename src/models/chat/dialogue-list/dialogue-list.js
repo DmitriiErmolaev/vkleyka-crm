@@ -50,7 +50,7 @@ function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clie
   // TODO: рефакторинг
   const dialoguesListGroups = orderedDialoguesSnapshots.reduce((acc, dialogueSnap) => {
     const dialogue = dialogueSnap.data();
-  
+
     const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
       if(message.sendState === 0 && message.sender !== authorizedUser.name) {
         ++acc;
@@ -61,24 +61,24 @@ function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clie
     const client = clients.find(user => {
       return user.UID === dialogue.UID;
     })
-    
+
     const clientApplicationsSnaps = appsCollSnapshot.docs.reduce((acc, appSnap) => {
-      // TODO убедиться, что 
+      // TODO убедиться, что
       if (appSnap.get("UID") === dialogue.UID && appSnap.get("preparedInformation.preparationStatus") !== 2) {
         acc.push(appSnap);
         return acc;
       }
       return acc;
     }, [])
-  
+
     const dialogueListItem = (
-      <DialogueListItem 
-        key={dialogue.UID} 
-        client={client} 
-        dialogue={dialogue} 
+      <DialogueListItem
+        key={dialogue.UID}
+        client={client}
+        dialogue={dialogue}
         selectedDialogue={selectedDialogue}
         functions={functions}
-        unreadMessagesNumber={unreadMessagesNumber} 
+        unreadMessagesNumber={unreadMessagesNumber}
         clientApplicationsSnaps={clientApplicationsSnaps}// т.к. если у клиента нет оплаченной заявки - то будет undefined.
         dialogueSnap={dialogueSnap}
       />
@@ -92,7 +92,7 @@ function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clie
     if ((!dialogue.assignedTo) && dialogue.active) {
       acc.grabableDialogues.push(dialogueListItem);
       return acc;
-    } 
+    }
 
     return acc;
   }, {myDialogues: [], grabableDialogues: [],})
@@ -138,7 +138,7 @@ function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapsh
     const client = clients.find(user => {
       return user.UID === dialogue.UID;
     })
-    
+
     const clientApplicationsSnaps = appsCollSnapshot.docs.reduce((acc, appSnap) => {
       if (appSnap.get("UID") === dialogue.UID) {
         acc.push(appSnap);
@@ -146,21 +146,21 @@ function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapsh
       }
       return acc;
     }, [])
-    
+
     return (
-      <DialogueListItem 
-        key={dialogue.UID} 
-        client={client} 
-        dialogue={dialogue} 
+      <DialogueListItem
+        key={dialogue.UID}
+        client={client}
+        dialogue={dialogue}
         dialogueSnap={dialogueSnap}
         selectedDialogue={selectedDialogue}
         functions={functions}
-        // unreadMessagesNumber={unreadMessagesNumber} 
+        // unreadMessagesNumber={unreadMessagesNumber}
         clientApplicationsSnaps={clientApplicationsSnaps}
       />
     ) 
   })
-  // console.log(dialoguesList)  
+
   if(dialoguesList.length === 0) {
     dialoguesList.push(
       <div key='dialoguesAreAbsent' style={{textAlign:'center', color:'#b8b8b8', fontStyle:'italic'}}>

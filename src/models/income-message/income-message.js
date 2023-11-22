@@ -5,11 +5,11 @@ export const notificationGlobConfig = {
 }
 
 
-export const showUnredMessage = (api, applicantName, message) => {
+export const showUnredMessage = (api, name, message) => {
   api.info({
     icon: '',
-    key: message.UID,
-    message: applicantName,
+    key: message.id,
+    message: name, // TODO: исправить, когда появится поле в БД.
     description: message.content, 
     className: 'notification',
   })

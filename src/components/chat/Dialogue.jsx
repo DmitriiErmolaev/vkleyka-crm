@@ -8,15 +8,15 @@ import { getDataFromCollSnapshot } from '../../models/data-processing';
 
 const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}) => {
   const dialogueContainerRef = useRef(null);
-  const {clientsCollSnapshot} = useContext(WorkPageContext);
+  const {cleintsData} = useContext(WorkPageContext);
 
   useLayoutEffect(() => {
     console.log(dialogueContainerRef.current)
     console.log(dialogueContainerRef.current.style.top)
-    dialogueContainerRef.current.style.top = `${window.scrollY}px`; 
+    dialogueContainerRef.current.style.top = `${window.scrollY}px`;
   },[])
 
-  // когда открывается список чатов. Диалог тоже начинает рендерится.  
+  // когда открывается список чатов. Диалог тоже начинает рендерится.
   // Данная проверка это предотвращает.
   // if(!dialogueWindowOpen) {
   //   return null;
@@ -28,15 +28,14 @@ const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}
 
   }
 
-  const clients = getDataFromCollSnapshot(clientsCollSnapshot);
-  const client = clients.find(user => {
+  const client = cleintsData.find(user => {
     return user.UID === selectedDialogue.dialogue.UID;
   })
 
-  const userName = client.name 
-  ? client.name 
+  const userName = client.name
+  ? client.name
   : (
-      client.passports[0]?.first_name 
+      client.passports[0]?.first_name
         ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
         : client.UID
     )
@@ -61,7 +60,6 @@ const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}
         <Chat applicantName={userName} applicantId={selectedDialogue.dialogue.UID} unreadMessagesNumber={selectedDialogue.unreadMessagesNumber} clientApplicationsSnaps={selectedDialogue.clientApplicationsSnaps} source="global-chat"/>
       </Drawer>
     </div>
-    
   );
 };
 

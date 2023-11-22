@@ -5,7 +5,7 @@ import { showUnredMessage } from '../models/income-message/income-message';
 import { WorkPageContext } from '../models/context';
 
 const UnreadMessageNotificationContextHolder = ({dialoguesData, notificationsWillBeNotShown}) => {
-  const { clientsCollSnapshot } = useContext(WorkPageContext)
+  const { cleintsData } = useContext(WorkPageContext)
   const [api, contextHolder] = notification.useNotification(notificationGlobConfig);
 
   useEffect(() => {
@@ -16,16 +16,16 @@ const UnreadMessageNotificationContextHolder = ({dialoguesData, notificationsWil
         dialogue.messages.forEach(message => {
           if(!message.sendState ) {
             if(checkWillMessageBeShown(dialogue.UID, message, notificationsWillBeNotShown)) {
-              const clientDocSNap = clientsCollSnapshot.docs.find(clientDocSnap => clientDocSnap.get('UID') === dialogue.UID)
-              const client = clientDocSNap.data()
-              const applicantName = client?.name 
-              ? client.name 
-              : (
-                client?.passports[0]?.first_name 
-                    ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
-                    : client?.UID
-                )
-              showUnredMessage(api, applicantName, message);
+              // const clientDocSNap = clientsCollSnapshot.docs.find(clientDocSnap => clientDocSnap.get('UID') === dialogue.UID) // TODO: Удалить, когда будет добавлено имя в объект диалога.
+              // const client = clientDocSNap.data()
+              // const applicantName = client?.name
+              // ? client.name
+              // : (
+              //   client?.passports[0]?.first_name
+              //       ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
+              //       : client?.UID
+              //   )
+              showUnredMessage(api, dialogue.name, message);
               audio.play()
             } else {
               return;
@@ -35,14 +35,9 @@ const UnreadMessageNotificationContextHolder = ({dialoguesData, notificationsWil
       })
     // }
    
-  }, [dialoguesData, api, notificationsWillBeNotShown, ])
+  }, [dialoguesData, api, notificationsWillBeNotShown])
 
-  return (
-    <>
-      {contextHolder}
-    </>
-    
-  )
-};
+  return contextHolder;
+}
 
 export default UnreadMessageNotificationContextHolder;

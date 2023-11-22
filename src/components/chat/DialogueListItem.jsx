@@ -12,11 +12,7 @@ const {Meta} = Card;
 
 const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, functions, clientApplicationsSnaps, unreadMessagesNumber}) => {
   const { clientId } = useParams();
-  // const {authorizedUser, role} = useContext(ProgramContext)
-
-  // const [appsCollSnapshot, appsLoading, appsError] = useCollection(clientId, authorizedUser.id, role);
   const navigate = useNavigate();
-  // console.log('DialogueListItem')
 
   const handleDialogSelect = () => {
     if(clientApplicationsSnaps.length > 0) {
@@ -34,10 +30,10 @@ const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, fun
   }
 
   // у клиента имени может не быть. Вывести айди если его нет.
-  const applicantName = client?.name 
-    ? client.name 
+  const applicantName = client?.name
+    ? client.name
     : (
-      client?.passports[0]?.first_name 
+      client?.passports[0]?.first_name
           ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
           : client?.UID
       )
@@ -46,13 +42,13 @@ const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, fun
     ? ''
     : ( dialogue.messages[dialogue.messages.length - 1].content === ''
       ? <i>attachment</i>
-      : dialogue.messages[dialogue.messages.length - 1].content 
-    ) 
+      : dialogue.messages[dialogue.messages.length - 1].content
+    )
 
   const messageCreationTime = !dialogue.messages.length
       ? ''
       : getlastMessageTime(dialogue.messages[dialogue.messages.length - 1].time)
-  
+
 
   return (
     <Card.Grid
@@ -64,17 +60,17 @@ const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, fun
           <Meta
             style={{backgroundColor:"transparent",border:"none", alignItems:"center",marginBottom:"15px"}}
             avatar={
-              <Avatar 
-                shape="circle" 
-                icon={<UserOutlined />} 
-                alt="avatar" 
+              <Avatar
+                shape="circle"
+                icon={<UserOutlined />}
+                alt="avatar"
                 size={50}
               />
             }
             title={
-              <DialogueListItemTitle 
+              <DialogueListItemTitle
                 applicantName={applicantName || <i style={{color:'#8A8A8A', fontWeight:'400'}}>Аккаунт удален</i>} // TODO: временное решение. Ждем изменений от Жангира
-                unreadMessagesNumber={unreadMessagesNumber} 
+                unreadMessagesNumber={unreadMessagesNumber}
                 messageCreationTime={messageCreationTime}
               />
             }

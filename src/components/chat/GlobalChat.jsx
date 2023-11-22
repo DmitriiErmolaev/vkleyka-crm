@@ -25,21 +25,19 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
     setDialogueWindowOpen(false)
   }
 
-  
-  
   return (
     <>
-      <DialoguesListContainer 
-        drawerOpen={drawerOpen} 
-        handleDrawerClose={handleDrawerClose} 
-        selectedDialogue={selectedDialogue} 
-        setSelectedDialogue={setSelectedDialogue} 
+      <DialoguesListContainer
+        drawerOpen={drawerOpen}
+        handleDrawerClose={handleDrawerClose}
+        selectedDialogue={selectedDialogue}
+        setSelectedDialogue={setSelectedDialogue}
         setDialogueWindowOpen={setDialogueWindowOpen}
       />
       {dialogueWindowOpen ? (
-        <Dialogue 
-          setDialogueWindowOpen={setDialogueWindowOpen} 
-          selectedDialogue={selectedDialogue} 
+        <Dialogue
+          setDialogueWindowOpen={setDialogueWindowOpen}
+          selectedDialogue={selectedDialogue}
           setSelectedDialogue={setSelectedDialogue}
         />
       ) : (

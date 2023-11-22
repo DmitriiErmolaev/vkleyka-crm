@@ -10,13 +10,13 @@ import '../../assets/loading.scss';
 
 
 const DialoguesList = ({chatsCollSnapshot, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose, dialoguesListContainerRef}) => {
-  const {clientsCollSnapshot} = useContext(WorkPageContext);
+  const {cleintsData} = useContext(WorkPageContext);
   const {authorizedUser, role} = useContext(ProgramContext);
   const [appsCollSnapshot, appsLoading, appsError] = useCollection(getApplicationsBySetOfApplicantIDs(chatsCollSnapshot, authorizedUser.id, role));
-  
+
   useLayoutEffect(() => {
     if (!appsLoading) {
-      dialoguesListContainerRef.current.style.top = `${window.scrollY}px` 
+      dialoguesListContainerRef.current.style.top = `${window.scrollY}px`
     }
   }, [appsLoading, dialoguesListContainerRef])
 
@@ -37,12 +37,10 @@ const DialoguesList = ({chatsCollSnapshot, selectedDialogue, setSelectedDialogue
     return <Error error={appsError}/>
   }
 
-  const clients = getDataFromCollSnapshot(clientsCollSnapshot);
-
   const dialoguesList = getDialogueList(
     authorizedUser, 
     chatsCollSnapshot, 
-    clients, 
+    cleintsData, 
     appsCollSnapshot, 
     selectedDialogue,
     {setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose}

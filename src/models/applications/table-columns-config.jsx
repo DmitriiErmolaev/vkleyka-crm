@@ -22,9 +22,10 @@ const id_object = {
     align: "center",
     render: (text, record, _) => {
       return (
-        <Link 
-          to={`/application/${record.clientId}/${record.key}`} 
+        <Link
+          to={`/application/${record.clientId}/${record.key}`}
           style={{color:"#0EA5E9", fontWeight:"800"}}
+          state={{ country: record.country }}
         >
           {text}
         </Link>
@@ -70,8 +71,8 @@ const country_object = {
   role: all,
   config: {
     title: 'Country',
-    dataIndex: 'country',
-    key: 'country',
+    dataIndex: 'countryFullName',
+    key: 'countryFullName',
     align: "center",
   }
 }
@@ -94,15 +95,15 @@ const viser_object = {
       }, [])
       const operatorSelectDisabled = record.status
       return (
-        <SelectComponent 
-          collectionType={"operators"} 
+        <SelectComponent
+          collectionType={"operators"}
           data={{
-            assignedTo, 
-            dialogueSnap: record.dialogueSnap, 
+            assignedTo,
+            dialogueSnap: record.dialogueSnap,
             clientApplicationsSnaps,
             disabledProp: record.status === 2 ? true : false,
           }}
-        /> 
+        />
       )
     }
   }
@@ -112,7 +113,7 @@ const allObjects = [
   id_object,
   date_object,
   applicant_object,
-  status_object, 
+  status_object,
   country_object,
   viser_object,
 ]

@@ -6,7 +6,7 @@ import Aside from "../components/layout/sider/Aside";
 import GlobalChat from "../components/chat/GlobalChat";
 import '../assets/workpage.scss';
 import '../assets/notification/notification.scss';
-import { useCollection } from "react-firebase-hooks/firestore";
+import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
 import { getClientsQuery } from "../models/clients/clients";
 import Error from "../components/error/Error";
 import { ProgramContext, WorkPageContext } from "../models/context";
@@ -14,14 +14,16 @@ import { getChatsQueryForDialoguesList } from "../models/chat/chat-data-processi
 import UnreadMessageNotificationContextHolder from "../components/UnreadMessageNotificationContextHolder";
 const {Content} = Layout;
 
+const CLIENTS_QUERY = getClientsQuery();
+
 const WorkPage = () => {
   const [ drawerOpen, setDrawerOpen ] = useState(false);
-  const { authorizedUser, role } = useContext(ProgramContext);
   const [ searchFilter, setSearchFilters ] = useState('');
   const [ appsSearchFilter, setAppsSearchFilter ] = useState('');
-  const contentRef = useRef(null);
   const [ notificationsWillBeNotShown, setNotificationsWillBeNotShown ] = useState(null);
-  const [ clientsCollSnapshot, clientsLoading, clientsError ] = useCollection(getClientsQuery());
+  const { authorizedUser, role } = useContext(ProgramContext);
+  const contentRef = useRef(null);
+  const [ cleintsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilter));
 
   useEffect(() => {
@@ -64,7 +66,7 @@ const WorkPage = () => {
   })
 
   return (
-    <WorkPageContext.Provider value={{clientsCollSnapshot, chatsCollSnapshot, chatsLoading, searchFilter, setSearchFilters, appsSearchFilter, setAppsSearchFilter, unreadMessagesArray: notificationsWillBeNotShown }}>
+    <WorkPageContext.Provider value={{cleintsData, chatsCollSnapshot, chatsLoading, searchFilter, setSearchFilters, appsSearchFilter, setAppsSearchFilter, unreadMessagesArray: notificationsWillBeNotShown }}>
       {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
       <ConfigProvider
         theme={{

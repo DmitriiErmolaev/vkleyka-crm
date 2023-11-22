@@ -5,10 +5,6 @@ export const addZero = (num) => {
 export const getShortYear = (year) => {
   return +String(year).slice(2);
 }
-// TODO: не надо
-// export const getCollectionFirstDocRef = (collSnapShot) => {
-//   return collSnapShot.docs[0].ref;
-// } 
 
 export const getFileExtension = (str) => {
   return str.slice(str.lastIndexOf(".") + 1);

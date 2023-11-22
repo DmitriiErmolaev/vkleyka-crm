@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
-import {useDocument, useCollection} from "react-firebase-hooks/firestore"
-import {useParams} from "react-router-dom";
-import {Layout, Row, Col, Spin} from "antd";
+import { useDocument, useCollection, useDocumentData } from "react-firebase-hooks/firestore"
+import { useLocation, useParams } from "react-router-dom";
+import { Layout, Row, Col, Spin } from "antd";
 import Chat from "../chat/Chat";
 import CardComponent from "../card/CardComponent";
 import { getAllFieldsFromDocSnapshot } from "../../models/data-processing";
@@ -9,7 +9,7 @@ import UploadSection from "./UploadSection";
 import QuestionnaireSection from "../questionnaire/QuestionnaireSection";
 import Error from "../error/Error";
 import { getFullCountryName } from "../../models/applications/table-data-processing";
-import { getCountryFlag } from "../../models/countries/countries";
+import { getCountry, getCountryFlag } from "../../models/countries/countries";
 import { getAllCountriesRef } from "../../models/countries/countries";
 import { getSingleFieldFromDocSnapshot } from "../../models/data-processing";
 import { getChatQuery } from "../../models/chat/chat-data-processing";
@@ -24,15 +24,14 @@ const visaType = {
   work: "Рабочая",
 }
 
-const ALL_COUNTRIES_REF = getAllCountriesRef();
-
-const ApplicationForm = ({clientId }) => {
-  const {appId} = useParams();
+const ApplicationForm = ({ clientId }) => {
+  const { appId } = useParams();
   const applicationFormRef = useRef(null);
+  const { state } = useLocation();
   const { authorizedUser, role } = useContext(ProgramContext);
-  const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
-  const [allClientAppsCollSnapshot, allClientAppsCollSnapshotLoading, allClientAppsCollSnapshotError] = useCollection(getAllClientApplications(clientId, authorizedUser.id, role));
-  const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
+  const [ countriesData, countriesLoading, countriesError, countriesDocSnapshot ] = useDocumentData(getAllCountriesRef(state?.country));
+  const [ allClientAppsCollSnapshot, allClientAppsCollSnapshotLoading, allClientAppsCollSnapshotError ] = useCollection(getAllClientApplications(clientId, authorizedUser.id, role));
+  const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatQuery());
 
   if ( countriesLoading || chatsLoading || allClientAppsCollSnapshotLoading) {
     return (
@@ -41,17 +40,17 @@ const ApplicationForm = ({clientId }) => {
       </div>
     )
   }
-  
+
   if(allClientAppsCollSnapshotError || countriesError || chatsError ) {
     return <Error error={allClientAppsCollSnapshotError || countriesError || chatsError }/>
   }
-
-  const curApplicationSnap = allClientAppsCollSnapshot.docs.find(docSnap => docSnap.id === appId);
+  
   const currentClientApplications = allClientAppsCollSnapshot.docs;
+  const curApplicationSnap = allClientAppsCollSnapshot.docs.find(docSnap => docSnap.id === appId);
   const application = getAllFieldsFromDocSnapshot(curApplicationSnap)
-  const countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries");
-  const countryNameRu = getFullCountryName(countries, application.country_code) 
-  const countryFlag = getCountryFlag(countries, application.country_code)
+  const country = state?.country ? state.country : getCountry(countriesData.countries, application.country_code);
+  const countryNameRu = state?.country ? state.country.name_ru : country.name_ru;
+  const countryFlag = state?.country ? state.country.flag : country.flag;
   const cardTitle = `${countryNameRu}-${visaType[application.type]}`
   const curAppStatus = application.preparedInformation.preparationStatus;
   const applicantName = `${application.passports[0].first_name} ${application.passports[0].last_name}`
@@ -62,7 +61,7 @@ const ApplicationForm = ({clientId }) => {
       <Layout ref={applicationFormRef} style={{height:"calc(100vh - 64px)", padding:"0px 10px 10px"}}>
         <Row gutter={20} style={{height:"100% "}}>
           <Col span={12} style={{height:"100%", overflowY:"auto"}}>
-            <CardComponent 
+            <CardComponent
               countryFlag={countryFlag}
               cardTitle={cardTitle}
               appDocId={application.documentID}
@@ -72,10 +71,10 @@ const ApplicationForm = ({clientId }) => {
               currentClientApplications={currentClientApplications}
               questionnaire={application.questionnary?.answers}
             />
-            <QuestionnaireSection 
-              questionnaire={application.questionnary?.answers} 
-              passports={application.passports} 
-              appRef={curApplicationSnap.ref} 
+            <QuestionnaireSection
+              questionnaire={application.questionnary?.answers}
+              passports={application.passports}
+              appRef={curApplicationSnap.ref}
               appId={appId}
             />
           </Col>
@@ -86,7 +85,7 @@ const ApplicationForm = ({clientId }) => {
             <UploadSection uploadedDocs={application.preparedInformation.documents}/>
           </Col>
         </Row>
-      </Layout>  
+      </Layout>
     </ApplicationStatus.Provider>
   )
 }
