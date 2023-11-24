@@ -12,20 +12,24 @@ import Error from "../components/error/Error";
 import { ProgramContext, WorkPageContext } from "../models/context";
 import { getChatsQueryForDialoguesList } from "../models/chat/chat-data-processing";
 import UnreadMessageNotificationContextHolder from "../components/UnreadMessageNotificationContextHolder";
+import GlobalDataDownload from "../components/GlobalDataDownload";
 const {Content} = Layout;
 
 const CLIENTS_QUERY = getClientsQuery();
 
 const WorkPage = () => {
   const [ drawerOpen, setDrawerOpen ] = useState(false);
-  const [ searchFilter, setSearchFilters ] = useState('');
-  const [ appsSearchFilter, setAppsSearchFilter ] = useState('');
+  const [  chatsSearchFilter, setChatsSearchFilter ] = useState('');
+  const [ appsSearch, setAppsSearch ] = useState({text: '', mode: false});
   const [ notificationsWillBeNotShown, setNotificationsWillBeNotShown ] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [lastDoc, setLastDoc] = useState();
   const { authorizedUser, role } = useContext(ProgramContext);
   const contentRef = useRef(null);
   const [ cleintsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
-  const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, searchFilter));
-
+  const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
+  console.log(tableData)
+  
   useEffect(() => {
     if(!chatsLoading) {
       const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
@@ -66,7 +70,7 @@ const WorkPage = () => {
   })
 
   return (
-    <WorkPageContext.Provider value={{cleintsData, chatsCollSnapshot, chatsLoading, searchFilter, setSearchFilters, appsSearchFilter, setAppsSearchFilter, unreadMessagesArray: notificationsWillBeNotShown }}>
+    <WorkPageContext.Provider value={{cleintsData, chatsCollSnapshot, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, tableData, setTableData, lastDoc, setLastDoc }}>
       {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
       <ConfigProvider
         theme={{
@@ -79,13 +83,15 @@ const WorkPage = () => {
           <Head />
           <Layout className="main" hasSider>
             <Aside handleMenuSelect={handleMenuSelect} drawerOpen={drawerOpen}/>
-            <Content
-              ref={contentRef}
-              className="content"
-            >
-              {globalChatComponent}
-              <Outlet />
-            </Content>
+            <GlobalDataDownload >
+              <Content
+                ref={contentRef}
+                className="content"
+              >
+                {globalChatComponent}
+                <Outlet />
+              </Content>
+            </GlobalDataDownload>
           </Layout>
         </Layout>
       </ConfigProvider>

@@ -6,6 +6,8 @@ export const getSingleFieldFromDocSnapshot = (docSnapshot, fieldName) => {
 }
 
 export const getAllFieldsFromDocSnapshot = (docSnapshot) => {
+  console.log(docSnapshot)
+
   return docSnapshot.data();
 }
 

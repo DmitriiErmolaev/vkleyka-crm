@@ -4,10 +4,10 @@ import { WorkPageContext } from '../../models/context';
 const { Search } = Input;
 
 const DialogueSearch = () => {
-  const { searchFilter, setSearchFilters } = useContext(WorkPageContext);
+  const { chatsSearchFilter, setChatsSearchFilter } = useContext(WorkPageContext);
 
   const handleValueChange = (e) => {
-    setSearchFilters(e.target.value);
+    setChatsSearchFilter(e.target.value);
  }
  
   return (
@@ -15,7 +15,7 @@ const DialogueSearch = () => {
       allowClear
       size={"large"}
       onChange={handleValueChange}
-      value={searchFilter}
+      value={chatsSearchFilter}
       style={{
         width: "100%",
       }}

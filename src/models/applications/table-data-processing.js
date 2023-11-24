@@ -93,3 +93,8 @@ export const getFilters = (country, status, column, authorizedUser, appsSearchFi
 
   return filters;
 }
+
+export const resetBeforeDownloadFilteredData = (lastDoc, setLastDoc, setTableData) => {
+  setTableData([])
+  if(lastDoc) setLastDoc(null); // обязательно стираем сохраненный последний документ, если заявки подгружались.
+}

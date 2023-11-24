@@ -28,14 +28,23 @@
         color: rgba(255, 255, 255, 0.47);
       }
     }
-  
-    .chat__applicant-name {
+    .chat__personal {
       width:40%;
-      overflow-wrap:break-word;
-      overflow-x: hidden;
-      text-overflow:ellipsis;
+
+      .chat__applicant-name {
+        overflow-x: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+      }
+
+      .chat__applicant-id {
+        overflow-x: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        font-size:11px;
+      }
     }
-    
+
     .chat__operator-info {
       display:flex;
       justify-content: flex-end;
@@ -43,13 +52,13 @@
       width:40%;
       flex-wrap: wrap;
     }
-    
+
     .chat__active-status {
       width:20%;
       margin-left:auto;
     }
   }
-  
+
   .chat__messages {
     display: flex;
     flex-direction: column;
@@ -57,7 +66,7 @@
     overflow-y: auto;
     scrollbar-width: auto;
     scrollbar-color: #1677ff #b8d5ff ;
-    
+
     .unread-notification {
       margin-bottom: 5px;
       padding:5px;
@@ -67,7 +76,7 @@
       color:#1677ff;
       text-align:center;
     }
-  
+
     &::-webkit-scrollbar {
       width:6px;
     }
@@ -96,7 +105,7 @@
     height: 11.47%;
     align-items: center;
     margin:0 10px;
-  } 
+  }
 
   .chat__footer_not-allowed {
     justify-content:center;

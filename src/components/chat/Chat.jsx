@@ -20,7 +20,6 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
   const [ chatCollSnapshot, chatLoading, chatError ] = useCollection(getChatQueryForApplication(applicantId));
   const { setUnreadMessagesToNotify } = useContext(WorkPageContext);
 
-
   useLayoutEffect(()=> {
     if(!chatLoading){
       allMessages.current.scrollTop = 9999;
@@ -43,7 +42,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
         readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
       }
     }
-    
+
   },[chatCollSnapshot, chatLoading, authorizedUser, setUnreadMessagesToNotify])
 
   if(chatLoading){
@@ -72,11 +71,12 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
       readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
     }
   }
- 
+  console.log(chatCollSnapshot.docs.map(elem => elem.data()))
+
   const dialogueSnap = chatCollSnapshot.docs[0];
   const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
   const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages);
-  
+
   const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
     if(message.sendState === 0 && message.sender !== authorizedUser.name) {
       ++acc;
@@ -89,8 +89,14 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
   return (
     <div className="chat__container" >
       <div className="chat__info">
-        <div className="chat__applicant-name">
-          {applicantName}
+        <div className="chat__personal">
+          <p className="chat__applicant-name">
+            {applicantName}
+          </p>
+          <p className="chat__applicant-id">
+            <span>ID: </span>
+            <span>{dialogue.UID}</span>
+          </p>
         </div>
         {source === 'application'
           ? null

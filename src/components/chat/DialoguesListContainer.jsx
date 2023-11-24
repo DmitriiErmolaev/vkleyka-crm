@@ -15,7 +15,6 @@ import '../../assets/loading.scss';
 
 const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen}) => {
   const dialoguesListContainerRef = useRef(null)
-  const [ searchFilters, setSearchFilters ] = useState('');
   const { authorizedUser, role } = useContext(ProgramContext);
   const { chatsCollSnapshot, chatsLoading } = useContext(WorkPageContext);
 
@@ -28,7 +27,7 @@ const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue
         bodyStyle={{padding:"5px 0 10px 0"}}
         rootClassName="dialogues-list"
         placement="left"
-        title={<DialogueSearch setSearchFilters={setSearchFilters} />}
+        title={<DialogueSearch />}
         open={drawerOpen}
         mask={false}
         onClose={handleDrawerClose}

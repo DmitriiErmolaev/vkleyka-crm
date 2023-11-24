@@ -57,16 +57,13 @@ const TableComponent = ({
 
   return (
     <>
-      <AppsPaginator currentAppsCount={currentAppsCount} totalAppsCount={totalAppsCount} />
-        <Table
-          size="small"
-          // dataSource={tableLoading ? tableDataBeforeChanging : tableData}
-          dataSource={tableData}
-          columns={columnsSettings}
-          pagination={false}
-          onChange={handleTableChange}
-        />
-      <AppsPaginator currentAppsCount={currentAppsCount} totalAppsCount={totalAppsCount} />
+      <Table
+        size="small"
+        dataSource={tableData}
+        columns={columnsSettings}
+        pagination={false}
+        onChange={handleTableChange}
+      />
     </>
     
 
