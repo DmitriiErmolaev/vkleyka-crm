@@ -5,7 +5,6 @@ import { getNumberOfApplications } from '../../utils';
 
 const ApplicationExistsInfo = ({clientApplicationsSnaps}) => {
   const numberOfApplications = getNumberOfApplications(clientApplicationsSnaps.length)
-  // console.log('ApplicationExistsInfo')
 
   return clientApplicationsSnaps.length > 0 ? (
     <div className="application-exists">

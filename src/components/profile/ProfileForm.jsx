@@ -20,9 +20,7 @@ const ProfileForm = () => {
   const [ authModalOpened, setAuthModalOpened ] = useState(false);
   const [emailState, setEmailState] = useState() // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider функции handleFormProvider, т.к. не реализован вызов модалки асинхронно из фукнции. 
   const [passwordState, setPasswordState] = useState([{name: 'pass', value: ''}, {name: 'confirm', value: ''}]) // вынесли стейт имейла , т.к. нельзя получить стейт из formProvider функции handleFormProvider, т.к. не реализован вызов модалки асинхронно из фукнции. 
-  console.log(passwordState)
- 
-  
+
   const handleModalClose = () => {
     setAuthModalOpened(false)
   }
@@ -32,7 +30,6 @@ const ProfileForm = () => {
     try {
       const credential = EmailAuthProvider.credential(email, password); // связываем email и пароль с текущим firebase acc и получаем credential.
       const userCredential = await reauthenticateWithCredential(user, credential); // реавторизация
-      console.log(curEditingForm)
       if (curEditingForm === 'emailForm') {
         await updateEmail(userCredential.user, emailState[0].value); // изменяем firebase acc
         await updateOperatorProfile(authorizedUser, admins, {[emailState[0].name]: emailState[0].value});// изменяем firestore запись.

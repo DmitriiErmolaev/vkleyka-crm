@@ -11,7 +11,6 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUpload
   const [text, setText] = useState("");
   const { setUnreadMessagesToNotify } = useContext(WorkPageContext); 
 
-
   const handleChange = (e)=> {
     setText(e.target.value);
   }

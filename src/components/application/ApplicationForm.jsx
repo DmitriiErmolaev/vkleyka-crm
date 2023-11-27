@@ -47,7 +47,6 @@ const ApplicationForm = ({ clientId }) => {
 
   useEffect(() => {
     if (!state?.country && !country && curApplicationSnap && countriesData) {
-      console.log(countriesData)
       setCountry(countriesData.countries.find(country => country.country_code === curApplicationSnap.get('country_code')))
     }
   }, [countriesData, curApplicationSnap, country, state?.country])

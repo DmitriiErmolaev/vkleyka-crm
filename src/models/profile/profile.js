@@ -36,7 +36,6 @@ export const updateOperatorProfile = async (authorizedUser, admins, values) => {
 
   try {
     await updateOperator(updatedAdmins);
-    console.log('готово')
   } catch (e) {
     throw e;
   }

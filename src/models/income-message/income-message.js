@@ -22,7 +22,7 @@ export const checkWillMessageBeShown = (clientUID, message, notificationsWillNot
   if(!notificationsWillNotShow.length) return true;
   const isMessageIncluded = notificationsWillNotShow.some(item => {
     return item.key === `${clientUID}-${message.time.nanoseconds}`;
-    // return item.id === message.id;
+    //TODO: return item.id === message.id;
   })
   return !isMessageIncluded;
 }

@@ -6,14 +6,15 @@ import { WorkPageContext } from '../../models/context';
 import { resetBeforeDownloadFilteredData } from '../../models/applications/table-data-processing';
 
 const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
-  const {appsSearch, setAppsSearch, tableData, setTableData, lastDoc, setLastDoc} = useContext(WorkPageContext);
+  const { setPageCount } = useContext(WorkPageContext);
 
   const filterOption = (inputValue, option) => {
     return option.label.toLowerCase().includes(inputValue.toLowerCase())
   }
 
   const handleSelect = (_value, option) => {
-    resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData)
+    // resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData)
+    setPageCount(1)
     if(option === undefined) {
       // NOTICE: срабатывает, когда нажимаем на иконку сброса select'а.
       // В таком случае обработчик селекта возвращает undefined

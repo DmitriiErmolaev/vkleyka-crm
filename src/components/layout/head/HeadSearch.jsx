@@ -5,23 +5,18 @@ import { resetBeforeDownloadFilteredData } from '../../../models/applications/ta
 const {Search} = Input;
 
 const HeadSearch = () => {
-  const {appsSearch, setAppsSearch, setTableData, lastDoc, setLastDoc} = useContext(WorkPageContext);
+  const {appsSearch, setAppsSearch, setPageCount} = useContext(WorkPageContext);
 
   const handleSearchChange = (e) => {
-    if(e.target.value) {
-      resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData)
-      if(!appsSearch.mode) setAppsSearch(prev => ({...prev, mode: true}));
-    } else {
-      if(appsSearch.mode) setAppsSearch(prev => ({...prev, mode: false}));
-    }
-    setAppsSearch(prev => ({...prev, text: e.target.value}))
+    setPageCount(1)
+    setAppsSearch(e.target.value)
   }
 
   return (
     <Search 
-      allowClear={true} 
+      allowClear={true}
       size='large'
-      value={appsSearch.text}
+      value={appsSearch}
       onChange={handleSearchChange}
     />
   );

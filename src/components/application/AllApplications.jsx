@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import {Layout, Space, Radio, Button, Statistic} from "antd";
-import { collection, getCountFromServer, onSnapshot, query, where } from "firebase/firestore";
+import { Timestamp, collection, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import {useCollection,useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
 import TableComponent from "./TableComponent";
 import { buttonFilterSettings} from "../../models/status/status";
@@ -14,7 +14,7 @@ import {getAllCountriesRef, getCountry} from "../../models/countries/countries"
 import {getQueryForAppsWithLimit, getQueryForAppsWithoutLimit} from "../../models/data-processing";
 import { getChatQuery } from "../../models/chat/chat-data-processing";
 import AppsPaginator from "./AppsPaginator.jsx";
-import { firebase } from "../../models/firebase.js";
+import { firebase, firestore } from "../../models/firebase.js";
 
 const ALL_COUNTRIES_REF = getAllCountriesRef();
 // const CLIENTS_QUERY = getClientsQuery();
@@ -22,29 +22,22 @@ const APPS_REF = getAppsCollRef();
 
 const AllApplications = () => {
   const {role, authorizedUser} = useContext(ProgramContext);
-  const {appsSearch, setAppsSearch, tableData, setTableData, lastDoc, setLastDoc} = useContext(WorkPageContext);
+  const {appsSearch, pageCount, setPageCount } = useContext(WorkPageContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
   const [countriesData, countriesLoading, countriesError, countriesDocSnapshot] = useDocumentData(ALL_COUNTRIES_REF);
   const [selectedCountry, setSelectedCountry] = useState({value:null, label:null});
   const [selectedStatus, setSelectedStatus] = useState('allStatuses');
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [totalAppsCount, setTotalAppsCount] = useState(0);
-  const filters = getFilters(selectedCountry, selectedStatus, selectedColumn, authorizedUser, appsSearch.text);
-  const [applicationsData, tableLoading, tableError, appsCollSnapshot] = useCollectionData(getQueryForAppsWithLimit(APPS_REF, filters, lastDoc));
+  const filters = getFilters(selectedCountry, selectedStatus, selectedColumn, authorizedUser, appsSearch);
+  const [applicationsData, tableLoading, tableError, appsCollSnapshot] = useCollectionData(getQueryForAppsWithLimit(APPS_REF, filters, pageCount));
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    console.log("первое монитрование")
-    // При монтировании компонента - сбрасываем стейт табличных данных сохраненных из предыдущих рендеров данного компонента.
-    resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData)
-  }, [])
-
-  useEffect(() => {
-    // при каждой подгрузке записываем новые табличные данные к старым
     if(applicationsData && countriesData && chatsCollSnapshot) {
-      const newTableData = getDataForTable(applicationsData, countriesData.countries, chatsCollSnapshot, appsCollSnapshot);
-      setTableData(prev => [...prev, ...newTableData]);
+      setTableData(getDataForTable(applicationsData, countriesData.countries, chatsCollSnapshot, appsCollSnapshot));
     }
-  }, [applicationsData, countriesData, chatsCollSnapshot, appsCollSnapshot, setTableData])
+  }, [applicationsData, countriesData, chatsCollSnapshot, appsCollSnapshot])
 
   useEffect(() => {
     // получаение общего количества возможных заявок
@@ -61,12 +54,12 @@ const AllApplications = () => {
   }
 
   const radioChange = (e) => {
-    resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData)
     setSelectedStatus(e.target.value)
+    setPageCount(1)
   }
 
   const downloadMoreApps = () => {
-    setLastDoc(appsCollSnapshot.docs[appsCollSnapshot.docs.length - 1]);
+    setPageCount(prev => ++prev);
   }
 
   const countries = countriesLoading ? [] : countriesData.countries;
@@ -96,7 +89,6 @@ const AllApplications = () => {
           />
           <AppsPaginator currentAppsCount={tableData.length} totalAppsCount={totalAppsCount} />
         </div>
-       
 
       </Space>
       <TableComponent

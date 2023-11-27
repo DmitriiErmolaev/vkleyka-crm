@@ -58,7 +58,7 @@ export const getDataForTable = (applications, countries, chatsCollSnapshot, apps
   }, [])
 }
 
-export const getFilters = (country, status, column, authorizedUser, appsSearchFilter) => { // Новый с пагинацией
+export const getFilters = (country, status, column, authorizedUser, appsSearchFilter, pageCount) => { // Новый с пагинацией
   let filters = [
     where('paymentSuccessful', '==', true),
   ];

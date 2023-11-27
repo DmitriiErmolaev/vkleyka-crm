@@ -3,7 +3,6 @@ import {Badge} from 'antd';
 import '../../assets/chat/dialogue-list-item-title.scss'
 
 const DialogueListItemTitle = ({applicantName, unreadMessagesNumber, messageCreationTime}) => {
-  // console.log('DialogueListItemTitle')
   return (
    <div className="dialogue-list__card-title">
     <p className="card-title__client-name">{applicantName}</p>

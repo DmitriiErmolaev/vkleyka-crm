@@ -65,13 +65,10 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
 
   const scrollHandle = (e) => {
     const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
-    // console.log(unreadMessagesNumber)
     if(Math.floor(scrollBottom) < 5 && unreadMessagesNumber) {
-      console.log("читка")
       readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
     }
   }
-  console.log(chatCollSnapshot.docs.map(elem => elem.data()))
 
   const dialogueSnap = chatCollSnapshot.docs[0];
   const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])

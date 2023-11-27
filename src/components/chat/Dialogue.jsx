@@ -11,8 +11,6 @@ const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}
   const {cleintsData} = useContext(WorkPageContext);
 
   useLayoutEffect(() => {
-    console.log(dialogueContainerRef.current)
-    console.log(dialogueContainerRef.current.style.top)
     dialogueContainerRef.current.style.top = `${window.scrollY}px`;
   },[])
 

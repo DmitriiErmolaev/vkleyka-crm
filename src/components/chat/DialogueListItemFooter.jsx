@@ -4,7 +4,6 @@ import ApplicationExistsInfo from './ApplicationExistsInfo';
 import { ProgramContext } from '../../models/context';
 
 const DialogueListItemFooter = ({dialogue, dialogueSnap, clientApplicationsSnaps}) => {
-  // console.log('DialogueListFooter')
 
   return (
     <div className="dialogue-card__footer">

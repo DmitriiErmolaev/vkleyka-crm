@@ -52,6 +52,7 @@ function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clie
     const dialogue = dialogueSnap.data();
 
     const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
+      //TODO: проверка имени отправителя с именем визовика надо будет исправить на сравнение айдишников. Айди отправителя !== authorizedUser.id
       if(message.sendState === 0 && message.sender !== authorizedUser.name) {
         ++acc;
       }

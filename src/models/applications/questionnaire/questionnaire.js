@@ -1,5 +1,7 @@
 import { updateDoc } from "firebase/firestore";
 import { nanoid } from "nanoid";
+import PassportImg from "../../../components/questionnaire/applicationPassportInfo/PassportImg";
+import dayjs from "dayjs";
 
 // const questionnairePath = "questionnary.answers"; // NOTE: для создания справочника путей
 
@@ -71,61 +73,73 @@ export const getPassportInfoQuestions = () => {
       key:nanoid(),
       questionTitle: "Имя, латиницей",
       propWithAnswer: "first_name",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Фамилия, латиницей",
       propWithAnswer: "last_name",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Дата рождения",
       propWithAnswer: "date_of_birth",
+      answerType:'date',
     },
     {
       key:nanoid(),
       questionTitle: "Пол",
       propWithAnswer: "gender",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Гражданство",
       propWithAnswer: "citizenship",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Место рождения",
       propWithAnswer: "place_of_birth",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Номер паспорта",
       propWithAnswer: "passport_number",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Дата выдачи",
       propWithAnswer: "issue_date",
+      answerType:'date',
     },
     {
       key:nanoid(),
       questionTitle: "Орган, который выдал",
       propWithAnswer: "issued_by",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: "Действителен до",
       propWithAnswer: "valid_until",
+      answerType:'date',
     },
     {
       key:nanoid(),
       questionTitle: "ИИН",
       propWithAnswer: "IIN",
+      answerType:'string',
     },
     {
       key:nanoid(),
       questionTitle: 'Фото паспорта',
       propWithAnswer: 'image_url',
+      answerType:'photo',
     }
   ]
 }
@@ -138,6 +152,19 @@ export const getPassportsInfoCollapseItem = (label, extra, children) => {
     // style: panelStyle, // NOTE: для стилизации. Пока не убирать
     children: children,
   }
+}
+
+export const getPassportInfoValue = (question, value) => {
+  if(!value) return '';
+  if(question.answerType === 'date') {
+    // TODO: временное решение. Удалить когда все даты в паспортной части будут таймштампами а не текстом
+    if (typeof value === 'string') return value;
+    return dayjs.unix(value.seconds).format('DD.MM.YYYY');
+  }
+  if(question.answerType === 'photo') {
+    return <PassportImg path={value}/>
+  }
+  return value;
 }
 
 export const getCollapseItems = (questionnaireItems) => {

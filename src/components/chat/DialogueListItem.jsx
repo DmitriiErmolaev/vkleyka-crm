@@ -37,7 +37,7 @@ const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, fun
           ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
           : client?.UID
       )
-  // console.log(applicantName)
+      
   const lastMessage = !dialogue.messages.length
     ? ''
     : ( dialogue.messages[dialogue.messages.length - 1].content === ''

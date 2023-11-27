@@ -20,26 +20,24 @@ const CLIENTS_QUERY = getClientsQuery();
 const WorkPage = () => {
   const [ drawerOpen, setDrawerOpen ] = useState(false);
   const [  chatsSearchFilter, setChatsSearchFilter ] = useState('');
-  const [ appsSearch, setAppsSearch ] = useState({text: '', mode: false});
+  const [ appsSearch, setAppsSearch ] = useState('');
   const [ notificationsWillBeNotShown, setNotificationsWillBeNotShown ] = useState(null);
-  const [tableData, setTableData] = useState([]);
-  const [lastDoc, setLastDoc] = useState();
+  const [ pageCount, setPageCount ] = useState(1);
   const { authorizedUser, role } = useContext(ProgramContext);
   const contentRef = useRef(null);
   const [ cleintsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
-  const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
-  console.log(tableData)
+  const [ chatsData, chatsLoading, chatsError, chatsCollSnapshot ] = useCollectionData(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
   
   useEffect(() => {
     if(!chatsLoading) {
-      const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
-        return docSnap.data();
-      })
+      // const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
+      //   return docSnap.data();
+      // })
       // cохраняем в стейт те сообщения, которые не были прочитаны, пока визовик был оффлайн и новые непрочитанные, которые визовик еще не прочитал.
       // чтобы при получении новых сообщений, текущие непрочитанные не показывались повторно.
-      setNotificationsWillBeNotShown(dialoguesData.reduce((acc, dialogue) => {
+      setNotificationsWillBeNotShown(chatsData.reduce((acc, dialogue) => {
         dialogue.messages.forEach(message => {
-          if(!message.sendState) {
+          if(!message.sendState && (message.sender !== authorizedUser.name) ) {
             //сохраняем message, на случай если в будующем нужно будет повторно показать непрочитанное оповещение
             acc.push({key: `${dialogue.UID}-${message.time.nanoseconds}`, message})
             // acc.push({id: message.id, message})
@@ -70,7 +68,7 @@ const WorkPage = () => {
   })
 
   return (
-    <WorkPageContext.Provider value={{cleintsData, chatsCollSnapshot, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, tableData, setTableData, lastDoc, setLastDoc }}>
+    <WorkPageContext.Provider value={{cleintsData, chatsCollSnapshot, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount  }}>
       {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
       <ConfigProvider
         theme={{

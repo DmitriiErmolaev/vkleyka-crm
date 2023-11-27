@@ -6,15 +6,14 @@ import { ProgramContext } from '../../models/context';
 
 const ChatAction = ({dialogue, dialogueSnap, clientApplicationsSnaps=[]}) => {
   const {authorizedUser, role} = useContext(ProgramContext);
-  // console.log('ChatAction')
 
   const assignToMe = async (e) => {
     e.stopPropagation();
     try {
       if(clientApplicationsSnaps.length > 0) {
-        for (const applicationSnap of clientApplicationsSnaps) { 
+        for (const applicationSnap of clientApplicationsSnaps) {
           await updateDocField(applicationSnap.ref, "preparedInformation.assignedTo", authorizedUser.id);
-        }   
+        }
       }
       await updateDocField(dialogueSnap.ref, "assignedTo", authorizedUser.id);
     } catch (e) {
@@ -23,28 +22,28 @@ const ChatAction = ({dialogue, dialogueSnap, clientApplicationsSnaps=[]}) => {
   }
 
   return role === 'admin' ? (
-    <SelectComponent 
-      collectionType={"operators"} 
+    <SelectComponent
+      collectionType={"operators"}
       data={{
-        clientApplicationsSnaps, 
-        dialogueSnap, 
-        assignedTo: dialogue.assignedTo, 
+        clientApplicationsSnaps,
+        dialogueSnap,
+        assignedTo: dialogue.assignedTo,
         transparent: false
-      }} 
+      }}
     />
   ) : (
     dialogue.assignedTo ? (
-      <SelectComponent 
-        collectionType={"operators"} 
+      <SelectComponent
+        collectionType={"operators"}
         data={{
-          clientApplicationsSnaps, 
-          dialogueSnap, 
-          assignedTo:dialogue.assignedTo, 
+          clientApplicationsSnaps,
+          dialogueSnap,
+          assignedTo:dialogue.assignedTo,
           transparent:false
-        }} 
+        }}
       />
     ) : (
-      <Button 
+      <Button
         type={"primary"}
         onClick={assignToMe}
         // size={"small"}

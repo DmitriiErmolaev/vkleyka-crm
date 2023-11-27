@@ -6,7 +6,6 @@ export const getSingleFieldFromDocSnapshot = (docSnapshot, fieldName) => {
 }
 
 export const getAllFieldsFromDocSnapshot = (docSnapshot) => {
-  console.log(docSnapshot)
 
   return docSnapshot.data();
 }
@@ -20,10 +19,10 @@ export const getDataFromCollSnapshot = (collSnap) => {
   })
 }
 
-export const getQueryForAppsWithLimit = (ref, filters, lastDoc) => {
+export const getQueryForAppsWithLimit = (ref, filters, pageCount) => {
   // Фильтры нельзя мутировать, т.к. в функции getQueryForAppsWithoutLimit фильтры не должны быть измененными
-  const constraints = lastDoc ? [...filters, startAfter(lastDoc)] : filters;
-  return query(ref, ...constraints, limit(2))
+  // const constraints = lastDoc ? [...filters, startAfter(lastDoc)] : filters;
+  return query(ref, ...filters, limit(5 * pageCount))
 }
 
 export const getQueryForAppsWithoutLimit = (ref, filters) => {
@@ -39,10 +38,7 @@ export const getDocsRefs = (collSnap) => {
 
 export const updateDocField = async (ref, path, data) => {
   try {
-    console.log('перед updateDoc')
     const res = await updateDoc(ref, {[path]: data})
-    // console.log('результат updateDoc - ' + ' ' + res)
-    // console.log('после updateDoc')
   } catch (e) {
     // TODO: отобразить 
     console.log(e)

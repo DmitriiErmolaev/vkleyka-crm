@@ -33,18 +33,14 @@ const OperatorsSelect = ({dialogueSnap, clientApplicationsSnaps, assignedTo=null
           if (applicationSnap.get('preparedInformation.preparationStatus') !== 2) { // если она не завершена
             if (role === "operator" && clientId === dialogueSnap.get('UID')) navigate("/"); // если роль визовик и
             await updateDocField(applicationSnap.ref, "preparedInformation.assignedTo", value);
-             resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData);
              // после каждого внесения изменений в бд - происходит ререндер заявки перед следующим внесением изменений. Если открыта заявка на которую я еще пока назначен, то ошибки нет. Когда внесения внесутся в ту заявку, которая сейчас открыта, произойдет ее ререндер и будет ошибка, т.к. на нее  будут неверные где то. 
           }
         }
       }
       if(!dialogueSnap.get('active')) {
-        // resetBeforeDownloadFilteredData(lastDoc, setLastDoc, setTableData);
         await updateDocField(dialogueSnap.ref, "active", true);
       }
-      // (lastDoc, setLastDoc, setTableData);
       await updateDocField(dialogueSnap.ref, "assignedTo", value);
-      
       openNotification(notificationApi, "success", 'operatorChanged');
     } catch(e) {
       console.log(e)

@@ -4,7 +4,7 @@ import { EditOutlined } from "@ant-design/icons";
 import Question from '../Question';
 import PassportInfoCollapseLabel from './PassportInfoCollapseLabel';
 import ApplyOrCancel from '../ApplyOrCancel';
-import { getPassportInfoQuestions, getPassportsInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
+import { getPassportInfoQuestions, getPassportInfoValue, getPassportsInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
 import { ApplicationStatus } from '../../../models/context';
 import { getDownloadURL }from 'firebase/storage';
 import '../../../assets/passport-info.scss'
@@ -22,10 +22,12 @@ const PassportInfo = ({passports, appId}) => {
       </div>
     )
     let passportsInfoPreparedData = getPassportInfoQuestions().map(question => {
-      let answer = passport[question.propWithAnswer];
-      if (question.propWithAnswer === 'image_url') {
-        answer = <PassportImg path={passport[question.propWithAnswer]}/>
-      }
+      const answer = getPassportInfoValue(question, passport[question.propWithAnswer]);
+      // let answer = passport[question.propWithAnswer];
+      // if (question.propWithAnswer === 'image_url') {
+      //   answer = <PassportImg path={passport[question.propWithAnswer]}/>
+      // }
+      // if (question.propWithAnswer === 'image_url')
       return (
         <div
           style={{display:"inline-block", width:"50%"}}

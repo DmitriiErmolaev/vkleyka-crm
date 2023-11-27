@@ -97,7 +97,6 @@ export const sendMessage = async (text, authorizedUser, chatDocRef, messages, at
  */
 export const readUnreadMessages = async (chatDocRef, messages, authorizedUser, setUnreadMessagesToNotify) => {
   const allReadMessagesOrFalse = makeAllMessagesReadIfTheyAreNot(messages, authorizedUser, setUnreadMessagesToNotify)
-  console.log(allReadMessagesOrFalse)
   if (allReadMessagesOrFalse) await updateDocField(chatDocRef, 'messages', allReadMessagesOrFalse)
 }
 
