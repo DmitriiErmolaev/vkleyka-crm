@@ -28,31 +28,37 @@ export const dialogListOperations = {
 }
 const getOrderedDialoguesSnapshots = (chatsCollSnapshot) => {
   return chatsCollSnapshot.docs.sort((a, b) => {
-    const firstDialogueLastMessageTime = a.get('messages')[a.get('messages').length - 1].time.nanoseconds;
-    const secondDialogueLastMessageTime = b.get('messages')[b.get('messages').length - 1].time.nanoseconds;
+    const firstDialogueLastMessageTime = a.get('messages')[a.get('messages').length - 1]?.time.toMillis();
+    const secondDialogueLastMessageTime = b.get('messages')[b.get('messages').length - 1]?.time.toMillis();
+
     if (firstDialogueLastMessageTime > secondDialogueLastMessageTime) {
-      return 1;
-    } if (firstDialogueLastMessageTime < secondDialogueLastMessageTime) {
       return -1;
+    } if (firstDialogueLastMessageTime < secondDialogueLastMessageTime) {
+      return 1;
     } else {
       return 0;
     }
   })
 }
-export function getDialogueList(authorizedUser, chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, functions) {
+
+export function getDialogueList(authorizedUser, chatsCollSnapshot, clients, appsCollSnapshot, selectedDialogue, scrollMode, functions) {
   // TODO: рефакторинг
   const orderedDialoguesSnapshots = getOrderedDialoguesSnapshots(chatsCollSnapshot)
-  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots,  clients, appsCollSnapshot, selectedDialogue, functions);
+  if(authorizedUser.role === 'operator') return getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots,  clients, appsCollSnapshot, selectedDialogue, scrollMode, functions);
   if(authorizedUser.role === 'admin') return getAdminDialogueData(orderedDialoguesSnapshots, clients,  appsCollSnapshot, selectedDialogue, functions);
 }
 
-function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clients, appsCollSnapshot, selectedDialogue, functions) {
+function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clients, appsCollSnapshot, selectedDialogue, scrollMode, functions) {
   // TODO: рефакторинг
   const dialoguesListGroups = orderedDialoguesSnapshots.reduce((acc, dialogueSnap) => {
     const dialogue = dialogueSnap.data();
 
     const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
       //TODO: проверка имени отправителя с именем визовика надо будет исправить на сравнение айдишников. Айди отправителя !== authorizedUser.id
+      // console.log(selectedDialogue?.dialogue.UID)
+      // console.log(dialogue.UID)
+      // не пополняем счетчик непрочитанных сообщений для перебираемого диалога, если этот диалог открыт и прокручен книзу.
+      if(dialogue.UID === selectedDialogue?.dialogue.UID && !scrollMode) return acc;
       if(message.sendState === 0 && message.sender !== authorizedUser.name) {
         ++acc;
       }
@@ -130,7 +136,7 @@ function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapsh
     const dialogue = dialogueSnap.data();
 
     // const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
-    //   if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+    //   if(message.sendState === 0 && message.sender !== authorizedUser.name) {   // админам не нужны отметки непрочитанных сообщений.
     //     ++acc;
     //   }
     //   return acc;

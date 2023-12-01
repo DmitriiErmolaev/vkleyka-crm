@@ -15,7 +15,7 @@ import { getSingleFieldFromDocSnapshot } from "../../models/data-processing";
 import { getChatQuery } from "../../models/chat/chat-data-processing";
 import { getDialogueSnap } from "../../models/chat/chat-data-processing";
 import { getAllClientApplications } from "../../models/applications/applications";
-import { ApplicationStatus, ProgramContext } from "../../models/context";
+import { ApplicationStatus, ProgramContext, WorkPageContext } from "../../models/context";
 import '../../assets/application-form.scss';
 
 const visaType = {
@@ -29,15 +29,26 @@ const ApplicationForm = ({ clientId }) => {
   const applicationFormRef = useRef(null);
   const { state } = useLocation();
   const { authorizedUser, role } = useContext(ProgramContext);
-  const [ countriesData, countriesLoading, countriesError, countriesDocSnapshot ] = useDocumentData(getAllCountriesRef(state?.country));
+  const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
+  const [ countriesData, countriesLoading, countriesError, countriesDocSnapshot ] = useDocumentData(getAllCountriesRef(state?.savedCountry));
   const [ allClientAppsData, allClientAppsCollSnapshotLoading, allClientAppsCollSnapshotError, allClientAppsCollSnapshot ] = useCollectionData(getAllClientApplications(clientId, authorizedUser.id, role));
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatQuery());
   const [ country, setCountry ] = useState();
   const [ curApplicationSnap, setCurApplicationSnap ] = useState();
 
   useEffect(() => {
-    if(state?.country) setCountry(state.country);
-  },[state?.country]);
+    // если форма открыта не из чата - получить dialogue и сохранить в ref для дальнейшего удобства.
+    if (!dialogueForApplication?.current && chatsCollSnapshot && allClientAppsCollSnapshot && curApplicationSnap) {
+      console.log(123)
+      const dialogue = getDialogueSnap(chatsCollSnapshot, curApplicationSnap.data().UID).data();
+      dialogueForApplication.current = dialogue;
+      setSelectedDialogue({dialogue: dialogue})
+    }
+  }, [chatsCollSnapshot, curApplicationSnap, dialogueForApplication, allClientAppsCollSnapshot, setSelectedDialogue] )
+
+  useEffect(() => {
+    if(state?.savedCountry) setCountry(state?.savedCountry);
+  },[state?.savedCountry]);
 
   useEffect(() => {
     if(allClientAppsCollSnapshot) {
@@ -46,10 +57,10 @@ const ApplicationForm = ({ clientId }) => {
   }, [allClientAppsCollSnapshot, appId])
 
   useEffect(() => {
-    if (!state?.country && !country && curApplicationSnap && countriesData) {
+    if (!state?.savedCountry && !country && curApplicationSnap && countriesData) {
       setCountry(countriesData.countries.find(country => country.country_code === curApplicationSnap.get('country_code')))
     }
-  }, [countriesData, curApplicationSnap, country, state?.country])
+  }, [countriesData, curApplicationSnap, country, state?.savedCountry])
 
   if (!country || !curApplicationSnap || chatsLoading) {
     return (

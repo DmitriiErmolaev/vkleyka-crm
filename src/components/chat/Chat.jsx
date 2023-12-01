@@ -12,19 +12,42 @@ import ChatFooter from './ChatFooter.jsx';
 import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
 
-const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) => {
+const Chat = ({ applicantName, applicantId, clientApplicationsSnaps, source }) => {
+  // const [ scrolledToBottom, setScrolledToBottom ] = useState(true)
+  // const [ scrollMode, setScrollMode ] = useState(false)
+  const [ uploadingMessageWithAttachments, setUploadingMessageWithAttachments ] = useState([]);
   const { authorizedUser, role } = useContext(ProgramContext)
   const allMessages = useRef(null);
-  const [ uploadingMessageWithAttachments, setUploadingMessageWithAttachments ] = useState([]);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot.
-  const [ chatCollSnapshot, chatLoading, chatError ] = useCollection(getChatQueryForApplication(applicantId));
-  const { setUnreadMessagesToNotify } = useContext(WorkPageContext);
+  const [ chatCollSnapshot, chatLoading, chatError ] = useCollection(getChatQueryForApplication(applicantId)) // нельзя запросить конкретный документ, потому что не знаем путь.
+  const { setUnreadMessagesToNotify, scrollMode, setScrollMode } = useContext(WorkPageContext);
+  // console.log("scrolledToBottom " + scrolledToBottom)
+  // console.log("scrollMode " + scrollMode)
 
-  useLayoutEffect(()=> {
-    if(!chatLoading){
+
+  useLayoutEffect(() => {
+    if(chatCollSnapshot && !scrollMode) {
       allMessages.current.scrollTop = 9999;
+      // setScrolledToBottom(true)
     }
-  },[chatLoading])
+  },[chatCollSnapshot, scrollMode])
+
+  useLayoutEffect(() => {
+    if(chatCollSnapshot) {
+      const messagesContainer = allMessages.current;
+
+      const handleScroll = (e) => {
+        if(messagesContainer.scrollTop + messagesContainer.clientHeight === messagesContainer.scrollHeight) {
+          setScrollMode(false)
+        } else {
+          setScrollMode(true)
+        }
+      }
+
+      messagesContainer.addEventListener('scroll', handleScroll);
+      return () => messagesContainer.removeEventListener('scroll', handleScroll);
+    }
+  },[chatCollSnapshot])
 
   useLayoutEffect(() => {
     if(!chatLoading) {
@@ -72,7 +95,7 @@ const Chat = ({ applicantName, applicantId, source, clientApplicationsSnaps }) =
 
   const dialogueSnap = chatCollSnapshot.docs[0];
   const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
-  const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages);
+  const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages, scrollMode);
 
   const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
     if(message.sendState === 0 && message.sender !== authorizedUser.name) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Layout, Menu, Button, ConfigProvider } from "antd";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../models/firebase";
@@ -9,6 +9,7 @@ import { ReactComponent as Logo } from '../../../assets/icons/logo.svg';
 import HeadMenu from "./HeadMenu";
 import { topMenuItems } from "../../../models/head-menu/head-menu";
 import { theme } from "antd";
+import { WorkPageContext } from "../../../models/context";
 const { useToken } = theme;
 const { Header } = Layout;
 
@@ -17,9 +18,13 @@ const { Header } = Layout;
 const Head = ()=> {
   const navigate = useNavigate();
   const { token } = useToken();
+  const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
+
 
   const handleLogoClick = () => {
     navigate('/')
+    dialogueForApplication.current = null;
+    setSelectedDialogue(null);
   }
 
   // useEffect(() => {
@@ -34,9 +39,6 @@ const Head = ()=> {
   //   setSelectedMenuItem(getMenuKey(location.pathname));
   // }, [location])
 
-
- 
- 
   return (
     <ConfigProvider
       theme={{

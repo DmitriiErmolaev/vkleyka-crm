@@ -2,21 +2,15 @@ import React, { useContext, useLayoutEffect } from 'react';
 import { Card, Spin } from 'antd';
 import { getDialogueList } from '../../models/chat/dialogue-list/dialogue-list';
 import { ProgramContext, WorkPageContext } from '../../models/context';
-import { getDataFromCollSnapshot, getQueryForAppsWithLimit } from '../../models/data-processing';
-import { useCollection, useCollectionData } from 'react-firebase-hooks/firestore';
+import { useCollection } from 'react-firebase-hooks/firestore';
 import { getApplicationsBySetOfApplicantIDs } from '../../models/chat/dialogue-list/dialogue-list-data-processing';
 import Error from '../error/Error';
 import '../../assets/loading.scss';
-import { getAppsCollRef } from '../../models/applications/applications';
-
-const APPS_REF = getAppsCollRef();
-
 
 const DialoguesList = ({chatsCollSnapshot, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose, dialoguesListContainerRef}) => {
-  const {cleintsData} = useContext(WorkPageContext);
+  const {clientsData, scrollMode} = useContext(WorkPageContext);
   const {authorizedUser, role} = useContext(ProgramContext);
   const [appsCollSnapshot, appsLoading, appsError] = useCollection(getApplicationsBySetOfApplicantIDs(chatsCollSnapshot, authorizedUser.id, role));
-
 
   useLayoutEffect(() => {
     if (!appsLoading) {
@@ -42,11 +36,12 @@ const DialoguesList = ({chatsCollSnapshot, selectedDialogue, setSelectedDialogue
   }
 
   const dialoguesList = getDialogueList(
-    authorizedUser, 
-    chatsCollSnapshot, 
-    cleintsData, 
-    appsCollSnapshot, 
+    authorizedUser,
+    chatsCollSnapshot,
+    clientsData,
+    appsCollSnapshot,
     selectedDialogue,
+    scrollMode,
     {setSelectedDialogue, setDialogueWindowOpen, handleDrawerClose}
   )
 

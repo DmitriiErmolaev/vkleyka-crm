@@ -24,8 +24,12 @@ const id_object = {
       return (
         <Link
           to={`/application/${record.clientId}/${record.key}`}
-          style={{color:"#0EA5E9", fontWeight:"800"}}
-          state={{ country: record.country }}
+          style={{ color:"#0EA5E9", fontWeight:"800" }}
+          state={{ savedCountry: record.country, dialogue: record.dialogueSnap.data() }}
+          onClick={() => {
+            record.dialogueForApplication.current = record.dialogueSnap.data();
+            record.setSelectedDialogue({dialogue: record.dialogueForApplication.current});
+          }}
         >
           {text}
         </Link>

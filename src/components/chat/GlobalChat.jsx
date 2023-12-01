@@ -1,18 +1,13 @@
-import React, {useState, useEffect, useContext, useRef, useLayoutEffect} from 'react';
-import { useCollection } from 'react-firebase-hooks/firestore';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import DialoguesListContainer from './DialoguesListContainer';
 import Dialogue from './Dialogue';
-import { getChatsQueryForDialoguesList } from '../../models/chat/chat-data-processing';
-import { ProgramContext, WorkPageContext } from '../../models/context';
-import { getDataFromCollSnapshot } from '../../models/data-processing';
-import { getUsersQuery } from '../../models/clients/clients';
-import Error from '../error/Error';
+import { WorkPageContext } from '../../models/context';
 
-const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
-  const {authorizedUser, role} = useContext(ProgramContext)
-  const [dialogueWindowOpen, setDialogueWindowOpen] = useState(false);
-  const [selectedDialogue, setSelectedDialogue] = useState(null);
+
+const GlobalChat = ({chatListOpen, setChatListOpen, selectedDialogue, setSelectedDialogue}) => {
+  const [ dialogueWindowOpen, setDialogueWindowOpen ] = useState(false);
   const bodyClientWidth = useRef(document.body.clientWidth);
+  const { setScrollMode, dialogueForApplication } = useContext(WorkPageContext);
 
   useEffect(() => {
     document.body.setAttribute('style', 'overflow: hidden');
@@ -21,28 +16,35 @@ const GlobalChat = ({drawerOpen, setDrawerOpen}) => {
   })
 
   const handleDrawerClose = () => {
-    setDrawerOpen(false)
-    setDialogueWindowOpen(false)
+    setChatListOpen(false);
+    setDialogueWindowOpen(false);
+    setScrollMode(false);
+
+    if (dialogueForApplication.current ) {
+      // console.log(dialogueForApplication.current)
+      if(selectedDialogue?.dialogue.UID !== dialogueForApplication.current.UID) {
+        setSelectedDialogue({dialogue: dialogueForApplication.current})
+      }
+    } else {
+      setSelectedDialogue(null);
+    }
   }
 
   return (
     <>
       <DialoguesListContainer
-        drawerOpen={drawerOpen}
+        chatListOpen={chatListOpen}
         handleDrawerClose={handleDrawerClose}
         selectedDialogue={selectedDialogue}
         setSelectedDialogue={setSelectedDialogue}
         setDialogueWindowOpen={setDialogueWindowOpen}
       />
-      {dialogueWindowOpen ? (
         <Dialogue
+          dialogueWindowOpen={dialogueWindowOpen}
           setDialogueWindowOpen={setDialogueWindowOpen}
           selectedDialogue={selectedDialogue}
           setSelectedDialogue={setSelectedDialogue}
         />
-      ) : (
-        null
-      )}
     </>
   );
 };

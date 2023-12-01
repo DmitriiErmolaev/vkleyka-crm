@@ -5,11 +5,12 @@ import ChatUpload from './upload/ChatUpload';
 import { ApplicationStatus, ProgramContext, WorkPageContext } from '../../models/context';
 import { sendMessage } from '../../models/chat/chat-data-processing';
 
-const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUploadingMessageWithAttachments}) => {
+const ChatFooter = ({ allMessages, dialogueSnap, dialogue, applicantId, setUploadingMessageWithAttachments}) => {
   const {authorizedUser, role} = useContext(ProgramContext);
   const {curAppStatus} = useContext(ApplicationStatus); 
   const [text, setText] = useState("");
-  const { setUnreadMessagesToNotify } = useContext(WorkPageContext); 
+  const { setUnreadMessagesToNotify, setScrollMode } = useContext(WorkPageContext); 
+
 
   const handleChange = (e)=> {
     setText(e.target.value);
@@ -19,8 +20,9 @@ const ChatFooter = ({allMessages, dialogueSnap, dialogue, applicantId, setUpload
     if(!text) {
       return
     }
+    setScrollMode(false)
     await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue.messages, setUnreadMessagesToNotify)
-    allMessages.current.scrollTop = 9999;
+    // allMessages.current.scrollTop = 9999;
     setText("")
   }
 

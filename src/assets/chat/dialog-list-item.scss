@@ -1,5 +1,6 @@
 .dialogue-card {
   border:"none";
+
   .dialogue-card__container {
     .dialogue-card__content {
       .dialogue-list__last-message {
@@ -19,4 +20,7 @@
   }
 }
 
+.dialogue-card_selected {
+  background-color: #0F6CA51F;
+}
 

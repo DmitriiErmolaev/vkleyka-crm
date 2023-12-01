@@ -14,9 +14,9 @@ const ChatActiveStatus = ({dialogueAssignedTo, dialogueSnap, source, clientAppli
   const handleChange = async (value, _option) => {
     if(value === dialogueActions.takeInpRogress.value) {
       if(clientApplicationsSnaps.length > 0) {
-        for (const applicationSnap of clientApplicationsSnaps) { 
+        for (const applicationSnap of clientApplicationsSnaps) {
           await updateDocField(applicationSnap.ref, "preparedInformation.assignedTo", authorizedUser.id);
-        }   
+        }
       }
       await updateDocField(dialogueSnap.ref, "assignedTo", authorizedUser.id);
     }
@@ -29,9 +29,9 @@ const ChatActiveStatus = ({dialogueAssignedTo, dialogueSnap, source, clientAppli
 
   const value = dialogueAssignedTo ? chatCurrentStatus.inProgress : chatCurrentStatus.finished;
   const selectOptions =  dialogueAssignedTo ? chatActiveStatusActionOptions.finish : chatActiveStatusActionOptions.takeInProgress
-  const disabled = (!dialogueAssignedTo && dialogueSnap.get('active')) || (dialogueAssignedTo === authorizedUser.id && clientApplicationsSnaps.length === 0) ? false : true;
-  
-  return (    
+  const disabled = (!dialogueAssignedTo && dialogueSnap.get('active')) || (dialogueAssignedTo === authorizedUser.id && !clientApplicationsSnaps?.length) ? false : true;
+
+  return (
     <div className="chat__active-status">
       <Select
         popupMatchSelectWidth={false}

@@ -1,13 +1,15 @@
 import { Menu } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
-import { ProgramContext } from '../../../models/context';
+import { ProgramContext, WorkPageContext } from '../../../models/context';
 import { checkLocationIsFromSiderMenu, getItems } from '../../../models/sider-menu/sider-menu';
 import { useLocation } from 'react-router-dom';
 
-const SiderMenu = ({handleMenuSelect, drawerOpen}) => {
+const SiderMenu = ({handleMenuSelect, chatListOpen}) => {
   const {role} = useContext(ProgramContext);
   const location = useLocation();
   const [ selectedMenuItem, setSelectedMenuItem ] = useState([]);
+  const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
+
 
   useEffect(() => {
     // подсвечивает выбранный пункт меню, либо нет, если location не из меню Sider.
@@ -20,14 +22,14 @@ const SiderMenu = ({handleMenuSelect, drawerOpen}) => {
       return key === '/chat';
     })
 
-    if (drawerOpen && index === -1) {
+    if (chatListOpen && index === -1) {
       setSelectedMenuItem((prev) => [...prev, '/chat'])
     }
 
-    if (!drawerOpen && index !== -1) {
+    if (!chatListOpen && index !== -1) {
       setSelectedMenuItem((prev) => [...prev.slice(0, index), ...prev.slice(index+1)])
     }
-  }, [drawerOpen, selectedMenuItem])
+  }, [chatListOpen, selectedMenuItem])
 
   return (
     <div>
@@ -35,7 +37,7 @@ const SiderMenu = ({handleMenuSelect, drawerOpen}) => {
         mode="inline"
         theme="dark"
         selectedKeys={selectedMenuItem}
-        items={getItems(role)}
+        items={getItems(role, dialogueForApplication, setSelectedDialogue)}
         style={{backgroundColor:"transparent", color:"white", marginTop:"50px"}}
         onSelect={handleMenuSelect}
       />

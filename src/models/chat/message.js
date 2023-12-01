@@ -37,7 +37,7 @@ const memoizedCreationDate = () => {
   }
 }
 
-export const getChatMessages = (messages, uploadingMessageWithAttachments, authorizedUser, allMessages) => {
+export const getChatMessages = (messages, uploadingMessageWithAttachments, authorizedUser, allMessages, scrollMode) => {
   // пустой контейнер, который заполнит диалоговое окно, пока нет новых сообщений.
   // рефакторить в reduce.
   let result = [
@@ -45,9 +45,11 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments, autho
       <div className="invisible-message"></div>
     </li>,
   ];
-
+  if (!messages.length) {
+    return result;
+  }
   const isDateNew = memoizedCreationDate();
-  let unreadMessageExist = false;
+  let unreadMessageGroupAdded = false;
 
   messages.forEach((message) => {
     const messageCreationDate = getMessageCreationDate(message.time.seconds);
@@ -58,21 +60,21 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments, autho
       result.push(
         <DateDivider key={messageCreationDate} date={messageCreationDate} />
       )
-    } 
+    }
 
     // const scrollBottom = allMessages?.current?.scrollHeight - allMessages?.current?.scrollTop - allMessages?.current?.clientHeight
-  
-    if(message.sendState === 0 && !unreadMessageExist && message.sender !== authorizedUser.name) {
+
+    if(message.sendState === 0 && !unreadMessageGroupAdded && message.sender !== authorizedUser.name && scrollMode) {
       result.push(<div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>)
-      unreadMessageExist = true;
+      unreadMessageGroupAdded = true;
     }
-    
+
     result.push(
-      <Message 
-        key={message.time.toDate().getTime()}
-        styleClass={classNameForMessage} 
-        message={message} 
-        time={messageCreationTime} 
+      <Message
+        key={message.id}
+        styleClass={classNameForMessage}
+        message={message}
+        time={messageCreationTime}
       />
     )
   })
@@ -81,11 +83,11 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments, autho
     uploadingMessageWithAttachments.forEach((message, index) => {
       const messageCreationTime = getMessageCreationTime(new Date(message.time));
       result.push(
-        <Message 
+        <Message
           key={message.time}
           styleClass={"message__content operator"}
-          message={message} 
-          time={messageCreationTime} 
+          message={message}
+          time={messageCreationTime}
           attachmentsIsLoading={true}
         />
       )

@@ -22,7 +22,7 @@ const APPS_REF = getAppsCollRef();
 
 const AllApplications = () => {
   const {role, authorizedUser} = useContext(ProgramContext);
-  const {appsSearch, pageCount, setPageCount } = useContext(WorkPageContext);
+  const {appsSearch, pageCount, setPageCount, dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
   const [countriesData, countriesLoading, countriesError, countriesDocSnapshot] = useDocumentData(ALL_COUNTRIES_REF);
   const [selectedCountry, setSelectedCountry] = useState({value:null, label:null});
@@ -35,7 +35,7 @@ const AllApplications = () => {
 
   useEffect(() => {
     if(applicationsData && countriesData && chatsCollSnapshot) {
-      setTableData(getDataForTable(applicationsData, countriesData.countries, chatsCollSnapshot, appsCollSnapshot));
+      setTableData(getDataForTable(applicationsData, countriesData.countries, chatsCollSnapshot, appsCollSnapshot, dialogueForApplication, setSelectedDialogue));
     }
   }, [applicationsData, countriesData, chatsCollSnapshot, appsCollSnapshot])
 

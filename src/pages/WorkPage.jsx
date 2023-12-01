@@ -18,35 +18,41 @@ const {Content} = Layout;
 const CLIENTS_QUERY = getClientsQuery();
 
 const WorkPage = () => {
-  const [ drawerOpen, setDrawerOpen ] = useState(false);
-  const [  chatsSearchFilter, setChatsSearchFilter ] = useState('');
-  const [ appsSearch, setAppsSearch ] = useState('');
-  const [ notificationsWillBeNotShown, setNotificationsWillBeNotShown ] = useState(null);
   const [ pageCount, setPageCount ] = useState(1);
+  const [ chatListOpen, setChatListOpen] = useState(false);
+  const [ appsSearch, setAppsSearch ] = useState('');
+  const [ chatsSearchFilter, setChatsSearchFilter ] = useState('');
+  const [ notificationsWillBeNotShown, setNotificationsWillBeNotShown ] = useState(null);
+  const [ selectedDialogue, setSelectedDialogue ] = useState(null);
+  const [ scrollMode, setScrollMode ] = useState(false)
+  const dialogueForApplication = useRef(null);
+
+  console.log(selectedDialogue)
+  console.log(dialogueForApplication.current)
+
   const { authorizedUser, role } = useContext(ProgramContext);
   const contentRef = useRef(null);
-  const [ cleintsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
+
+  const [ clientsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
   const [ chatsData, chatsLoading, chatsError, chatsCollSnapshot ] = useCollectionData(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
-  
+
   useEffect(() => {
     if(!chatsLoading) {
-      // const dialoguesData = chatsCollSnapshot.docs.map(docSnap => {
-      //   return docSnap.data();
-      // })
       // cохраняем в стейт те сообщения, которые не были прочитаны, пока визовик был оффлайн и новые непрочитанные, которые визовик еще не прочитал.
       // чтобы при получении новых сообщений, текущие непрочитанные не показывались повторно.
       setNotificationsWillBeNotShown(chatsData.reduce((acc, dialogue) => {
+        const dialogIsOpened = dialogue.UID === selectedDialogue?.dialogue.UID;
+        if(dialogIsOpened && !scrollMode) return acc;
         dialogue.messages.forEach(message => {
-          if(!message.sendState && (message.sender !== authorizedUser.name) ) {
-            //сохраняем message, на случай если в будующем нужно будет повторно показать непрочитанное оповещение
-            acc.push({key: `${dialogue.UID}-${message.time.nanoseconds}`, message})
-            // acc.push({id: message.id, message})
+          if(!message.sendState && (message.sender !== authorizedUser.name)   ) {
+            // сохраняем message, на случай если в будующем нужно будет повторно показать непрочитанное оповещение
+            acc.push({id: message.id, message})
           }
         })
         return acc;
       }, []))
     }
-  },[chatsCollSnapshot, chatsLoading ])
+  },[chatsData, chatsLoading, authorizedUser.name, scrollMode, selectedDialogue?.dialogue.UID ])
 
   if(clientsLoading) {
     return
@@ -58,18 +64,13 @@ const WorkPage = () => {
 
   const handleMenuSelect = ({item, key, keyPath, selectedKeys, domEvent}) => {
     if (key === "/chat") {
-      setDrawerOpen((prev) => !prev)
+      setChatListOpen((prev) => !prev)
     }
   }
 
-  const globalChatComponent = drawerOpen ? <GlobalChat drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} /> : null
-  const dialoguesData = chatsCollSnapshot?.docs.map(docSnap => {
-    return docSnap.data();
-  })
-
   return (
-    <WorkPageContext.Provider value={{cleintsData, chatsCollSnapshot, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount  }}>
-      {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder dialoguesData={dialoguesData} notificationsWillBeNotShown={notificationsWillBeNotShown}/> : null}
+    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, setSelectedDialogue, dialogueForApplication  }}>
+      {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder chatsData={chatsData} notificationsWillBeNotShown={notificationsWillBeNotShown} selectedDialogue={selectedDialogue}/> : null}
       <ConfigProvider
         theme={{
           token: {
@@ -80,13 +81,18 @@ const WorkPage = () => {
         <Layout className="workpage">
           <Head />
           <Layout className="main" hasSider>
-            <Aside handleMenuSelect={handleMenuSelect} drawerOpen={drawerOpen}/>
+            <Aside handleMenuSelect={handleMenuSelect} chatListOpen={chatListOpen}/>
             <GlobalDataDownload >
               <Content
                 ref={contentRef}
                 className="content"
               >
-                {globalChatComponent}
+                <GlobalChat
+                    chatListOpen={chatListOpen}
+                    setChatListOpen={setChatListOpen}
+                    selectedDialogue={selectedDialogue}
+                    setSelectedDialogue={setSelectedDialogue}
+                />
                 <Outlet />
               </Content>
             </GlobalDataDownload>

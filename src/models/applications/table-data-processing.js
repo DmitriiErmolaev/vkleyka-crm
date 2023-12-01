@@ -33,7 +33,7 @@ export const getUserName = (users, uid) => {
 
 
 
-export const getDataForTable = (applications, countries, chatsCollSnapshot, appsCollSnapshot ) => {
+export const getDataForTable = (applications, countries, chatsCollSnapshot, appsCollSnapshot, dialogueForApplication, setSelectedDialogue ) => {
   return applications.reduce((accum, application) => {
     // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
     //   return accum // TODO: обход бага. Решить с Жангиром
@@ -45,6 +45,8 @@ export const getDataForTable = (applications, countries, chatsCollSnapshot, apps
         clientId: application.UID,
         country: country,
         appsCollSnapshot: appsCollSnapshot,
+        dialogueForApplication: dialogueForApplication,
+        setSelectedDialogue: setSelectedDialogue,
         id: getShortApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),
         dialogueSnap: getDialogueSnap(chatsCollSnapshot, application.UID),

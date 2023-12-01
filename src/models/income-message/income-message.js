@@ -18,10 +18,10 @@ export const showUnredMessage = (api, name, message) => {
 export const audio = new Audio()
 audio.src = './sounds/notification-signal.mp3'
 
-export const checkWillMessageBeShown = (clientUID, message, notificationsWillNotShow) => {
+export const checkWillMessageBeShown = (clientUID, message, notificationsWillNotShow, selectedDialogue) => {
   if(!notificationsWillNotShow.length) return true;
   const isMessageIncluded = notificationsWillNotShow.some(item => {
-    return item.key === `${clientUID}-${message.time.nanoseconds}`;
+    return item.id === message.id;
     //TODO: return item.id === message.id;
   })
   return !isMessageIncluded;

@@ -1,21 +1,15 @@
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
-import { useCollection } from 'react-firebase-hooks/firestore';
-import { Drawer, Card, Spin } from 'antd';
-import { getApplicationsBySetOfApplicantIDs } from '../../models/chat/dialogue-list/dialogue-list-data-processing';
+import React, { useContext, useRef } from 'react';
+import { Drawer, Spin } from 'antd';
 import DialogueSearch from './DialogueSearch';
-import { ProgramContext, WorkPageContext } from '../../models/context';
-import { getDialogueList } from '../../models/chat/dialogue-list/dialogue-list';
-import { getDataFromCollSnapshot } from '../../models/data-processing';
-import Error from '../error/Error';
+import { WorkPageContext } from '../../models/context';
 import DialoguesList from './DialoguesList';
-import { getChatsQueryForDialoguesList } from '../../models/chat/chat-data-processing';
 import '../../assets/chat/dialogue-list.scss';
 import '../../assets/loading.scss';
+import Spinner from '../spinner/Spinner';
 
 
-const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen}) => {
+const DialoguesListContainer = ({chatListOpen, handleDrawerClose, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen}) => {
   const dialoguesListContainerRef = useRef(null)
-  const { authorizedUser, role } = useContext(ProgramContext);
   const { chatsCollSnapshot, chatsLoading } = useContext(WorkPageContext);
 
   return (
@@ -28,21 +22,22 @@ const DialoguesListContainer = ({drawerOpen, handleDrawerClose, selectedDialogue
         rootClassName="dialogues-list"
         placement="left"
         title={<DialogueSearch />}
-        open={drawerOpen}
+        open={chatListOpen}
         mask={false}
         onClose={handleDrawerClose}
         getContainer={false}
         zIndex={100}
       >
         {chatsLoading ? (
-          <div className="loading">
-            <div className="loading__spinner">
-              <Spin />
-            </div>
-            <p className="loading__text">
-              Загрузка...
-            </p>
-          </div>
+          <Spinner />
+          // <div className="loading">
+          //   <div className="loading__spinner">
+          //     <Spin />
+          //   </div>
+          //   <p className="loading__text">
+          //     Загрузка...
+          //   </p>
+          // </div>
         ) : (
           <DialoguesList
             chatsCollSnapshot={chatsCollSnapshot}

@@ -6,9 +6,9 @@ import { WorkPageContext } from '../../models/context';
 import { getDataFromCollSnapshot } from '../../models/data-processing';
 
 
-const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}) => {
+const Dialogue = ({dialogueWindowOpen, setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}) => {
   const dialogueContainerRef = useRef(null);
-  const {cleintsData} = useContext(WorkPageContext);
+  const {clientsData, setScrollMode, dialogueForApplication} = useContext(WorkPageContext);
 
   useLayoutEffect(() => {
     dialogueContainerRef.current.style.top = `${window.scrollY}px`;
@@ -23,21 +23,26 @@ const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}
   const handleDialogClose = () => {
     setDialogueWindowOpen(false)
     setSelectedDialogue(null)
-
+    setScrollMode(false)
+    if (dialogueForApplication.current) {
+      setSelectedDialogue({dialogue: dialogueForApplication.current})
+    } else {
+      setSelectedDialogue(null);
+    }
   }
 
-  const client = cleintsData.find(user => {
-    return user.UID === selectedDialogue.dialogue.UID;
+  const client = clientsData.find(user => {
+    return user.UID === selectedDialogue?.dialogue.UID;
   })
 
-  const userName = client.name
+  const userName = client?.name
   ? client.name
   : (
-      client.passports[0]?.first_name
+      client?.passports[0]?.first_name
         ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
-        : client.UID
+        : client?.UID
     )
-  
+
   return (
     <div
       ref={dialogueContainerRef}
@@ -50,12 +55,22 @@ const Dialogue = ({setDialogueWindowOpen, selectedDialogue, setSelectedDialogue}
         placement="left"
         title="Чат"
         mask={false}
-        open={true}
+        open={dialogueWindowOpen}
         onClose={handleDialogClose}
         getContainer={false}
         zIndex={99}
       >
-        <Chat applicantName={userName} applicantId={selectedDialogue.dialogue.UID} unreadMessagesNumber={selectedDialogue.unreadMessagesNumber} clientApplicationsSnaps={selectedDialogue.clientApplicationsSnaps} source="global-chat"/>
+        {selectedDialogue ? (
+          <Chat
+            applicantName={userName}
+            applicantId={selectedDialogue.dialogue.UID}
+            clientApplicationsSnaps={selectedDialogue.clientApplicationsSnaps}
+            source="global-chat"
+          />
+        ) : (
+          null
+        )}
+
       </Drawer>
     </div>
   );

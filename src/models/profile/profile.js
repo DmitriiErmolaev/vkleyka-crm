@@ -33,7 +33,7 @@ export const updateOperatorProfile = async (authorizedUser, admins, values) => {
     }
     return admin;
   })
-
+  
   try {
     await updateOperator(updatedAdmins);
   } catch (e) {

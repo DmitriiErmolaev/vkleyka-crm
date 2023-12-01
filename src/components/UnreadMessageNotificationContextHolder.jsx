@@ -4,22 +4,26 @@ import { audio, checkWillMessageBeShown, notificationGlobConfig } from '../model
 import { showUnredMessage } from '../models/income-message/income-message';
 import { ProgramContext, WorkPageContext } from '../models/context';
 
-const UnreadMessageNotificationContextHolder = ({dialoguesData, notificationsWillBeNotShown}) => {
-  const { cleintsData } = useContext(WorkPageContext)
+const UnreadMessageNotificationContextHolder = ({chatsData, notificationsWillBeNotShown, selectedDialogue}) => {
+  const { clientsData } = useContext(WorkPageContext)
   const { authorizedUser } = useContext(ProgramContext);
-
   const [api, contextHolder] = notification.useNotification(notificationGlobConfig);
 
   useEffect(() => {
 
-    // if(dialoguesData) {
+    // if(chatsData) {
       // показывает непрочитанное сообщение, кроме тех, которые уже были показаны, либо были получены оффлайн. Они записаны в notificationsWillBeNotShown
-      dialoguesData.forEach(dialogue => {
+      chatsData.forEach(dialogue => {
+        
+        if(selectedDialogue?.dialogue.UID === dialogue.UID) {
+          // чтобы нотификации не приходили из диалога, кототрый отрыт.
+          return;
+        }
         dialogue.messages.forEach(message => {
           // TODO: заменить сравнение на сравнение по айдишникам
           if(!message.sendState && (message.sender !== authorizedUser.name)) {
-            if(checkWillMessageBeShown(dialogue.UID, message, notificationsWillBeNotShown)) {
-              const client = cleintsData.find(client => client.UID === dialogue.UID);
+            if(checkWillMessageBeShown(dialogue.UID, message, notificationsWillBeNotShown, selectedDialogue)) {
+              const client = clientsData.find(client => client.UID === dialogue.UID);
               // const applicantName = client?.name
               // ? client.name
               // : (
@@ -38,8 +42,7 @@ const UnreadMessageNotificationContextHolder = ({dialoguesData, notificationsWil
         })
       })
     // }
-   
-  }, [dialoguesData, api, notificationsWillBeNotShown])
+  }, [chatsData, api, notificationsWillBeNotShown, authorizedUser.name, clientsData, selectedDialogue])
 
   return contextHolder;
 }

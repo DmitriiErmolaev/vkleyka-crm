@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { ProgramContext, WorkPageContext } from '../../../models/context';
 
 const SiderMenuChatField = () => {
-  const {unreadMessages} = useContext(WorkPageContext);
+  const {unreadMessagesArray} = useContext(WorkPageContext);
   const {role} = useContext(ProgramContext);
 
   return (
@@ -14,7 +14,7 @@ const SiderMenuChatField = () => {
         <div style={{display: "flex", justifyContent: "space-between", alignItems:'center'}}>
           <p >Чат</p>
           <Badge
-            count={unreadMessages?.length}
+            count={unreadMessagesArray?.length}
             styles={
               {
                 root:{color: "white"},

@@ -7,12 +7,12 @@ import "../../../assets/aside.scss"
 import SiderMenu from './SiderMenu.jsx';
 const {Sider} = Layout;
 
-const Aside = ({handleMenuSelect, drawerOpen}) => {
+const Aside = ({handleMenuSelect, chatListOpen}) => {
   return (
     <Sider
       className="aside"
     >
-      <SiderMenu handleMenuSelect={handleMenuSelect} drawerOpen={drawerOpen}/>
+      <SiderMenu handleMenuSelect={handleMenuSelect} chatListOpen={chatListOpen}/>
     </Sider >
   );
 };
