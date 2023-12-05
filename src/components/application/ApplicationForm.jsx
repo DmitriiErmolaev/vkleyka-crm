@@ -32,10 +32,11 @@ const ApplicationForm = ({ clientId }) => {
   const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
   const [ countriesData, countriesLoading, countriesError, countriesDocSnapshot ] = useDocumentData(getAllCountriesRef(state?.savedCountry));
   const [ allClientAppsData, allClientAppsCollSnapshotLoading, allClientAppsCollSnapshotError, allClientAppsCollSnapshot ] = useCollectionData(getAllClientApplications(clientId, authorizedUser.id, role));
+  // const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollectionData(getChatQueryByClientId());
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatQuery());
   const [ country, setCountry ] = useState();
   const [ curApplicationSnap, setCurApplicationSnap ] = useState();
-
+  
   useEffect(() => {
     // если форма открыта не из чата - получить dialogue и сохранить в ref для дальнейшего удобства.
     if (!dialogueForApplication?.current && chatsCollSnapshot && allClientAppsCollSnapshot && curApplicationSnap) {
@@ -69,14 +70,6 @@ const ApplicationForm = ({ clientId }) => {
       </div>
     )
   }
-
-  // if ( countriesLoading || chatsLoading || allClientAppsCollSnapshotLoading) {
-  //   return (
-  //     <div style={{height:"100vh", display:"flex", justifyContent:"center", alignItems:"center" }}>
-  //       <Spin size="large"/>
-  //     </div>
-  //   )
-  // }
 
   if(allClientAppsCollSnapshotError || countriesError || chatsError ) {
     return <Error error={allClientAppsCollSnapshotError || countriesError || chatsError }/>

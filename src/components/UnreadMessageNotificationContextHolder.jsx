@@ -32,9 +32,13 @@ const UnreadMessageNotificationContextHolder = ({chatsData, notificationsWillBeN
               //       : client?.UID
               //   )
               const clientName = dialogue?.name || client?.name || client.passports[0].first_name || client.UID
-
               showUnredMessage(api, clientName, message);
-              audio.play()
+              audio.play().catch(e => {
+                if(e.name === 'NotAllowedError') {
+                  // Nobody interacted with the page.
+                }
+                console.log(e)
+              })
             } else {
               return;
             }

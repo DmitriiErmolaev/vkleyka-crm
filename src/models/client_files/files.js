@@ -51,9 +51,9 @@ export const deleteUploadedFile = async (uploadedDocs, uid, applicationRef) => {
       return docInfo.uid === uid
     })
     const storageFileRef = getFileRef(deletingFileInfo.link);
-    await deleteObject(storageFileRef);
+    await deleteObject(storageFileRef); // удаление файла из storage
     const removedFromUploadedFilesInfo = removeFromUploadedFilesInfo(uploadedDocs, uid);
-    await updateUploadedFilesInfo(applicationRef, "preparedInformation.documents", removedFromUploadedFilesInfo);
+    await updateUploadedFilesInfo(applicationRef, "preparedInformation.documents", removedFromUploadedFilesInfo); // удаление записи об этом файле из firestore
   } catch (e) {
     throw e
   }

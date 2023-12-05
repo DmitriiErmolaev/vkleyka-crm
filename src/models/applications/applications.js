@@ -26,11 +26,11 @@ export const getAllClientApplications = (clientId, authorizedUserId, role ) => {
   return query(getAppsCollRef(), ...constraints);
 }
 
-export const getFileUrl = async (flagRef) => {
+export const getFileUrl = async (fileRef) => {
 // TODO: надо как то сохранять этот файл, и потом уже брать из скаченных.
   try {
-    const flagBlob = await getBlob(flagRef);
-    return URL.createObjectURL(flagBlob)
+    const fileBlob = await getBlob(fileRef);
+    return URL.createObjectURL(fileBlob)
   } catch (error) {
     console.log(error)
   }

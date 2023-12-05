@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useLayoutEffect, useRef } from 'react';
 import { Drawer, Spin } from 'antd';
 import DialogueSearch from './DialogueSearch';
 import { WorkPageContext } from '../../models/context';
@@ -11,6 +11,12 @@ import Spinner from '../spinner/Spinner';
 const DialoguesListContainer = ({chatListOpen, handleDrawerClose, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen}) => {
   const dialoguesListContainerRef = useRef(null)
   const { chatsCollSnapshot, chatsLoading } = useContext(WorkPageContext);
+
+  useLayoutEffect(() => {
+    if (chatListOpen) {
+      dialoguesListContainerRef.current.style.top = `${window.scrollY}px`
+    }
+  }, [chatListOpen, dialoguesListContainerRef])
 
   return (
     <div

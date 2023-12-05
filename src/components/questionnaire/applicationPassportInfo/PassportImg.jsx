@@ -1,28 +1,37 @@
 import { getDownloadURL } from 'firebase/storage';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { getFileRef } from '../../../models/firebase';
 import { Image } from 'antd';
+import { getFileUrl } from '../../../models/applications/applications';
 
 const PassportImg = ({path}) => {
   const [url, setUrl] = useState();
 
+  // useEffect(() => {
+  //   // TODO: сделать загрузку флага до отображения всей карты. 
+  //   getFileUrl(getFileRef(path)).then(res => {
+  //     setUrl(res)
+  //   })
+  // },[])
+
   useEffect(() => {
     if(path) {
+      console.log('u12y3487')
       const func = async () => {
         const url = await getDownloadURL(getFileRef(path));
         setUrl(url)
       }
       func()
     }
-  }, [url, path])
-  
+  }, [])
+
   if (!path) {
     return;
   }
 
   return (
     <Image
-      width={50}
+      width={100}
       src={url}
     />
   );

@@ -10,6 +10,7 @@ import { getDownloadURL }from 'firebase/storage';
 import '../../../assets/passport-info.scss'
 import { getFileRef, getRootStorageRef } from '../../../models/firebase';
 import PassportImg from './PassportImg';
+import dayjs from 'dayjs';
 
 const PassportInfo = ({passports, appId}) => {
   const {curAppStatus} = useContext(ApplicationStatus);
@@ -22,7 +23,21 @@ const PassportInfo = ({passports, appId}) => {
       </div>
     )
     let passportsInfoPreparedData = getPassportInfoQuestions().map(question => {
-      const answer = getPassportInfoValue(question, passport[question.propWithAnswer]);
+      // const answer = getPassportInfoValue(question, passport[question.propWithAnswer]);
+      let answer = ''
+      const value = passport[question.propWithAnswer];
+      if(question.answerType === 'date') {
+        // TODO: временное решение. Удалить когда все даты в паспортной части будут таймштампами а не текстом
+        console.log(typeof value)
+        if (typeof value === 'string') {
+          answer = value;
+        } else {
+          answer = dayjs.unix(value.seconds).format('DD.MM.YYYY');
+        }
+      }
+      if(question.answerType === 'photo') {
+        answer = <PassportImg path={value}/>
+      }
       // let answer = passport[question.propWithAnswer];
       // if (question.propWithAnswer === 'image_url') {
       //   answer = <PassportImg path={passport[question.propWithAnswer]}/>

@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import { useParams } from 'react-router-dom';
 import { Upload, Button, Typography } from 'antd';
 import { uploadBytesResumable } from 'firebase/storage';
@@ -21,26 +21,28 @@ import '../../assets/upload-section.scss';
 const { Title } = Typography;
 
 const UploadSection = ({uploadedDocs}) => {
-  const createExtraFileList = () => {
+  const createExtraFileList = useCallback(() => {
     //Для первого отображения уже загруженных документов.
     if(uploadedDocs.length === 0) {
       return [];
     }
-    
+
     return uploadedDocs.map(doc => {
       return {name:doc.name, status:'done', uid:doc.uid, url: doc.downloadURL}
     })
-  }
+  }, [uploadedDocs]);
 
-  const {appId} = useParams();
-  const {curAppStatus} = useContext(ApplicationStatus);
-  const [fileListState, setFileListState] = useState(createExtraFileList);
-  const [uploadButtonIsDisabled, setUploadButtonIsDisabled] = useState(false);
+  const [ fileListState, setFileListState ] = useState(createExtraFileList);
+  const [ uploadButtonIsDisabled, setUploadButtonIsDisabled ] = useState(false);
+  const [ deletingFile, setDeletingFile ] = useState(false);
+  const { curAppStatus } = useContext(ApplicationStatus);
+  const { notificationApi } = useContext(ProgramContext)
+  const { appId } = useParams();
   const APPLICATION_REF = getAppRefById(appId);
-  const {notificationApi} = useContext(ProgramContext)
+
   useEffect(() => {
     setFileListState(createExtraFileList);
-  }, [uploadedDocs])
+  }, [uploadedDocs, createExtraFileList])
 
   // useEffect(() => {
   //   if (curAppStatus === 2) setUploadButtonIsDisabled(true);
@@ -52,6 +54,7 @@ const UploadSection = ({uploadedDocs}) => {
 
   const handleDelete = async (file) => {
     try {
+      setDeletingFile(true);
       await deleteUploadedFile(uploadedDocs, file.uid, APPLICATION_REF)
       setFileListState((prev) => prev.filter(fileInfo => fileInfo.uid !== file.uid ))
       openNotification(notificationApi, "success", 'deleteUploadedFile')
@@ -59,13 +62,15 @@ const UploadSection = ({uploadedDocs}) => {
       console.log(e)
       openNotification(notificationApi, "error", 'deleteUploadedFile')
       // Firebase Storage: Object 'documents/hJ1goDbnR8C8OMygvtm2-1690235227709.pdf' does not exist. (storage/object-not-found) - пример.
-    } 
+    } finally {
+      setDeletingFile(false);
+    }
   }
   // Вызывается для каждого файла из списка
   const beforeUpload = (file, _fileList) => {
     setUploadButtonIsDisabled(true);
     setFileListState((prev) => getUpdatedExtraFileList(prev, file));
-    return false; // предотвращает загрузку по адресу в пропсе action. 
+    return false; // предотвращает загрузку по адресу - пропс action компонента upload
   }
 
   // Вызывается для каждого файла из списка при смене статуса файла (Если удаление - только для одного)
@@ -109,9 +114,9 @@ const UploadSection = ({uploadedDocs}) => {
       }
     })
   }
-  
+
   const uploadPermanentlyDisabled = curAppStatus === 2;
-  
+
   return (
     <div className="uploaded-documents">
       <Typography>
@@ -137,6 +142,7 @@ const UploadSection = ({uploadedDocs}) => {
           beforeUpload={beforeUpload}
           onChange={handleUploadChange}
           onRemove={handleDelete}
+          showUploadList={{showRemoveIcon: deletingFile ? false : true }}
         >
           <Button disabled={uploadPermanentlyDisabled || uploadButtonIsDisabled} icon={<UploadOutlined/>}>Загрузить файл</Button>
         </Upload> 

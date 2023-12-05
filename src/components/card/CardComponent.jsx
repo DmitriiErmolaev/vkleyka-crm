@@ -7,6 +7,8 @@ import ApplicationInfoCardFooter from './ApplicationInfoCardFooter';
 import { getFileRef } from '../../models/firebase';
 import { getFileUrl } from '../../models/applications/applications';
 import { ApplicationStatus } from '../../models/context';
+import { getDownloadURL } from 'firebase/storage';
+import Spinner from '../spinner/Spinner';
 
 const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, dialogueSnap, currentClientApplications, questionnaire}) => {
   const [progressPercent, setProgressPercent] = useState();
@@ -17,11 +19,22 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
   const flagRef = getFileRef(countryFlag);
 
   useEffect(() => {
-    // TODO: сделать загрузку флага до отображения всей карты. 
-    getFileUrl(flagRef).then(res => {
-      setFlagUrl(res)
-    })
-  },[])
+    if(countryFlag) {
+      console.log('u12y3487')
+      const func = async () => {
+        const url = await getDownloadURL(flagRef);
+        setFlagUrl(url)
+      }
+      func()
+    }
+  }, [])
+
+  // useEffect(() => {
+  //   // TODO: сделать загрузку флага до отображения всей карты. 
+  //   getFileUrl(flagRef).then(res => {
+  //     setFlagUrl(res)
+  //   })
+  // },[])
 
   useEffect(() => {
     if(curAppStatus || curAppStatus === 0) {
@@ -30,16 +43,14 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
     }
   },[curAppStatus])
 
-  if (flagUrl === null) {
-    // TODO: показать скелетон или спиннер на всей карте.
-  }
+ 
 
   return (
     <Layout style={{marginBottom:"10px"}}>
       <Card
         headStyle={{padding:"42px 27px 0", backgroundColor:"#182A67", font:"500 20px Jost, sans-serif", color:"#fff", borderRadius:"0"}}
         bodyStyle={{padding:"44px 27px 22px", backgroundColor:"#182A67", borderRadius:"0"}}
-        title={<CardTitle data={{cardTitle: cardTitle, flagUrl: flagUrl}}/>}
+        title={<CardTitle cardTitle={cardTitle} flagUrl={flagUrl}/>}
         // extra={<QuestionnaireFillPercentage />} 
       >
         <Progress 

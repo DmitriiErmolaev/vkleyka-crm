@@ -10,10 +10,12 @@ const GlobalChat = ({chatListOpen, setChatListOpen, selectedDialogue, setSelecte
   const { setScrollMode, dialogueForApplication } = useContext(WorkPageContext);
 
   useEffect(() => {
-    document.body.setAttribute('style', 'overflow: hidden');
-    document.body.setAttribute('style', `overflow: hidden; padding-right: ${document.body.clientWidth - bodyClientWidth.current}px`);
-    return () => document.body.setAttribute('style', 'overflow: auto');
-  })
+    if(chatListOpen) {
+      document.body.setAttribute('style', 'overflow: hidden');
+      document.body.setAttribute('style', `overflow: hidden; padding-right: ${document.body.clientWidth - bodyClientWidth.current}px`);
+      return () => document.body.setAttribute('style', 'overflow: auto');
+    }
+  }, [chatListOpen])
 
   const handleDrawerClose = () => {
     setChatListOpen(false);
