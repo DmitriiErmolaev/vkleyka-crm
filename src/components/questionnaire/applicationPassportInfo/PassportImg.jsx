@@ -6,7 +6,7 @@ import { getFileUrl } from '../../../models/applications/applications';
 
 const PassportImg = ({path}) => {
   const [url, setUrl] = useState();
-
+  console.log('ререндер PassportImg')
   // useEffect(() => {
   //   // TODO: сделать загрузку флага до отображения всей карты. 
   //   getFileUrl(getFileRef(path)).then(res => {
@@ -23,7 +23,7 @@ const PassportImg = ({path}) => {
       }
       func()
     }
-  }, [])
+  }, [path])
 
   if (!path) {
     return;

@@ -9,6 +9,7 @@ const CardTitle = ({cardTitle, flagUrl}) => {
     >
       <img
         src={flagUrl}
+        height='33px'
         alt="флаг страны"
         style={{display:"block", marginRight:"10px", }}
       />

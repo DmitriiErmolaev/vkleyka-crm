@@ -1,11 +1,9 @@
 import React, { useContext } from 'react';
 import { ProgramContext } from '../../models/context';
-import { Avatar, Button, Card, ConfigProvider, theme } from 'antd';
+import { Avatar, Card, theme } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import '../../assets/profile/profile.scss'
 import ProfileForm from './ProfileForm';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../models/firebase';
 const { useToken } = theme;
 const { Meta } = Card;
 
@@ -13,7 +11,7 @@ const { Meta } = Card;
 const Profile = () => {
   const { authorizedUser } = useContext(ProgramContext)
   const { token } = useToken();
-  
+
   return (
     <div className='profile'>
       <div className='profile__container'>

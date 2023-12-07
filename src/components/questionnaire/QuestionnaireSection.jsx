@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {Layout} from 'antd';
 import PassportInfo from './applicationPassportInfo/PassportInfo';
 import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQuestionnaire';
@@ -10,8 +10,8 @@ import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQues
 //   border: "none",
 // }
 
-const QuestionnaireSection = ({questionnaire, passports, appRef, appId}) => {
-
+const QuestionnaireSection = memo(({questionnaire, passports, appRef, appId}) => {
+  console.log('снова рендер')
   return (
     <div style={{ color:"#0F6CA5"}}>
       <PassportInfo
@@ -24,6 +24,6 @@ const QuestionnaireSection = ({questionnaire, passports, appRef, appId}) => {
       />
     </div>
   );
-};
+});
 
 export default QuestionnaireSection;

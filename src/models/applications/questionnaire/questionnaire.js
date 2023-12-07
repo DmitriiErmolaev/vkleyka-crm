@@ -67,101 +67,103 @@ export const getQuestionnaireSelectOptions = (options) => {
   })
 }
 
-export const getPassportInfoQuestions = () => {
+export const getPassportFieldsMatrix = () => {
   return [
     {
       key:nanoid(),
-      questionTitle: "Имя, латиницей",
-      propWithAnswer: "first_name",
-      answerType:'string',
+      fieldTitle: "Имя, латиницей",
+      propWithValue: "first_name",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Фамилия, латиницей",
-      propWithAnswer: "last_name",
-      answerType:'string',
+      fieldTitle: "Фамилия, латиницей",
+      propWithValue: "last_name",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Дата рождения",
-      propWithAnswer: "date_of_birth",
-      answerType:'date',
+      fieldTitle: "Дата рождения",
+      propWithValue: "date_of_birth",
+      valueType:'date',
     },
     {
       key:nanoid(),
-      questionTitle: "Пол",
-      propWithAnswer: "gender",
-      answerType:'string',
+      fieldTitle: "Пол",
+      propWithValue: "gender",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Гражданство",
-      propWithAnswer: "citizenship",
-      answerType:'string',
+      fieldTitle: "Гражданство",
+      propWithValue: "citizenship",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Место рождения",
-      propWithAnswer: "place_of_birth",
-      answerType:'string',
+      fieldTitle: "Место рождения",
+      propWithValue: "place_of_birth",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Номер паспорта",
-      propWithAnswer: "passport_number",
-      answerType:'string',
+      fieldTitle: "Номер паспорта",
+      propWithValue: "passport_number",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Дата выдачи",
-      propWithAnswer: "issue_date",
-      answerType:'date',
+      fieldTitle: "Дата выдачи",
+      propWithValue: "issue_date",
+      valueType:'date',
     },
     {
       key:nanoid(),
-      questionTitle: "Орган, который выдал",
-      propWithAnswer: "issued_by",
-      answerType:'string',
+      fieldTitle: "Орган, который выдал",
+      propWithValue: "issued_by",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: "Действителен до",
-      propWithAnswer: "valid_until",
-      answerType:'date',
+      fieldTitle: "Действителен до",
+      propWithValue: "valid_until",
+      valueType:'date',
     },
     {
       key:nanoid(),
-      questionTitle: "ИИН",
-      propWithAnswer: "IIN",
-      answerType:'string',
+      fieldTitle: "ИИН",
+      propWithValue: "IIN",
+      valueType:'string',
     },
     {
       key:nanoid(),
-      questionTitle: 'Фото паспорта',
-      propWithAnswer: 'image_url',
-      answerType:'photo',
+      fieldTitle: 'Фото паспорта',
+      propWithValue: 'image_url',
+      valueType:'photo',
     }
   ]
 }
 
-export const getPassportsInfoCollapseItem = (label, extra, children) => {
-  return {
-    key: "personalInfo",
-    label: label,
-    // extra: extra, // TODO: вернуть, когда внедрю редактирование для passportsInfo
-    // style: panelStyle, // NOTE: для стилизации. Пока не убирать
-    children: children,
-  }
+export const getPassportInfoCollapseItem = (label, extra, children) => {
+  // Collapse будет состоять только из 1 элемента. По этому только 1 объект.
+  return [
+    {
+      key: "personalInfo",
+      label: label,
+      extra: extra, // TODO: вернуть, когда внедрю редактирование для passportsInfo
+      children: children,
+    }
+  ]
 }
 
-export const getPassportInfoValue = (question, value) => {
+export const getPassportInfoValue = (passportField, value, isEdit) => {
   if(!value) return '';
-  if(question.answerType === 'date') {
+  if(passportField.valueType === 'date') {
     // TODO: временное решение. Удалить когда все даты в паспортной части будут таймштампами а не текстом
     if (typeof value === 'string') return value;
     return dayjs.unix(value.seconds).format('DD.MM.YYYY');
   }
-  if(question.answerType === 'photo') {
+  if(passportField.valueType === 'photo') {
     return <PassportImg path={value}/>
   }
   return value;
@@ -173,7 +175,6 @@ export const getCollapseItems = (questionnaireItems) => {
     return {
       key: index,
       label: section[0],
-      // style: panelStyle,  // NOTE: для стилизации. Пока не убирать
       children: section[1],
     }
   })

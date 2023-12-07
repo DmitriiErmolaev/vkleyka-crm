@@ -16,6 +16,13 @@ const conponents = {
 }
 
 const QuestionnaireItem = ({question, questionIndex, setAnswersToUpdate, answersToUpdate, isEdit}) => {
+  if(question.type === 'list') {
+    return (
+      <div>
+        тип вопроса - список
+      </div>
+    )
+  }
   const Component = conponents[question.type];
 
   return (

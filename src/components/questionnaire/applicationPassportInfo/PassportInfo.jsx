@@ -2,73 +2,32 @@ import React, {useState, useContext } from 'react';
 import { Collapse, Image, Layout } from 'antd';
 import { EditOutlined } from "@ant-design/icons";
 import Question from '../Question';
-import PassportInfoCollapseLabel from './PassportInfoCollapseLabel';
+import PassportInfoCollapseItemLabel from './label/PassportInfoCollapseItemLabel';
 import ApplyOrCancel from '../ApplyOrCancel';
-import { getPassportInfoQuestions, getPassportInfoValue, getPassportsInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
-import { ApplicationStatus } from '../../../models/context';
+import { getPassportInfoQuestions, getPassportInfoValue, getPassportInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
+import { ApplicationStatus, PassportInfoContext } from '../../../models/context';
 import { getDownloadURL }from 'firebase/storage';
 import '../../../assets/passport-info.scss'
 import { getFileRef, getRootStorageRef } from '../../../models/firebase';
 import PassportImg from './PassportImg';
 import dayjs from 'dayjs';
+import ApplicantPassportTitle from './content/ApplicantPassportTitle';
+import ApplicantPassportFields from './content/ApplicantPassportFields';
+import PassportInfoCollapseItemChildren from './content/PassportInfoCollapseItemChildren';
 
 const PassportInfo = ({passports, appId}) => {
   const {curAppStatus} = useContext(ApplicationStatus);
-  const [passportInfoIsEdit, setPassportInfoIsEdit] = useState(false); // для будущей фнкции редактирования
-  
-  const content = passports.map((passport, index) => {
-    const applicantTitle = (
-      <div key={`applicant-${index}-passport-title`} className="applicant-passport__title">
-        {`Заявитель №${index + 1}. ${passport.first_name} ${passport.last_name}`}
-      </div>
-    )
-    let passportsInfoPreparedData = getPassportInfoQuestions().map(question => {
-      // const answer = getPassportInfoValue(question, passport[question.propWithAnswer]);
-      let answer = ''
-      const value = passport[question.propWithAnswer];
-      if(question.answerType === 'date') {
-        // TODO: временное решение. Удалить когда все даты в паспортной части будут таймштампами а не текстом
-        console.log(typeof value)
-        if (typeof value === 'string') {
-          answer = value;
-        } else {
-          answer = dayjs.unix(value.seconds).format('DD.MM.YYYY');
-        }
-      }
-      if(question.answerType === 'photo') {
-        answer = <PassportImg path={value}/>
-      }
-      // let answer = passport[question.propWithAnswer];
-      // if (question.propWithAnswer === 'image_url') {
-      //   answer = <PassportImg path={passport[question.propWithAnswer]}/>
-      // }
-      // if (question.propWithAnswer === 'image_url')
-      return (
-        <div
-          style={{display:"inline-block", width:"50%"}}
-          key={question.key}
-        >
-          <Question question={question.questionTitle}/>
-          <div style={{color:"black", font:"400 17px Jost, sans-serif"}}>{answer}</div>
-        </div>
-      )
-    })
+  const [passportInfoIsEdit, setPassportInfoIsEdit] = useState(false);
 
-    return (
-      <div key={`applicant-${index}-passport`} className="applicant-passport">
-        {applicantTitle}
-        {passportsInfoPreparedData}
-      </div>
-    )
+  const cancelChanges = () => {
+    setPassportInfoIsEdit(false)
+    //TODO: сбросить редактируемые данные.
+  }
 
-  })
-
-  const passportsInfoLabel = (
-    <PassportInfoCollapseLabel 
-      appId={appId}
-      passportsLength={passports.length}
-    />
-  )
+  // Collapse будет состоять из 1 элемента. По этому только 1 лейбл.
+  const collapseItemLabel = <PassportInfoCollapseItemLabel appId={appId} passportsLength={passports.length} />
+  // Collapse будет состоять из 1 элемента. По этому только 1 массив children в котором 1 или несколько заявителей со своими title и fields.
+  const collapseItemChildren = <PassportInfoCollapseItemChildren passports={passports} />
 
   const passportsInfoLabelExtra = curAppStatus !== 2 ? (
     <EditOutlined
@@ -80,20 +39,22 @@ const PassportInfo = ({passports, appId}) => {
     null
   )
 
-  const passportsInfoCollapseItems = getPassportsInfoCollapseItem(passportsInfoLabel, passportsInfoLabelExtra, content)
+  const collapseItems = getPassportInfoCollapseItem(collapseItemLabel, passportsInfoLabelExtra, collapseItemChildren) // массив элементов. Представлен 1 элементом. Паспортная часть.
 
   return (
-    <Layout style={{marginBottom:"10px"}}>
-      <Collapse
-        bordered={false}
-        items={[passportsInfoCollapseItems]}
-        size={"middle"}
-        defaultActiveKey={"personalInfo"}
-        expandIcon={()=>{}} // убирает иконку стрелки, из-за чего некуда кликать, чтобы свернуть.
-        collapsible="icon" // разрешаем коллапс по клику на иконку, получается что коллапс запрещен, т.к. иконки нет.
-      />
-      <ApplyOrCancel />
-    </Layout>
+    <PassportInfoContext.Provider value={{isEdit: passportInfoIsEdit}}>
+      <div style={{marginBottom:"10px"}}>
+        <Collapse
+          bordered={false}
+          items={collapseItems}
+          size={"middle"}
+          defaultActiveKey={"personalInfo"}
+          expandIcon={()=>{}} // убирает иконку стрелки, из-за чего некуда кликать, чтобы свернуть.
+          collapsible="icon" // разрешаем коллапс по клику на иконку, получается что коллапс запрещен, т.к. иконки нет.
+        />
+        <ApplyOrCancel isEdit={passportInfoIsEdit} cancelChanges={cancelChanges}/>
+      </div>
+    </PassportInfoContext.Provider>
   );
 };
 

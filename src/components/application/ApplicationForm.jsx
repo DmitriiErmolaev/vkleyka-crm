@@ -17,6 +17,7 @@ import { getDialogueSnap } from "../../models/chat/chat-data-processing";
 import { getAllClientApplications } from "../../models/applications/applications";
 import { ApplicationStatus, ProgramContext, WorkPageContext } from "../../models/context";
 import '../../assets/application-form.scss';
+import ChatContainer from "../chat/ChatContainer";
 
 const visaType = {
   tourist: "Туристическая",
@@ -32,7 +33,6 @@ const ApplicationForm = ({ clientId }) => {
   const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
   const [ countriesData, countriesLoading, countriesError, countriesDocSnapshot ] = useDocumentData(getAllCountriesRef(state?.savedCountry));
   const [ allClientAppsData, allClientAppsCollSnapshotLoading, allClientAppsCollSnapshotError, allClientAppsCollSnapshot ] = useCollectionData(getAllClientApplications(clientId, authorizedUser.id, role));
-  // const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollectionData(getChatQueryByClientId());
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatQuery());
   const [ country, setCountry ] = useState();
   const [ curApplicationSnap, setCurApplicationSnap ] = useState();
@@ -105,10 +105,12 @@ const ApplicationForm = ({ clientId }) => {
               appId={appId}
             />
           </Col>
-          <Col  span={12} style={{height:"100%", overflowY:"auto"}}>
+          <Col span={12} style={{height:"100%", overflowY:"auto"}}>
+            {/* <ChatContainer applicantId={curApplication.UID}> */}
             <div className="chat-section">
               <Chat applicantName={applicantName} clientApplicationsSnaps={allClientAppsCollSnapshot.docs} applicantId={curApplication.UID} source="application"/>
             </div>
+            {/* </ChatContainer> */}
             <UploadSection uploadedDocs={curApplication.preparedInformation.documents}/>
           </Col>
         </Row>
