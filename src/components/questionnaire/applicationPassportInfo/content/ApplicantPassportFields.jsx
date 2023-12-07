@@ -10,17 +10,11 @@ const ApplicantPassportFields = ({passport}) => {
 
   const passportFieldsMatrix = getPassportFieldsMatrix();
   
-  const passportFields = passportFieldsMatrix.map(passportFieldInfo => {
-    return <PassportField key={passportFieldInfo.key} passportFieldInfo={passportFieldInfo} />
+  const passportFields = passportFieldsMatrix.map((passportFieldInfo, fieldIndex) => {
+    return <PassportField key={passportFieldInfo.key} passportFieldInfo={passportFieldInfo} fieldIndex={fieldIndex}/>
   })
 
-  return (
-    <Form 
-    
-    >
-      {passportFields}
-    </Form>
-  )
+  return passportFields
 };
 
 export default ApplicantPassportFields;

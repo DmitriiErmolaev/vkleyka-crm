@@ -3,16 +3,19 @@ import React, { useContext } from 'react';
 import { PassportInfoContext } from '../../../../models/context';
 
 const TypeTextField = ({isEdit, dbValue}) => {
+  const passportIndex = useContext(ApplicantPassportContext)
   const {isEdit} = useContext(PassportInfoContext);
 
-  const value = isEdit ? : dbValue;
+  // const value = isEdit ? : dbValue;
 
   return (
-    <Form.Item >
+    <Form.Item 
+      name=''
+    >
       {isEdit ? (
-        <Input />
+        <Input value={dbValue}/>
       ) : (
-        {value}
+        {dbValue}
       )}
     </Form.Item>
   );

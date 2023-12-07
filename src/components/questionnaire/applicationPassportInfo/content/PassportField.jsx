@@ -3,7 +3,7 @@ import '../../../assets/application/passports/passport-field.scss';
 import TypeTextField from '../passport-fields/TypeTextField';
 import TypeDateField from '../passport-fields/TypeDateField';
 import TypePhotoField from '../passport-fields/TypePhotoField';
-import { PassportInfoContext } from '../../../../models/context';
+import { ApplicantPassportContext, PassportInfoContext } from '../../../../models/context';
 
 const components = {
   text: TypeTextField,
@@ -11,8 +11,7 @@ const components = {
   Photo: TypePhotoField,
 }
 
-const PassportField = ({passportFieldInfo, fieldValue}) => {
-
+const PassportField = ({passportFieldInfo, fieldValue, passportIndex, passportFieldIndex}) => {
   const FieldValueComponent = components[passportFieldInfo.type];
 
   return (
