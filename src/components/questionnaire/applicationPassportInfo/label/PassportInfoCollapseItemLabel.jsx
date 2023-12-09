@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../../assets/application/passports/passport-collpse-item-label.scss';
+import '../../../../assets/application/passports/passport-collpse-item-label.scss';
 
 const PassportInfoCollapseItemLabel = ({appId, passportsLength}) => {
   return (

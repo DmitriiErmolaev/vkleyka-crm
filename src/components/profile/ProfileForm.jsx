@@ -58,7 +58,6 @@ const ProfileForm = () => {
   // }
 
   const handleFormProvider = async (formName, { values, forms }) => {
-    console.log(values)
     // TODO: придумать асинзронный вызов модалки с формой
     try {
       setProfileUpdating(true)

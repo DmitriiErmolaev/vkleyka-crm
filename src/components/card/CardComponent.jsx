@@ -20,7 +20,6 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
 
   useEffect(() => {
     if(countryFlag) {
-      console.log('u12y3487')
       const func = async () => {
         const url = await getDownloadURL(flagRef);
         setFlagUrl(url)

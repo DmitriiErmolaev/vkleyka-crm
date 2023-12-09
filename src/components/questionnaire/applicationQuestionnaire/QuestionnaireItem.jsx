@@ -7,7 +7,7 @@ import TypePhotoAnswer from './TypePhotoAnswer';
 import TypeDropdownAnswer from './TypeDropdownAnswer';
 import "../../../assets/questionnaire.scss"
 
-const conponents = {
+const components = {
   text: TypeTextAnswer,
   date: TypeDateAnswer,
   photo: TypePhotoAnswer,
@@ -23,7 +23,7 @@ const QuestionnaireItem = ({question, questionIndex, setAnswersToUpdate, answers
       </div>
     )
   }
-  const Component = conponents[question.type];
+  const Component = components[question.type];
 
   return (
     <div className="questionnary-item__container">

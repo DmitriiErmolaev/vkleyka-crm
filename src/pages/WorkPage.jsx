@@ -26,10 +26,6 @@ const WorkPage = () => {
   const [ selectedDialogue, setSelectedDialogue ] = useState(null);
   const [ scrollMode, setScrollMode ] = useState(false)
   const dialogueForApplication = useRef(null);
-
-  console.log(selectedDialogue)
-  console.log(dialogueForApplication.current)
-
   const { authorizedUser, role } = useContext(ProgramContext);
   const contentRef = useRef(null);
 
@@ -88,10 +84,10 @@ const WorkPage = () => {
                 className="content"
               >
                 <GlobalChat
-                    chatListOpen={chatListOpen}
-                    setChatListOpen={setChatListOpen}
-                    selectedDialogue={selectedDialogue}
-                    setSelectedDialogue={setSelectedDialogue}
+                  chatListOpen={chatListOpen}
+                  setChatListOpen={setChatListOpen}
+                  selectedDialogue={selectedDialogue}
+                  setSelectedDialogue={setSelectedDialogue}
                 />
                 <Outlet />
               </Content>

@@ -6,7 +6,6 @@ const ApplicationContainer = () => {
   const { clientId, appId } = useParams();
   const [ clientIdState, setClientIdState ] = useState(clientId)
   
-  console.log(clientId)
 
   useEffect(() => {
     if (clientIdState !== clientId) setClientIdState(clientId)

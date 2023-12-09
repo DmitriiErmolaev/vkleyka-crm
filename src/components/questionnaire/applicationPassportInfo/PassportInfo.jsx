@@ -4,25 +4,19 @@ import { EditOutlined } from "@ant-design/icons";
 import Question from '../Question';
 import PassportInfoCollapseItemLabel from './label/PassportInfoCollapseItemLabel';
 import ApplyOrCancel from '../ApplyOrCancel';
-import { getPassportInfoQuestions, getPassportInfoValue, getPassportInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
+import { getPassportInfoCollapseItem } from '../../../models/applications/questionnaire/questionnaire';
 import { ApplicationStatus, PassportInfoContext } from '../../../models/context';
 import { getDownloadURL }from 'firebase/storage';
 import '../../../assets/passport-info.scss'
 import { getFileRef, getRootStorageRef } from '../../../models/firebase';
-import PassportImg from './PassportImg';
 import dayjs from 'dayjs';
 import ApplicantPassportTitle from './content/ApplicantPassportTitle';
 import ApplicantPassportFields from './content/ApplicantPassportFields';
 import PassportInfoCollapseItemChildren from './content/PassportInfoCollapseItemChildren';
 
-const PassportInfo = ({passports, appId}) => {
+const PassportInfo = ({passports, appId, appRef}) => {
   const {curAppStatus} = useContext(ApplicationStatus);
   const [passportInfoIsEdit, setPassportInfoIsEdit] = useState(false);
-
-  const cancelChanges = () => {
-    setPassportInfoIsEdit(false)
-    //TODO: сбросить редактируемые данные.
-  }
 
   // Collapse будет состоять из 1 элемента. По этому только 1 лейбл.
   const collapseItemLabel = <PassportInfoCollapseItemLabel appId={appId} passportsLength={passports.length} />
@@ -42,7 +36,7 @@ const PassportInfo = ({passports, appId}) => {
   const collapseItems = getPassportInfoCollapseItem(collapseItemLabel, passportsInfoLabelExtra, collapseItemChildren) // массив элементов. Представлен 1 элементом. Паспортная часть.
 
   return (
-    <PassportInfoContext.Provider value={{isEdit: passportInfoIsEdit}}>
+    <PassportInfoContext.Provider value={{isEdit: passportInfoIsEdit, setIsEdit: setPassportInfoIsEdit, appRef}}>
       <div style={{marginBottom:"10px"}}>
         <Collapse
           bordered={false}
@@ -52,7 +46,6 @@ const PassportInfo = ({passports, appId}) => {
           expandIcon={()=>{}} // убирает иконку стрелки, из-за чего некуда кликать, чтобы свернуть.
           collapsible="icon" // разрешаем коллапс по клику на иконку, получается что коллапс запрещен, т.к. иконки нет.
         />
-        <ApplyOrCancel isEdit={passportInfoIsEdit} cancelChanges={cancelChanges}/>
       </div>
     </PassportInfoContext.Provider>
   );

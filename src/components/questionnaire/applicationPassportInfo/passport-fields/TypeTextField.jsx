@@ -1,21 +1,20 @@
-import { Input } from 'antd';
-import React, { useContext } from 'react';
-import { PassportInfoContext } from '../../../../models/context';
+import { Form, Input } from 'antd';
+import React, { useContext, useState } from 'react';
+import { ApplicantPassportContext, PassportInfoContext } from '../../../../models/context';
 
-const TypeTextField = ({isEdit, dbValue}) => {
-  const passportIndex = useContext(ApplicantPassportContext)
-  const {isEdit} = useContext(PassportInfoContext);
-
-  // const value = isEdit ? : dbValue;
+const TypeTextField = ({fieldName, dbValue}) => {
+  const { passportIndex } = useContext(ApplicantPassportContext);
+  const { isEdit } = useContext(PassportInfoContext);
 
   return (
-    <Form.Item 
-      name=''
+    <Form.Item
+      name={[String(passportIndex), fieldName ]}
+      initialValue={dbValue}
     >
       {isEdit ? (
-        <Input value={dbValue}/>
+        <Input />
       ) : (
-        {dbValue}
+        dbValue
       )}
     </Form.Item>
   );

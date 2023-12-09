@@ -10,13 +10,13 @@ import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQues
 //   border: "none",
 // }
 
-const QuestionnaireSection = memo(({questionnaire, passports, appRef, appId}) => {
-  console.log('снова рендер')
+const QuestionnaireSection = ({questionnaire, passports, appRef, appId}) => {
   return (
     <div style={{ color:"#0F6CA5"}}>
       <PassportInfo
         passports={passports}
         appId={appId}
+        appRef={appRef}
       />
       <ApplicationQuestionnaire
         questionnaire={questionnaire}
@@ -24,6 +24,6 @@ const QuestionnaireSection = memo(({questionnaire, passports, appRef, appId}) =>
       />
     </div>
   );
-});
+};
 
 export default QuestionnaireSection;

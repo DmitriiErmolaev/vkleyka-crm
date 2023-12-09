@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
-import { useDocument, useCollection, useDocumentData, useCollectionData } from "react-firebase-hooks/firestore"
+import { useDocument, useCollection, useDocumentData, useCollectionData, useCollectionDataOnce } from "react-firebase-hooks/firestore"
 import { useLocation, useParams } from "react-router-dom";
 import { Layout, Row, Col, Spin } from "antd";
 import Chat from "../chat/Chat";
@@ -36,11 +36,10 @@ const ApplicationForm = ({ clientId }) => {
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatQuery());
   const [ country, setCountry ] = useState();
   const [ curApplicationSnap, setCurApplicationSnap ] = useState();
-  
+  console.log(allClientAppsData)
   useEffect(() => {
     // если форма открыта не из чата - получить dialogue и сохранить в ref для дальнейшего удобства.
     if (!dialogueForApplication?.current && chatsCollSnapshot && allClientAppsCollSnapshot && curApplicationSnap) {
-      console.log(123)
       const dialogue = getDialogueSnap(chatsCollSnapshot, curApplicationSnap.data().UID).data();
       dialogueForApplication.current = dialogue;
       setSelectedDialogue({dialogue: dialogue})
@@ -82,7 +81,7 @@ const ApplicationForm = ({ clientId }) => {
   const curAppStatus = curApplication.preparedInformation.preparationStatus;
   const applicantName = `${curApplication.passports[0].first_name} ${curApplication.passports[0].last_name}`;
   const dialogueSnap = getDialogueSnap(chatsCollSnapshot, curApplication.UID);
-
+  
   return (
     <ApplicationStatus.Provider value={{curAppStatus: curAppStatus}}>
       <Layout ref={applicationFormRef} style={{height:"calc(100vh - 64px)", padding:"0px 10px 10px"}}>

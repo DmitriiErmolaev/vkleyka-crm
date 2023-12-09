@@ -1,24 +1,23 @@
-import React, { useContext } from 'react';
-import '../../../assets/application/passports/passport-field.scss';
+import React from 'react';
+import '../../../../assets/application/passports/passport-field.scss';
 import TypeTextField from '../passport-fields/TypeTextField';
 import TypeDateField from '../passport-fields/TypeDateField';
 import TypePhotoField from '../passport-fields/TypePhotoField';
-import { ApplicantPassportContext, PassportInfoContext } from '../../../../models/context';
 
 const components = {
-  text: TypeTextField,
+  string: TypeTextField,
   date: TypeDateField,
-  Photo: TypePhotoField,
+  photo: TypePhotoField,
 }
 
-const PassportField = ({passportFieldInfo, fieldValue, passportIndex, passportFieldIndex}) => {
-  const FieldValueComponent = components[passportFieldInfo.type];
+const PassportField = ({passportFieldInfo, dbValue}) => {
+  const FieldValueComponent = components[passportFieldInfo.valueType];
 
   return (
     <div className='passport-field'>
       <h3 className='passport-field__title'>{passportFieldInfo.fieldTitle}:</h3>
       <div className='passport-field__value'>
-        <FieldValueComponent />
+        <FieldValueComponent fieldName={passportFieldInfo.propWithValue} dbValue={dbValue}/>
       </div>
     </div>
   );
