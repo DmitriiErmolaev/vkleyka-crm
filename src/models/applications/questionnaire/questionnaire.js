@@ -1,4 +1,5 @@
 import { updateDoc } from "firebase/firestore";
+import { getArrayWithoutEmptyStrings } from "./type-list-answer";
 
 // const questionnairePath = "questionnary.answers"; // NOTE: для создания справочника путей
 
@@ -25,7 +26,7 @@ export const prepareChanges = (changedFields, newResponse, questionIndex, nested
   }
 }
 
-export const getChangedValue = (answersToUpdate, quesionIndex, nestedOptions) => {
+export const checkChangedValueExists = (answersToUpdate, quesionIndex, nestedOptions) => {
   if(answersToUpdate.length === 0) {
     return false
   }
@@ -43,16 +44,22 @@ export const getChangedValue = (answersToUpdate, quesionIndex, nestedOptions) =>
 }
 
 const createChangedQuestionnaireCopy = (questionnaireOriginal, answersToUpdate) => {
+  
   let copyQuestionnaire = [...questionnaireOriginal];
   answersToUpdate.forEach((question) => {
-    copyQuestionnaire[question.index].response = question.newResponse
+    if(Array.isArray(question.newResponse)) {
+      const arrayWithoutEmptyStrings = getArrayWithoutEmptyStrings(question.newResponse);
+      copyQuestionnaire[question.index].response = arrayWithoutEmptyStrings;
+      return;
+    }
+    copyQuestionnaire[question.index].response = question.newResponse;
   })
   return copyQuestionnaire;
 }
 
 export const updateQuestionnaireAnswers = async (ref, questionnaireOriginal, answersToUpdate) => {
   const copy = createChangedQuestionnaireCopy(questionnaireOriginal, answersToUpdate)
-  await updateDoc(ref,"questionnary.answers", copy )
+  await updateDoc(ref, "questionnary.answers", copy )
 }
 
 export const getQuestionnaireSelectOptions = (options) => {

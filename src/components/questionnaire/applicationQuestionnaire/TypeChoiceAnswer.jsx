@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Radio } from 'antd';
-import { getChangedValue, getQuestionnaireSelectOptions, prepareChanges } from '../../../models/applications/questionnaire/questionnaire';
+import { checkChangedValueExists, getQuestionnaireSelectOptions, prepareChanges } from '../../../models/applications/questionnaire/questionnaire';
 
 const TypeChoiceAnswer = ({questionData, questionIndex, setAnswersToUpdate, answersToUpdate, isEdit}) => {
 
@@ -9,7 +9,7 @@ const TypeChoiceAnswer = ({questionData, questionIndex, setAnswersToUpdate, answ
     const preparedChanges = prepareChanges(answersToUpdate, newResponse, questionIndex);
     setAnswersToUpdate(preparedChanges);
   }
-  const alreadyChangedResponse = getChangedValue(answersToUpdate, questionIndex);
+  const alreadyChangedResponse = checkChangedValueExists(answersToUpdate, questionIndex);
   const displayedValue = (alreadyChangedResponse) ? alreadyChangedResponse.pickedOption : questionData.response.pickedOption;
 
   // const radioButtons = questionData.options.map((option, index) => {

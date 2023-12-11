@@ -1,6 +1,6 @@
 import React from 'react';
-import {Input} from "antd";
-import { prepareChanges, getChangedValue } from '../../../models/applications/questionnaire/questionnaire';
+import { Input } from "antd";
+import { prepareChanges, checkChangedValueExists } from '../../../models/applications/questionnaire/questionnaire';
 
 const TypeTextAnswer = ({questionData, questionIndex, setAnswersToUpdate, answersToUpdate, isEdit, nestedOptions={isNested:false}}) => {
   const handleChange = (e) => {
@@ -9,13 +9,13 @@ const TypeTextAnswer = ({questionData, questionIndex, setAnswersToUpdate, answer
     if(nestedOptions.isNested) {
       const isQuestionAlreadyChanged = answersToUpdate.findIndex(question => {
         return question.index === questionIndex;
-      }) 
+      })
       if(isQuestionAlreadyChanged === -1) {
         const response = nestedOptions.dropdownQuestionData.response;
         const preparedChanges = prepareChanges(answersToUpdate, response, questionIndex);
         setAnswersToUpdate(preparedChanges);
-      } 
-    }    
+      }
+    }
 
     setAnswersToUpdate((prev) => {
       const preparedChanges = prepareChanges(prev, e.target.value, questionIndex, nestedOptions);
@@ -23,7 +23,7 @@ const TypeTextAnswer = ({questionData, questionIndex, setAnswersToUpdate, answer
     });
   }
 
-  const alreadyChangedResponse = getChangedValue(answersToUpdate, questionIndex, nestedOptions);
+  const alreadyChangedResponse = checkChangedValueExists(answersToUpdate, questionIndex, nestedOptions);
   const displayedValue = (alreadyChangedResponse !== false) ? alreadyChangedResponse : questionData.response;
 
   return isEdit ? (

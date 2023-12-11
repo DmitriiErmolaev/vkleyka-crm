@@ -17,7 +17,7 @@ const ApplicationQuestionnaire = ({questionnaire, appRef}) => {
   const {notificationApi} = useContext(ProgramContext)
   const {curAppStatus} = useContext(ApplicationStatus);
   const {token} = useToken();
-
+  console.log(answersToUpdate)
   useEffect(() => {
     if (curAppStatus === 2) cancelChanges();
   },[curAppStatus])

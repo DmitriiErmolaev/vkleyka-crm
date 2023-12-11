@@ -12,12 +12,6 @@ const DialoguesList = ({chatsCollSnapshot, selectedDialogue, setSelectedDialogue
   const {authorizedUser, role} = useContext(ProgramContext);
   const [appsCollSnapshot, appsLoading, appsError] = useCollection(getApplicationsBySetOfApplicantIDs(chatsCollSnapshot, authorizedUser.id, role));
 
-  useLayoutEffect(() => {
-    if (!appsLoading) {
-      dialoguesListContainerRef.current.style.top = `${window.scrollY}px`
-    }
-  }, [appsLoading, dialoguesListContainerRef])
-
   if (appsLoading) {
     return (
       <div className="loading">

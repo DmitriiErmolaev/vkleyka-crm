@@ -6,6 +6,7 @@ import TypeDateAnswer from './TypeDateAnswer';
 import TypePhotoAnswer from './TypePhotoAnswer';
 import TypeDropdownAnswer from './TypeDropdownAnswer';
 import "../../../assets/questionnaire.scss"
+import TypeListAnswer from './TypeListAnswer';
 
 const components = {
   text: TypeTextAnswer,
@@ -13,16 +14,11 @@ const components = {
   photo: TypePhotoAnswer,
   dropdown: TypeDropdownAnswer,
   choice: TypeChoiceAnswer,
+  list: TypeListAnswer,
 }
 
 const QuestionnaireItem = ({question, questionIndex, setAnswersToUpdate, answersToUpdate, isEdit}) => {
-  if(question.type === 'list') {
-    return (
-      <div>
-        тип вопроса - список
-      </div>
-    )
-  }
+  
   const Component = components[question.type];
 
   return (

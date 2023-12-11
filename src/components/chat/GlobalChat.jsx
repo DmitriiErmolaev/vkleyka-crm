@@ -12,7 +12,7 @@ const GlobalChat = ({chatListOpen, setChatListOpen, selectedDialogue, setSelecte
   useLayoutEffect(() => {
     if(chatListOpen) {
       document.body.setAttribute('style', 'overflow: hidden');
-      document.body.setAttribute('style', `overflow: hidden; margin-right: ${document.body.clientWidth - bodyClientWidth.current}px`);
+      document.body.setAttribute('style', `overflow: hidden; padding-right: ${document.body.clientWidth - bodyClientWidth.current}px`);
       return () => document.body.setAttribute('style', 'overflow: auto');
     }
   }, [chatListOpen])

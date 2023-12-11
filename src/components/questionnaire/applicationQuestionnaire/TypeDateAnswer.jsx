@@ -1,7 +1,7 @@
 import React from 'react';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs'
-import { prepareChanges, getChangedValue } from '../../../models/applications/questionnaire/questionnaire';
+import { prepareChanges, checkChangedValueExists } from '../../../models/applications/questionnaire/questionnaire';
 import { Timestamp } from 'firebase/firestore';
 
 const TypeDateAnswer = ({questionData, questionIndex, setAnswersToUpdate, answersToUpdate, isEdit}) => {
@@ -14,7 +14,7 @@ const TypeDateAnswer = ({questionData, questionIndex, setAnswersToUpdate, answer
     setAnswersToUpdate(preparedChanges)
   }
 
-  const alreadyChangedResponse = getChangedValue(answersToUpdate, questionIndex);
+  const alreadyChangedResponse = checkChangedValueExists(answersToUpdate, questionIndex);
   const displayedValue = !alreadyChangedResponse
     ?  dayjs.unix(questionData.response.seconds) // пустая строка воспринимается как 0 - и возвращается dayjs объект временной метки 1970г
     : (

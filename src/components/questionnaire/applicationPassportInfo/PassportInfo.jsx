@@ -43,8 +43,8 @@ const PassportInfo = ({passports, appId, appRef}) => {
           items={collapseItems}
           size={"middle"}
           defaultActiveKey={"personalInfo"}
-          expandIcon={()=>{}} // убирает иконку стрелки, из-за чего некуда кликать, чтобы свернуть.
-          collapsible="icon" // разрешаем коллапс по клику на иконку, получается что коллапс запрещен, т.к. иконки нет.
+          // expandIcon={()=>{}} // убирает иконку стрелки, из-за чего некуда кликать, чтобы свернуть.
+          // collapsible="icon" // разрешаем коллапс по клику на иконку, получается что коллапс запрещен, т.к. иконки нет.
         />
       </div>
     </PassportInfoContext.Provider>

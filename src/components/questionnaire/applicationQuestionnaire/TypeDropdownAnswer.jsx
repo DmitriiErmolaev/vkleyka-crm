@@ -4,7 +4,7 @@ import TypeTextAnswer from './TypeTextAnswer';
 import Question from '../Question';
 import { 
   prepareChanges, 
-  getChangedValue, 
+  checkChangedValueExists, 
   getQuestionnaireSelectOptions 
 } from '../../../models/applications/questionnaire/questionnaire';
 
@@ -22,7 +22,7 @@ const TypeDropdownAnswer = ({questionData, questionIndex, setAnswersToUpdate, an
     setAnswersToUpdate(preparedChanges);
   }
 
-  const alreadyChangedResponse = getChangedValue(answersToUpdate, questionIndex);
+  const alreadyChangedResponse = checkChangedValueExists(answersToUpdate, questionIndex);
   const displayedValue = (alreadyChangedResponse !== false) ? alreadyChangedResponse.pickedOption : questionData.response.pickedOption;
   const answersToDisplay = (alreadyChangedResponse !== false) ? alreadyChangedResponse.answers : questionData.response.answers;
   const options = getQuestionnaireSelectOptions(questionData.options)
