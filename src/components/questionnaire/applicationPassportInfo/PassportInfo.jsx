@@ -27,7 +27,10 @@ const PassportInfo = ({passports, appId, appRef}) => {
     <EditOutlined
       className="interactive-icons"
       style={{ fontSize: '22px', color: '#08c', marginLeft:"10px"}}
-      onClick={() =>  setPassportInfoIsEdit(true)}
+      onClick={(e) =>  {
+        e.stopPropagation()
+        setPassportInfoIsEdit(true)
+      }}
     />
   ) : (
     null
@@ -43,8 +46,6 @@ const PassportInfo = ({passports, appId, appRef}) => {
           items={collapseItems}
           size={"middle"}
           defaultActiveKey={"personalInfo"}
-          // expandIcon={()=>{}} // убирает иконку стрелки, из-за чего некуда кликать, чтобы свернуть.
-          // collapsible="icon" // разрешаем коллапс по клику на иконку, получается что коллапс запрещен, т.к. иконки нет.
         />
       </div>
     </PassportInfoContext.Provider>

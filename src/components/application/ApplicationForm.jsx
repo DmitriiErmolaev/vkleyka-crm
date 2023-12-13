@@ -79,9 +79,8 @@ const ApplicationForm = ({ clientId }) => {
   const countryFlag = country.flag;
   const cardTitle = `${countryNameRu}-${visaType[curApplication.type]}`
   const curAppStatus = curApplication.preparedInformation.preparationStatus;
-  const applicantName = `${curApplication.passports[0].first_name} ${curApplication.passports[0].last_name}`;
   const dialogueSnap = getDialogueSnap(chatsCollSnapshot, curApplication.UID);
-  
+
   return (
     <ApplicationStatus.Provider value={{curAppStatus: curAppStatus}}>
       <Layout ref={applicationFormRef} style={{height:"calc(100vh - 64px)", padding:"0px 10px 10px"}}>
@@ -107,7 +106,10 @@ const ApplicationForm = ({ clientId }) => {
           <Col span={12} style={{height:"100%", overflowY:"auto"}}>
             {/* <ChatContainer applicantId={curApplication.UID}> */}
             <div className="chat-section">
-              <Chat applicantName={applicantName} clientApplicationsSnaps={allClientAppsCollSnapshot.docs} applicantId={curApplication.UID} source="application"/>
+              <Chat 
+                clientApplicationsSnaps={allClientAppsCollSnapshot.docs} 
+                applicantId={curApplication.UID} source="application"
+              />
             </div>
             {/* </ChatContainer> */}
             <UploadSection uploadedDocs={curApplication.preparedInformation.documents}/>

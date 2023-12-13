@@ -1,7 +1,7 @@
-import {initializeApp}  from "firebase/app";
-import {browserLocalPersistence, initializeAuth} from "firebase/auth";
+import { initializeApp }  from "firebase/app";
+import { browserLocalPersistence, initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import {getStorage, ref} from "firebase/storage"
+import { getStorage, ref } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_APIKEY,  
@@ -31,4 +31,4 @@ export const getFileRef = (path) => {
   return ref(storage, path)
 }
 
-export  {app as firebase, auth, firestore, storage} 
+export  {app as firebase, auth, firestore, storage}

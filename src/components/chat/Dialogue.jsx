@@ -31,18 +31,6 @@ const Dialogue = ({dialogueWindowOpen, setDialogueWindowOpen, selectedDialogue, 
     }
   }
 
-  const client = clientsData.find(user => {
-    return user.UID === selectedDialogue?.dialogue.UID;
-  })
-
-  const userName = client?.name
-  ? client.name
-  : (
-      client?.passports[0]?.first_name
-        ? `${client.passports[0].first_name} ${client.passports[0].last_name}`
-        : client?.UID
-    )
-
   return (
     <div
       ref={dialogueContainerRef}
@@ -62,7 +50,6 @@ const Dialogue = ({dialogueWindowOpen, setDialogueWindowOpen, selectedDialogue, 
       >
         {selectedDialogue ? (
           <Chat
-            applicantName={userName}
             applicantId={selectedDialogue.dialogue.UID}
             clientApplicationsSnaps={selectedDialogue.clientApplicationsSnaps}
             source="global-chat"

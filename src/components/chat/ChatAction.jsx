@@ -46,7 +46,6 @@ const ChatAction = ({dialogue, dialogueSnap, clientApplicationsSnaps=[]}) => {
       <Button
         type={"primary"}
         onClick={assignToMe}
-        // size={"small"}
       >
         Взять
       </Button>

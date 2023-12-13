@@ -12,7 +12,7 @@ import ChatFooter from './ChatFooter.jsx';
 import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
 
-const Chat = ({ applicantName, applicantId, clientApplicationsSnaps, source }) => {
+const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
   // const [ scrolledToBottom, setScrolledToBottom ] = useState(true)
   // const [ scrollMode, setScrollMode ] = useState(false)
   const [ uploadingMessageWithAttachments, setUploadingMessageWithAttachments ] = useState([]);
@@ -20,7 +20,8 @@ const Chat = ({ applicantName, applicantId, clientApplicationsSnaps, source }) =
   const allMessages = useRef(null);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot.
   const [ chatCollSnapshot, chatLoading, chatError ] = useCollection(getChatQueryForApplication(applicantId)) // нельзя запросить конкретный документ, потому что не знаем путь.
-  const { setUnreadMessagesToNotify, scrollMode, setScrollMode } = useContext(WorkPageContext);
+  const { setUnreadMessagesToNotify, scrollMode, setScrollMode, clientsData } = useContext(WorkPageContext);
+  
   // console.log("scrolledToBottom " + scrolledToBottom)
   // console.log("scrollMode " + scrollMode)
 
@@ -96,6 +97,10 @@ const Chat = ({ applicantName, applicantId, clientApplicationsSnaps, source }) =
   const dialogueSnap = chatCollSnapshot.docs[0];
   const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
   const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages, scrollMode);
+  const client = clientsData.find(user => {
+    return user.UID === applicantId;
+  })
+  const applicantName = dialogue?.name || client?.name || client?.phone || 'Аккаунт удален';
 
   const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
     if(message.sendState === 0 && message.sender !== authorizedUser.name) {

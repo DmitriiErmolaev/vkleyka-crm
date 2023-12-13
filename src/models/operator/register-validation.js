@@ -130,7 +130,7 @@ export const fieldRules = {
     },
   ],
   passConfirm: [
-    { 
+    {
       validateTrigger:"onSubmit",
       required: true,
       message:validationError.requiredField,
