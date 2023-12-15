@@ -28,19 +28,20 @@ const WorkPage = () => {
   const dialogueForApplication = useRef(null);
   const { authorizedUser, role } = useContext(ProgramContext);
   const contentRef = useRef(null);
-
+  console.log(scrollMode)
   const [ clientsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
   const [ chatsData, chatsLoading, chatsError, chatsCollSnapshot ] = useCollectionData(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
 
   useEffect(() => {
     if(!chatsLoading) {
+      if (role === 'admin') return;
       // cохраняем в стейт те сообщения, которые не были прочитаны, пока визовик был оффлайн и новые непрочитанные, которые визовик еще не прочитал.
       // чтобы при получении новых сообщений, текущие непрочитанные не показывались повторно.
       setNotificationsWillBeNotShown(chatsData.reduce((acc, dialogue) => {
         const dialogIsOpened = dialogue.UID === selectedDialogue?.dialogue.UID;
         if(dialogIsOpened && !scrollMode) return acc;
         dialogue.messages.forEach(message => {
-          if(!message.sendState && (message.sender !== authorizedUser.name)   ) {
+          if(message.readBy && !message.readBy.includes('operator')) { // если в массиве нет 'operator' значит сообщение отправил не визовик и он его не прочитал.
             // сохраняем message, на случай если в будующем нужно будет повторно показать непрочитанное оповещение
             acc.push({id: message.id, message})
           }
@@ -48,7 +49,7 @@ const WorkPage = () => {
         return acc;
       }, []))
     }
-  },[chatsData, chatsLoading, authorizedUser.name, scrollMode, selectedDialogue?.dialogue.UID ])
+  },[chatsData, chatsLoading, authorizedUser.name, scrollMode, selectedDialogue?.dialogue.UID, role ])
 
   if(clientsLoading) {
     return
@@ -65,7 +66,7 @@ const WorkPage = () => {
   }
 
   return (
-    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, setSelectedDialogue, dialogueForApplication  }}>
+    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsData, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, setSelectedDialogue, dialogueForApplication  }}>
       {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder chatsData={chatsData} notificationsWillBeNotShown={notificationsWillBeNotShown} selectedDialogue={selectedDialogue}/> : null}
       <ConfigProvider
         theme={{

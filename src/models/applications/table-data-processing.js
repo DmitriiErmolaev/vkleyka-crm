@@ -33,12 +33,10 @@ export const getUserName = (users, uid) => {
 
 
 
-export const getDataForTable = (applications, countries, chatsCollSnapshot, appsCollSnapshot, dialogueForApplication, setSelectedDialogue ) => {
+export const getDataForTable = (applications, countries, chatsCollSnapshot, appsCollSnapshot, dialogueForApplication, setSelectedDialogue, clientsData ) => {
   return applications.reduce((accum, application) => {
-    // if (application.UID === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') {
-    //   return accum // TODO: обход бага. Решить с Жангиром
-    // }
     const country = getCountry(countries, application.country_code);
+    const client = clientsData.find(client => application.UID === client.UID)
     accum.push(
       {
         key: application.documentID,
@@ -50,7 +48,7 @@ export const getDataForTable = (applications, countries, chatsCollSnapshot, apps
         id: getShortApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),
         dialogueSnap: getDialogueSnap(chatsCollSnapshot, application.UID),
-        applicant: `${application.passports[0].first_name} ${application.passports[0].last_name}`,
+        applicant: client?.name || client.phone || 'Аккаут удален',
         status: application.preparedInformation.preparationStatus,
         countryFullName: country.name_ru,
         assignedTo: application.preparedInformation.assignedTo,

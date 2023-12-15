@@ -49,7 +49,7 @@ const getMenuItemsSample = () => {
 //   }
 // ]
 
-export const getItems = (role, dialogueForApplication, setSelectedDialogue ) => {
+export const getItems = (role, dialogueForApplication, setSelectedDialogue, unreadMessagesCount  ) => {
   const siderMenuItemsSample = [
     {
       roles: ['admin', 'operator'],
@@ -79,7 +79,7 @@ export const getItems = (role, dialogueForApplication, setSelectedDialogue ) => 
       roles: ['admin', 'operator'],
       menuItem: {
         key:"/chat",
-        label: <SiderMenuChatField />,
+        label: <SiderMenuChatField unreadMessagesCount={unreadMessagesCount}/>,
       },
     }
   ]

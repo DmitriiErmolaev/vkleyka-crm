@@ -13,17 +13,13 @@ import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
 
 const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
-  // const [ scrolledToBottom, setScrolledToBottom ] = useState(true)
-  // const [ scrollMode, setScrollMode ] = useState(false)
+
   const [ uploadingMessageWithAttachments, setUploadingMessageWithAttachments ] = useState([]);
   const { authorizedUser, role } = useContext(ProgramContext)
   const allMessages = useRef(null);
   // NOTE: должен загрузиться только 1 docSnapshot в составе querySnapshot.
   const [ chatCollSnapshot, chatLoading, chatError ] = useCollection(getChatQueryForApplication(applicantId)) // нельзя запросить конкретный документ, потому что не знаем путь.
-  const { setUnreadMessagesToNotify, scrollMode, setScrollMode, clientsData } = useContext(WorkPageContext);
-  
-  // console.log("scrolledToBottom " + scrolledToBottom)
-  // console.log("scrollMode " + scrollMode)
+  const { scrollMode, setScrollMode, clientsData } = useContext(WorkPageContext);
 
 
   useLayoutEffect(() => {
@@ -44,30 +40,37 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
           setScrollMode(true)
         }
       }
-
       messagesContainer.addEventListener('scroll', handleScroll);
       return () => messagesContainer.removeEventListener('scroll', handleScroll);
     }
   },[chatCollSnapshot])
 
   useLayoutEffect(() => {
-    if(!chatLoading) {
+    // чтобы при скролле в чате новые сообщения не скроллили его вниз, пока пользователь сам не проскроллит его. Зачем каждое новое сообщение будет скроллить чат самостоятельно.
+    if(chatCollSnapshot && !scrollMode) {
+      allMessages.current.scrollTop = 9999;
+    }
+  },[chatCollSnapshot, scrollMode])
+
+  useLayoutEffect(() => {
+    // прочитывание сообщения, если чат проскроллен вниз
+    if(!chatLoading && role !== 'admin') {
       //TODO: рефакторить компонент, т.к. функции дублируются тут и перед рендерои. Спустить эффект вниз.. Вычисления сделать выше.
       const dialogueSnap = chatCollSnapshot.docs[0];
-      const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
+      const dialogue = getAllFieldsFromDocSnapshot(dialogueSnap)
       const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
-        if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+        if(message.readBy && !message.readBy.includes('operator')) {
           ++acc;
         }
         return acc;
       }, 0)
-      const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
-      if(!Math.floor(scrollBottom) && unreadMessagesNumber) {
-        readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
+      // const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
+      if(!scrollMode && unreadMessagesNumber) {
+        readUnreadMessages(dialogueSnap.ref, dialogue.messages);
       }
     }
 
-  },[chatCollSnapshot, chatLoading, authorizedUser, setUnreadMessagesToNotify])
+  },[chatCollSnapshot, chatLoading, authorizedUser, scrollMode, role])
 
   if(chatLoading){
     return (
@@ -89,13 +92,13 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
 
   const scrollHandle = (e) => {
     const scrollBottom = allMessages.current.scrollHeight - allMessages.current.scrollTop - allMessages.current.clientHeight
-    if(Math.floor(scrollBottom) < 5 && unreadMessagesNumber) {
-      readUnreadMessages(dialogueSnap.ref, dialogue.messages, authorizedUser, setUnreadMessagesToNotify);
+    if(Math.floor(scrollBottom) < 5 && unreadMessagesNumber && authorizedUser.role !== 'admin') {
+      readUnreadMessages(dialogueSnap.ref, dialogue.messages);
     }
   }
 
   const dialogueSnap = chatCollSnapshot.docs[0];
-  const dialogue = getAllFieldsFromDocSnapshot(chatCollSnapshot.docs[0])
+  const dialogue = getAllFieldsFromDocSnapshot(dialogueSnap)
   const dialogueMessages = getChatMessages(dialogue.messages, uploadingMessageWithAttachments, authorizedUser, allMessages, scrollMode);
   const client = clientsData.find(user => {
     return user.UID === applicantId;
@@ -103,7 +106,7 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
   const applicantName = dialogue?.name || client?.name || client?.phone || 'Аккаунт удален';
 
   const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
-    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+    if(message.readBy && !message.readBy.includes('operator')) {
       ++acc;
     }
     return acc;

@@ -10,7 +10,7 @@ import { ApplicationStatus } from '../../models/context';
 import { getDownloadURL } from 'firebase/storage';
 import Spinner from '../spinner/Spinner';
 
-const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, dialogueSnap, currentClientApplications, questionnaire}) => {
+const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, dialogueSnap, currentClientApplications}) => {
   const [progressPercent, setProgressPercent] = useState();
   const [progressColor, setProgressColor] = useState();
   const [flagUrl, setFlagUrl] = useState(null)

@@ -43,7 +43,7 @@ const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessage
     setAttachmentText("");
     
     let uploadingAttachments = prepareAttachmentsInfo(chatUploadAttachmentList); // TODO: сделать стейтом ??
-    const newMessage = createNewMessageObject(attachmentText, authorizedUser.name, uploadingAttachments, true);
+    const newMessage = createNewMessageObject(attachmentText, authorizedUser, uploadingAttachments, true);
     setUploadingMessageWithAttachments( prev => { 
       return [...prev, newMessage];
     })

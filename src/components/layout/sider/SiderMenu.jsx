@@ -8,7 +8,7 @@ const SiderMenu = ({handleMenuSelect, chatListOpen}) => {
   const {role} = useContext(ProgramContext);
   const location = useLocation();
   const [ selectedMenuItem, setSelectedMenuItem ] = useState([]);
-  const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
+  const { dialogueForApplication, setSelectedDialogue, chatsData, chatsLoading } = useContext(WorkPageContext);
 
 
   useEffect(() => {
@@ -31,13 +31,22 @@ const SiderMenu = ({handleMenuSelect, chatListOpen}) => {
     }
   }, [chatListOpen, selectedMenuItem])
 
+  const unreadMessagesCount = role === 'admin' && chatsData.reduce((acc, chat) => {
+    chat.messages.forEach(message => {
+      if (message.readBy && !message.readBy.includes('operator')) {
+        acc += 1
+      }
+    })
+    return acc;
+  }, 0)
+
   return (
     <div>
       <Menu
         mode="inline"
         theme="dark"
         selectedKeys={selectedMenuItem}
-        items={getItems(role, dialogueForApplication, setSelectedDialogue)}
+        items={getItems(role, dialogueForApplication, setSelectedDialogue, unreadMessagesCount)}
         style={{backgroundColor:"transparent", color:"white", marginTop:"50px"}}
         onSelect={handleMenuSelect}
       />

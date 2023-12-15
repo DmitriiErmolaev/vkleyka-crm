@@ -59,7 +59,7 @@ function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clie
       // console.log(dialogue.UID)
       // не пополняем счетчик непрочитанных сообщений для перебираемого диалога, если этот диалог открыт и прокручен книзу.
       if(dialogue.UID === selectedDialogue?.dialogue.UID && !scrollMode) return acc;
-      if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+      if(message.readBy && !message.readBy.includes('operator')) {
         ++acc;
       }
       return acc;
@@ -129,18 +129,14 @@ function getOperatorDialogueData(authorizedUser, orderedDialoguesSnapshots, clie
 function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapshot, selectedDialogue, functions) {
   // TODO: рефакторинг
   const dialoguesList = orderedDialoguesSnapshots.map(dialogueSnap => {
-    // if (dialogueSnap.get('UID') === 'VFsLjgXQNMS5PAF3INqwO1ET3sB3') { // TODO: обход бага. Решить с Жангиром
-    //   return false;
-    // }
-
     const dialogue = dialogueSnap.data();
-
-    // const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
-    //   if(message.sendState === 0 && message.sender !== authorizedUser.name) {   // админам не нужны отметки непрочитанных сообщений.
-    //     ++acc;
-    //   }
-    //   return acc;
-    // }, 0)
+    const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
+      // админ пока не может узнать, находится ли визовик в чате и прокручен ли он у него книзу, чтобы не плюсовать непрочитанные сообщения.
+      if(message.readBy && !message.readBy.includes('operator')) {
+        ++acc;
+      }
+      return acc;
+    }, 0)
 
     const client = clients.find(user => {
       return user.UID === dialogue.UID;
@@ -162,7 +158,7 @@ function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapsh
         dialogueSnap={dialogueSnap}
         selectedDialogue={selectedDialogue}
         functions={functions}
-        // unreadMessagesNumber={unreadMessagesNumber}
+        unreadMessagesNumber={unreadMessagesNumber}
         clientApplicationsSnaps={clientApplicationsSnaps}
       />
     ) 

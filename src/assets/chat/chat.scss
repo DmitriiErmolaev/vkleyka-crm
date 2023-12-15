@@ -72,9 +72,12 @@
       padding:5px;
       font-size:16px;
       font-weight:500;
-      background-color: #dddddd;
       color:#1677ff;
       text-align:center;
+    }
+
+    .unread-messages__container {
+      background-color: rgba(233, 250, 255, 0.479);
     }
 
     &::-webkit-scrollbar {

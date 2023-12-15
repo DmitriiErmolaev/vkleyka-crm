@@ -7,7 +7,7 @@ import { ProgramContext, WorkPageContext } from '../models/context';
 const UnreadMessageNotificationContextHolder = ({chatsData, notificationsWillBeNotShown, selectedDialogue}) => {
   const { clientsData } = useContext(WorkPageContext)
   const { authorizedUser } = useContext(ProgramContext);
-  const [api, contextHolder] = notification.useNotification(notificationGlobConfig);
+  const [ api, contextHolder ] = notification.useNotification(notificationGlobConfig);
 
   useEffect(() => {
 
@@ -21,7 +21,7 @@ const UnreadMessageNotificationContextHolder = ({chatsData, notificationsWillBeN
         }
         dialogue.messages.forEach(message => {
           // TODO: заменить сравнение на сравнение по айдишникам
-          if(!message.sendState && (message.sender !== authorizedUser.name)) {
+          if(message.readBy && !message.readBy.includes('operator')) {
             if(checkWillMessageBeShown(dialogue.UID, message, notificationsWillBeNotShown, selectedDialogue)) {
               const client = clientsData.find(client => client.UID === dialogue.UID);
               // const applicantName = client?.name

@@ -9,7 +9,7 @@ const ChatFooter = ({ allMessages, dialogueSnap, dialogue, applicantId, setUploa
   const {authorizedUser, role} = useContext(ProgramContext);
   const {curAppStatus} = useContext(ApplicationStatus); 
   const [text, setText] = useState("");
-  const { setUnreadMessagesToNotify, setScrollMode } = useContext(WorkPageContext); 
+  const { setScrollMode } = useContext(WorkPageContext); 
 
 
   const handleChange = (e)=> {
@@ -21,7 +21,7 @@ const ChatFooter = ({ allMessages, dialogueSnap, dialogue, applicantId, setUploa
       return
     }
     setScrollMode(false)
-    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue.messages, setUnreadMessagesToNotify)
+    await sendMessage(text, authorizedUser, dialogueSnap.ref, dialogue.messages)
     // allMessages.current.scrollTop = 9999;
     setText("")
   }

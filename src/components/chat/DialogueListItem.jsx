@@ -14,16 +14,16 @@ const DialogueListItem = ({client, dialogue, dialogueSnap, selectedDialogue, fun
   // const [ itemGridClassName, setItemGridClassName ] = useState('dialogue-card')
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const { dialogueForApplication } = useContext(WorkPageContext);
+  const { dialogueForApplication, setScrollMode } = useContext(WorkPageContext);
 
 
   const handleDialogSelect = () => {
     if (selectedDialogue?.dialogue.UID === dialogue.UID) {
       return false
     }
-
+    
     functions.setSelectedDialogue({dialogue, clientApplicationsSnaps});
-
+    setScrollMode(false)
     if(clientApplicationsSnaps.length > 0) {
       dialogueForApplication.current = dialogue;
       if (clientId !== clientApplicationsSnaps[0].get('UID')) {
