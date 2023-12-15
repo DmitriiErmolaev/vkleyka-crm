@@ -95,7 +95,6 @@ const ApplicationForm = ({ clientId }) => {
               appRef={curApplicationSnap.ref}
               dialogueSnap={dialogueSnap}
               currentClientApplications={allClientAppsCollSnapshot.docs}
-              questionnaire={curApplication.questionnary?.answers}
             />
             <QuestionnaireSection
               questionnaire={curApplication.questionnary?.answers}

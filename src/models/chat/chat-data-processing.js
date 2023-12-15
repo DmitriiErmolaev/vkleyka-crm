@@ -59,14 +59,12 @@ export const getAssignedOperator = (admins, operatorId) => {
  * @param {*} authorizedUser
  * @returns
  */
-const makeAllMessagesReadIfTheyAreNot = (messages, authorizedUser) => {
+const makeAllMessagesReadIfTheyAreNot = (messages) => {
   let notMyUnreadMessagesExist = false;
-  const unreadMessages = [];
   const allReadMessages = messages.map(message => {
-    if(message.sendState === 0 && message.sender !== authorizedUser.name) {
+    if(message.readBy && !message.readBy.includes('operator')) {
       notMyUnreadMessagesExist = true;
-      unreadMessages.push(message);
-      return {...message, sendState: 1};
+      return {...message, readBy: [...message.readBy, 'operator']};
     }
     return message;
   })
@@ -83,8 +81,8 @@ const makeAllMessagesReadIfTheyAreNot = (messages, authorizedUser) => {
  * @param {*} attachmentsArray
  */
 export const sendMessage = async (text, authorizedUser, chatDocRef, messages, attachmentsArray) => {
-  const newMessage = createNewMessageObject(text, authorizedUser.name, attachmentsArray);
-  const allReadMessagesOrFalse = makeAllMessagesReadIfTheyAreNot(messages, authorizedUser)
+  const newMessage = createNewMessageObject(text, authorizedUser, attachmentsArray);
+  const allReadMessagesOrFalse = !authorizedUser.role === 'admin' && makeAllMessagesReadIfTheyAreNot(messages);
   const newMessagesToUpload = [...(allReadMessagesOrFalse || messages), newMessage];
   await updateDocField(chatDocRef, chatPaths.userChatDocumentField, newMessagesToUpload);
 }
@@ -95,8 +93,8 @@ export const sendMessage = async (text, authorizedUser, chatDocRef, messages, at
  * @param {*} messages
  * @param {*} authorizedUser
  */
-export const readUnreadMessages = async (chatDocRef, messages, authorizedUser, setUnreadMessagesToNotify) => {
-  const allReadMessagesOrFalse = makeAllMessagesReadIfTheyAreNot(messages, authorizedUser, setUnreadMessagesToNotify)
+export const readUnreadMessages = async (chatDocRef, messages) => {
+  const allReadMessagesOrFalse = makeAllMessagesReadIfTheyAreNot(messages)
   if (allReadMessagesOrFalse) await updateDocField(chatDocRef, 'messages', allReadMessagesOrFalse)
 }
 

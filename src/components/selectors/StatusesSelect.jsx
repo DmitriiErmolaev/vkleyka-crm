@@ -6,6 +6,8 @@ import { updateDocField } from '../../models/data-processing';
 import { getAppRefById } from '../../models/applications/applications';
 import { openNotification } from '../../models/notification/notification.js';
 import { ApplicationStatus, ProgramContext } from '../../models/context.js';
+import { collection, query, where } from 'firebase/firestore';
+import { firestore } from '../../models/firebase.js';
 
 const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assignedTo}) => {
   
@@ -25,7 +27,10 @@ const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assi
     const appDocRef = getAppRefById(appDocId)
     // Меняем статус заявки
     try {
-      await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)  
+      await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
+
+      // const newsQuery = query(collection(firestore, 'messages'), where('UID', '==', )) //TODO: для создания новостей.
+
       // Сброс визовика с чата, если он закрывает последнюю заявку клиента.
       if ( unFinishedAppsCount === 1 ) {
         await updateDocField(dialogueSnap.ref, 'assignedTo',  '');
