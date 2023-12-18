@@ -3,7 +3,6 @@ import {Link} from "react-router-dom";
 import {Tag} from "antd";
 import SelectComponent from "../../components/selectors/SelectComponent";
 import {GLOBAL_ROLES, roleBasedContent} from "../role-based-rules";
-import { getAppRefById } from "./applications";
 import { testStatuses } from "../status/status";
 
 const admin = GLOBAL_ROLES.admin;
@@ -54,6 +53,16 @@ const applicant_object = {
     title: 'Applicant',
     dataIndex: 'applicant',
     key: 'applicant',
+    align: "center",
+  }
+}
+
+const phone_object = {
+  role: all,
+  config: {
+    title: 'Phone',
+    dataIndex: 'phone',
+    key: 'phone',
     align: "center",
   }
 }
@@ -117,6 +126,7 @@ const allObjects = [
   id_object,
   date_object,
   applicant_object,
+  phone_object,
   status_object,
   country_object,
   viser_object,

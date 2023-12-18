@@ -10,7 +10,7 @@ export const showUnredMessage = (api, name, message) => {
     icon: '',
     key: message.id,
     message: name, // TODO: исправить, когда появится поле в БД.
-    description: message.content, 
+    description: message.content,
     className: 'notification',
   })
 }

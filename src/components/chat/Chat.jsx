@@ -103,7 +103,7 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
   const client = clientsData.find(user => {
     return user.UID === applicantId;
   })
-  const applicantName = dialogue?.name || client?.name || client?.phone || 'Аккаунт удален';
+  const applicantName = dialogue?.name || client?.name || client?.phone || client?.email || client?.UID || 'Аккаунт удален';
 
   const unreadMessagesNumber = dialogue.messages.reduce((acc, message) => {
     if(message.readBy && !message.readBy.includes('operator')) {
@@ -112,11 +112,10 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
     return acc;
   }, 0)
 
-  // const operatorSelectDisabled = (role === 'admin' || dialogueData.assignedTo === authorizedUser.id) ? false : true;
   const operatorSelectDisabled = (role === 'operator' && (dialogue.assignedTo !== authorizedUser.id)) ? true : false;
   return (
     <div className="chat__container" >
-      <div className="chat__info">
+      <div className={`chat__info ${client?.UID ? '' : 'chat__info__account-deleted' }`}>
         <div className="chat__personal">
           <p className="chat__applicant-name">
             {applicantName}
@@ -126,18 +125,21 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
             <span>{dialogue.UID}</span>
           </p>
         </div>
-        {source === 'application'
-          ? null
-          : (
-              <div className="chat__operator-info">
-                <div className="operator-title">
-                  Отв-ный:
-                </div>
-                <div className="operator-name">
-                  <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogue.assignedTo, disabledProp:operatorSelectDisabled}}/>
-                </div>
+        <div className='chat__applicant-phone'>
+          Тел: {client?.phone}
+        </div>
+        {source === 'application' ? (
+            <div className="chat__empty"></div>
+          ) : (
+            <div className="chat__operator-info">
+              <div className="operator-title">
+                Отв-ный:
               </div>
-            )
+              <div className="operator-name">
+                <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogue.assignedTo, disabledProp:operatorSelectDisabled}}/>
+              </div>
+            </div>
+          )
         }
         <ChatActiveStatus
           dialogueAssignedTo={dialogue.assignedTo}

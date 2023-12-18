@@ -49,7 +49,7 @@ const getMenuItemsSample = () => {
 //   }
 // ]
 
-export const getItems = (role, dialogueForApplication, setSelectedDialogue, unreadMessagesCount  ) => {
+export const getItems = (role, dialogueForApplication, selectedDialogue, setSelectedDialogue, unreadMessagesCount  ) => {
   const siderMenuItemsSample = [
     {
       roles: ['admin', 'operator'],
@@ -58,9 +58,13 @@ export const getItems = (role, dialogueForApplication, setSelectedDialogue, unre
         label: (
           <Link
             to="/"
-            onClick={() => {
-              dialogueForApplication.current = null;
-              setSelectedDialogue(null);
+            onClick={(e) => {
+              if (dialogueForApplication?.current) {
+                if (dialogueForApplication.current.UID === selectedDialogue.dialogue.UID) {
+                  setSelectedDialogue(null);
+                }
+                dialogueForApplication.current = null;
+              }
             }}
           >
             Все заявки

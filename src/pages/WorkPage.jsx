@@ -66,7 +66,7 @@ const WorkPage = () => {
   }
 
   return (
-    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsData, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, setSelectedDialogue, dialogueForApplication  }}>
+    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsData, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, selectedDialogue, setSelectedDialogue, dialogueForApplication  }}>
       {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder chatsData={chatsData} notificationsWillBeNotShown={notificationsWillBeNotShown} selectedDialogue={selectedDialogue}/> : null}
       <ConfigProvider
         theme={{

@@ -6,6 +6,11 @@ export const applicationsPath = {
   applications: "applications",
 }
 
+export const paymentTypes = {
+  online: 'Оплачено',
+  office: 'В офисе'
+}
+
 export const getAppsCollRef = () => {
   return collection(firestore, applicationsPath.applications);
 }

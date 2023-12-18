@@ -14,10 +14,11 @@ import { getAllCountriesRef } from "../../models/countries/countries";
 import { getSingleFieldFromDocSnapshot } from "../../models/data-processing";
 import { getChatQuery } from "../../models/chat/chat-data-processing";
 import { getDialogueSnap } from "../../models/chat/chat-data-processing";
-import { getAllClientApplications } from "../../models/applications/applications";
+import { getAllClientApplications, paymentTypes } from "../../models/applications/applications";
 import { ApplicationStatus, ProgramContext, WorkPageContext } from "../../models/context";
 import '../../assets/application-form.scss';
 import ChatContainer from "../chat/ChatContainer";
+import PaymentType from "./PaymentType";
 
 const visaType = {
   tourist: "Туристическая",
@@ -95,6 +96,7 @@ const ApplicationForm = ({ clientId }) => {
               dialogueSnap={dialogueSnap}
               currentClientApplications={allClientAppsCollSnapshot.docs}
             />
+            <PaymentType paymentType={paymentTypes[curApplication.paymentType]}/>
             <QuestionnaireSection
               questionnaire={curApplication.questionnary?.answers}
               passports={curApplication.passports}
@@ -105,8 +107,8 @@ const ApplicationForm = ({ clientId }) => {
           <Col span={12} style={{height:"100%", overflowY:"auto"}}>
             {/* <ChatContainer applicantId={curApplication.UID}> */}
             <div className="chat-section">
-              <Chat 
-                clientApplicationsSnaps={allClientAppsCollSnapshot.docs} 
+              <Chat
+                clientApplicationsSnaps={allClientAppsCollSnapshot.docs}
                 applicantId={curApplication.UID} source="application"
               />
             </div>

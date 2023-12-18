@@ -131,8 +131,9 @@ export const createNewMessageObject = (text, authorizedUser, attachmentsArray = 
     attachments: attachmentsArray,
     content: text,
     sendState: 0,
-    readBy:[ authorizedUser.role, ],
+    readBy: [authorizedUser.role,],
     sender: authorizedUser.name,
+    avatar: authorizedUser.avatar,
     time: time,
     type: "message",
   }

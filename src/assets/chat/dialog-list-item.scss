@@ -2,6 +2,7 @@
   border:"none";
 
   .dialogue-card__container {
+
     .dialogue-card__content {
       .dialogue-list__last-message {
         font:500 14px Roboto, sans-serif;
@@ -13,11 +14,16 @@
       display: flex;
       justify-content: space-between;
     }
+
+    
   }
+ 
 
   &:hover {
     cursor: pointer;
   }
+
+  
 }
 
 .dialogue-card_selected {

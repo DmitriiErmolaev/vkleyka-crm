@@ -26,6 +26,7 @@ export const dialogListOperations = {
     }
   }
 }
+
 const getOrderedDialoguesSnapshots = (chatsCollSnapshot) => {
   return chatsCollSnapshot.docs.sort((a, b) => {
     const firstDialogueLastMessageTime = a.get('messages')[a.get('messages').length - 1]?.time.toMillis();
@@ -161,7 +162,7 @@ function getAdminDialogueData(orderedDialoguesSnapshots, clients, appsCollSnapsh
         unreadMessagesNumber={unreadMessagesNumber}
         clientApplicationsSnaps={clientApplicationsSnaps}
       />
-    ) 
+    )
   })
 
   if(dialoguesList.length === 0) {

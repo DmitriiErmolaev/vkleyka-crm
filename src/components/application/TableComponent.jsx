@@ -28,6 +28,10 @@ const TableComponent = ({
   let columns = getColumnsConfig(role) || [];
   const [columnsSettings, setColumnsSettings] = useState(columns)
 
+  const handleRowClassName = (record, index) => {
+    if(record.accountIsDeleted) return 'is-deleted';
+  }
+
   function handleTableChange(pagination, filters, sorter, {action}){
     let sortOrder = "asc";
     if(sorter.order === "descend") {
@@ -63,6 +67,7 @@ const TableComponent = ({
         columns={columnsSettings}
         pagination={false}
         onChange={handleTableChange}
+        rowClassName={handleRowClassName}
       />
     </>
     

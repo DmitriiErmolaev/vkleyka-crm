@@ -18,26 +18,18 @@ const { Header } = Layout;
 const Head = ()=> {
   const navigate = useNavigate();
   const { token } = useToken();
-  const { dialogueForApplication, setSelectedDialogue } = useContext(WorkPageContext);
+  const { dialogueForApplication, selectedDialogue, setSelectedDialogue } = useContext(WorkPageContext);
 
 
   const handleLogoClick = () => {
     navigate('/')
-    dialogueForApplication.current = null;
-    setSelectedDialogue(null);
+    if (dialogueForApplication?.current) {
+      if (dialogueForApplication.current.UID === selectedDialogue.dialogue.UID) {
+        setSelectedDialogue(null);
+      }
+      dialogueForApplication.current = null;
+    }
   }
-
-  // useEffect(() => {
-  //   const getMenuKey = (path) => {
-  //     if (path === '/user-profile') {
-  //       return ['profile'];
-  //     }
-  //     if (path === 'notifications') {
-  //       return ['notifications'];
-  //     }
-  //   }
-  //   setSelectedMenuItem(getMenuKey(location.pathname));
-  // }, [location])
 
   return (
     <ConfigProvider

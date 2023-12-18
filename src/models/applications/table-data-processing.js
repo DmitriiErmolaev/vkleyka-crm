@@ -39,6 +39,7 @@ export const getDataForTable = (applications, countries, chatsCollSnapshot, apps
     const client = clientsData.find(client => application.UID === client.UID)
     accum.push(
       {
+        accountIsDeleted: !client?.UID,
         key: application.documentID,
         clientId: application.UID,
         country: country,
@@ -48,7 +49,8 @@ export const getDataForTable = (applications, countries, chatsCollSnapshot, apps
         id: getShortApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),
         dialogueSnap: getDialogueSnap(chatsCollSnapshot, application.UID),
-        applicant: client?.name || client.phone || 'Аккаут удален',
+        applicant: client?.name || client?.phone || client?.email || client?.UID || 'Аккаут удален',
+        phone: client?.phone,
         status: application.preparedInformation.preparationStatus,
         countryFullName: country.name_ru,
         assignedTo: application.preparedInformation.assignedTo,

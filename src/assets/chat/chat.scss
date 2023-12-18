@@ -1,4 +1,7 @@
 .chat__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
   border-radius:10px ;
   background-color:white;
   width:100% ;
@@ -7,8 +10,11 @@
 
   .chat__info {
     display:flex;
-    align-items:center;
-    height: 9.22%;
+    justify-content: space-between;
+    // align-items:center;
+    // height: 9.22%;
+    flex-shrink: 0;
+    flex-basis: 57px;
     padding: 7px 12px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.125);
     font-size: 16px;
@@ -29,7 +35,11 @@
       }
     }
     .chat__personal {
-      width:40%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 25%;
+      // height: 100%;
 
       .chat__applicant-name {
         overflow-x: hidden;
@@ -39,30 +49,55 @@
 
       .chat__applicant-id {
         overflow-x: hidden;
-        text-overflow:ellipsis;
+        text-overflow: ellipsis;
         white-space: nowrap;
-        font-size:11px;
+        font-size: 11px;
       }
     }
 
+    .chat__applicant-phone {
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11px;
+      align-self: end;
+      min-width: fit-content;
+      margin-left:2%;
+    }
+    .chat__empty {
+      width: 100%;
+    }
+
     .chat__operator-info {
-      display:flex;
-      justify-content: flex-end;
+      display: flex;
+      // flex-direction: column;
+      // justify-content: space-between;
       align-items: center;
-      width:40%;
-      flex-wrap: wrap;
+      // width:20%;
+      // flex-wrap: wrap;
     }
 
     .chat__active-status {
-      width:20%;
-      margin-left:auto;
+      display: flex;
+      align-items: center;
+      // flex-direction: column;
+      // width: 20%;
+      // margin-left: auto;
     }
+  }
+  
+  .chat__info__account-deleted {
+    background-color: #182a6748;
+
   }
 
   .chat__messages {
     display: flex;
+    flex-grow: 0;
     flex-direction: column;
-    height: 79.27%;
+    // height: 79.27%;
+    height: 100%;
+    // flex-grow: 1;
     overflow-y: auto;
     scrollbar-width: auto;
     scrollbar-color: #1677ff #b8d5ff ;
@@ -105,7 +140,9 @@
   .chat__footer {
     display: flex;
     justify-content:space-between;
-    height: 11.47%;
+    // height: 11.47%;
+    flex-shrink: 0;
+    flex-basis: 60px;
     align-items: center;
     margin:0 10px;
   }

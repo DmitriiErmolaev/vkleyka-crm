@@ -1,16 +1,21 @@
 import React, { useContext } from 'react';
 import { ProgramContext } from '../../models/context';
-import { Avatar, Card, theme } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Upload, theme } from 'antd';
 import '../../assets/profile/profile.scss'
 import ProfileForm from './ProfileForm';
+import { uploadBytes } from 'firebase/storage';
+import { getFileRef } from '../../models/firebase';
+import { storageAdminsAvatarsPath, updateOperatorProfile } from '../../models/profile/profile';
+import ProfileAvatar from './ProfileAvatar';
 const { useToken } = theme;
 const { Meta } = Card;
 
 
 const Profile = () => {
-  const { authorizedUser } = useContext(ProgramContext)
+  const { authorizedUser, admins } = useContext(ProgramContext)
   const { token } = useToken();
+
+ 
 
   return (
     <div className='profile'>
@@ -25,12 +30,16 @@ const Profile = () => {
         >
           <Meta
             avatar={
-              <Avatar
-                shape="circle"
-                icon={<UserOutlined />}
-                alt="avatar"
-                size={50}
-              />
+              // <Upload
+              //   listType="picture-circle"
+              //   fileList={fileList}
+              //   // onPreview={handlePreview}
+              //   // onChange={handleChange}
+              // >
+              //   {fileList.length >= 8 ? null : uploadButton}
+              // </Upload>
+              <ProfileAvatar />
+              
             }
             title={`ID пользователя: ${authorizedUser.id}`}
             description={<ProfileForm />}

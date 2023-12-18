@@ -2,6 +2,10 @@ import { verifyBeforeUpdateEmail } from "firebase/auth"
 import { auth } from "../firebase"
 import { updateOperator } from "../operator/operators-data-processing"
 
+export const  storageAdminsAvatarsPath = {
+  path: "admins_avatars"
+}
+
 export const getProfileFormFields = (authorizedUser) => {
   return {
     regularProfileData: [{
