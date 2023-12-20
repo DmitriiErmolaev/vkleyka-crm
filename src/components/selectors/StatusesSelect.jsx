@@ -6,8 +6,9 @@ import { updateDocField } from '../../models/data-processing';
 import { getAppRefById } from '../../models/applications/applications';
 import { openNotification } from '../../models/notification/notification.js';
 import { ApplicationStatus, ProgramContext } from '../../models/context.js';
-import { collection, query, where } from 'firebase/firestore';
+import { Transaction, collection, query, runTransaction, serverTimestamp, where } from 'firebase/firestore';
 import { firestore } from '../../models/firebase.js';
+import { getShortApplicationId } from '../../models/applications/table-data-processing.js';
 
 const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assignedTo}) => {
   
@@ -23,24 +24,24 @@ const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assi
     if (curAppStatus === option.value) {
       return false;
     }
-  
+
     const appDocRef = getAppRefById(appDocId)
     // Меняем статус заявки
     try {
       await updateDocField(appDocRef, "preparedInformation.preparationStatus",  option.value)
 
-      // const newsQuery = query(collection(firestore, 'messages'), where('UID', '==', )) //TODO: для создания новостей.
-
       // Сброс визовика с чата, если он закрывает последнюю заявку клиента.
       if ( unFinishedAppsCount === 1 ) {
-        await updateDocField(dialogueSnap.ref, 'assignedTo',  '');
-        await updateDocField(dialogueSnap.ref, 'active',  false);
+        runTransaction(firestore, async (transaction) => {
+          transaction.update(dialogueSnap.ref, 'assignedTo',  '').update(dialogueSnap.ref, 'active',  false)
+        })
       }
       // При возврате заявки в работу, назначаем на чат визовика данной заявки.
       if ((!unFinishedAppsCount && curAppStatus === 2 && option.value === 0) || (!unFinishedAppsCount && curAppStatus === 2 && option.value === 1)) {
-        await updateDocField(dialogueSnap.ref, 'active',  true) ;
-        await updateDocField(dialogueSnap.ref, 'assignedTo', assignedTo);
-      }    
+        runTransaction(firestore, async (transaction) => {
+          transaction.update(dialogueSnap.ref, 'active',  true).update(dialogueSnap.ref, 'assignedTo', assignedTo)
+        })
+      }
       openNotification(notificationApi, "success", 'statusChanged')
     } catch (e) {
       console.log(e)

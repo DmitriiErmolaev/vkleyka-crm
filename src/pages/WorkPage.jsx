@@ -6,7 +6,7 @@ import Aside from "../components/layout/sider/Aside";
 import GlobalChat from "../components/chat/GlobalChat";
 import '../assets/workpage.scss';
 import '../assets/notification/notification.scss';
-import { useCollection, useCollectionData } from "react-firebase-hooks/firestore";
+import { useCollection, useCollectionData, useCollectionDataOnce } from "react-firebase-hooks/firestore";
 import { getClientsQuery } from "../models/clients/clients";
 import Error from "../components/error/Error";
 import { ProgramContext, WorkPageContext } from "../models/context";
@@ -28,7 +28,6 @@ const WorkPage = () => {
   const dialogueForApplication = useRef(null);
   const { authorizedUser, role } = useContext(ProgramContext);
   const contentRef = useRef(null);
-  console.log(scrollMode)
   const [ clientsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
   const [ chatsData, chatsLoading, chatsError, chatsCollSnapshot ] = useCollectionData(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
 
