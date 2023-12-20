@@ -1,0 +1,15 @@
+.passport-field {
+  display: inline-block; 
+  width: 50%;
+
+  .passport-field__title {
+    //TODO: дублируются с .person-info__question из questionnaire.scss
+    color: #A5A5A5;
+    font: 400 14px Jost, sans-serif;
+  }
+
+  .passport-field__value {
+    color: black; 
+    font: 400 17px Jost, sans-serif;
+  }
+}

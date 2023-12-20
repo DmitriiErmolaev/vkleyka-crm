@@ -3,7 +3,6 @@ import {Link} from "react-router-dom";
 import {Tag} from "antd";
 import SelectComponent from "../../components/selectors/SelectComponent";
 import {GLOBAL_ROLES, roleBasedContent} from "../role-based-rules";
-import { getAppRefById } from "./applications";
 import { testStatuses } from "../status/status";
 
 const admin = GLOBAL_ROLES.admin;
@@ -22,9 +21,14 @@ const id_object = {
     align: "center",
     render: (text, record, _) => {
       return (
-        <Link 
-          to={`/application/${record.key}`} 
-          style={{color:"#0EA5E9", fontWeight:"800"}}
+        <Link
+          to={`/application/${record.clientId}/${record.key}`}
+          style={{ color:"#0EA5E9", fontWeight:"800" }}
+          state={{ savedCountry: record.country, dialogue: record.dialogueSnap.data() }}
+          onClick={() => {
+            record.dialogueForApplication.current = record.dialogueSnap.data();
+            record.setSelectedDialogue({dialogue: record.dialogueForApplication.current});
+          }}
         >
           {text}
         </Link>
@@ -53,6 +57,16 @@ const applicant_object = {
   }
 }
 
+const phone_object = {
+  role: all,
+  config: {
+    title: 'Phone',
+    dataIndex: 'phone',
+    key: 'phone',
+    align: "center",
+  }
+}
+
 const status_object = {
   role: all,
   config: {
@@ -70,8 +84,8 @@ const country_object = {
   role: all,
   config: {
     title: 'Country',
-    dataIndex: 'country',
-    key: 'country',
+    dataIndex: 'countryFullName',
+    key: 'countryFullName',
     align: "center",
   }
 }
@@ -84,9 +98,26 @@ const viser_object = {
     key: 'assignedTo',
     align: "center",
     render: (_test, record, _index) => {
-        const ref = getAppRefById(record.key);
-        const assignedTo = record.assignedTo;
-        return <SelectComponent collectionType={"operators"} data={{ref, assignedTo, dialogueRef:record.dialogueRef }}/> 
+      const assignedTo = record.assignedTo;
+      const clientApplicationsSnaps = record.appsCollSnapshot.docs.reduce((acc, docSnap) => {
+        if (docSnap.get("UID") === record.clientId) {
+          acc.push(docSnap);
+          return acc;
+        }
+        return acc;
+      }, [])
+      const operatorSelectDisabled = record.status
+      return (
+        <SelectComponent
+          collectionType={"operators"}
+          data={{
+            assignedTo,
+            dialogueSnap: record.dialogueSnap,
+            clientApplicationsSnaps,
+            disabledProp: record.status === 2 ? true : false,
+          }}
+        />
+      )
     }
   }
 }
@@ -95,7 +126,8 @@ const allObjects = [
   id_object,
   date_object,
   applicant_object,
-  status_object, 
+  phone_object,
+  status_object,
   country_object,
   viser_object,
 ]

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { FileFilled, LoadingOutlined  } from '@ant-design/icons';
 import { getDownloadURL } from "firebase/storage";
 import { getFileRef } from '../../../models/firebase';
+import '../../../assets/chat/attachment.scss';
 
 const Attachment = ({ attachment, isLoading }) => {
   const [downloadURL, setDownloadURL] = useState(null)

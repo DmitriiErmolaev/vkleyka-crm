@@ -1,93 +1,80 @@
 import React, {useState, useEffect, useContext} from "react";
-import {Layout, Space, Radio} from "antd";
-import { where } from "firebase/firestore";
-import {useCollection,useDocument} from "react-firebase-hooks/firestore";
+import {Layout, Space, Radio, Button, Statistic} from "antd";
+import { Timestamp, collection, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import {useCollection,useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
 import TableComponent from "./TableComponent";
 import { buttonFilterSettings} from "../../models/status/status";
-import { getFilters, getDataForTable} from "../../models/applications/table-data-processing";
-import { findAuthorizedOperatorName } from "../../models/operator/operators-data-processing";
+import { getFilters, getDataForTable, resetBeforeDownloadFilteredData} from "../../models/applications/table-data-processing";
 import SelectComponent from "../selectors/SelectComponent";
 import Error from "../error/Error";
-import {ProgramContext} from "../../models/context.js";
-import {getUsersQuery} from "../../models/applicants/applicants"
+import {ProgramContext, WorkPageContext} from "../../models/context.js";
+import { getClientsQuery } from "../../models/clients/clients";
 import {getAppsCollRef} from "../../models/applications/applications"
-import {getAllCountriesRef} from "../../models/countries/countries"
-import {getSingleFieldFromDocSnapshot, getDataFromCollSnapshot, getQueryWithConstraints} from "../../models/data-processing";
+import {getAllCountriesRef, getCountry} from "../../models/countries/countries"
+import {getQueryForAppsWithLimit, getQueryForAppsWithoutLimit} from "../../models/data-processing";
 import { getChatQuery } from "../../models/chat/chat-data-processing";
+import AppsPaginator from "./AppsPaginator.jsx";
+import { firebase, firestore } from "../../models/firebase.js";
 
 const ALL_COUNTRIES_REF = getAllCountriesRef();
-const USERS_QUERY = getUsersQuery();
+// const CLIENTS_QUERY = getClientsQuery();
 const APPS_REF = getAppsCollRef();
 
-// const TABLE_PAGE_ITEMS_NUMBER = 10; // NOTE: Для пагинации
-
 const AllApplications = () => {
-  const {role, authorizedOperator} = useContext(ProgramContext);
+  const {role, authorizedUser} = useContext(ProgramContext);
+  const {appsSearch, pageCount, setPageCount, dialogueForApplication, setSelectedDialogue, clientsData } = useContext(WorkPageContext);
   const [chatsCollSnapshot, chatsLoading, chatsError] = useCollection(getChatQuery());
-  const [countriesDocSnapshot, countriesLoading, countriesError] = useDocument(ALL_COUNTRIES_REF);
-  const [usersCollSnapshot, usersLoading, usersError] = useCollection(USERS_QUERY);
+  const [countriesData, countriesLoading, countriesError, countriesDocSnapshot] = useDocumentData(ALL_COUNTRIES_REF);
   const [selectedCountry, setSelectedCountry] = useState({value:null, label:null});
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('allStatuses');
   const [selectedColumn, setSelectedColumn] = useState(null);
-  // const [curTablePage, setCurTablePage] = useState();  // NOTE: Для пагинации
-  // const [firstApplicationRef, setFirstApplicationRef] = useState();  // NOTE: Для пагинации
-  // const [lastApplicationRef, setLastApplicationRef] = useState();  // NOTE: Для пагинации
+  const [totalAppsCount, setTotalAppsCount] = useState(0);
+  const filters = getFilters(selectedCountry, selectedStatus, selectedColumn, authorizedUser, appsSearch);
+  const [applicationsData, tableLoading, tableError, appsCollSnapshot] = useCollectionData(getQueryForAppsWithLimit(APPS_REF, filters, pageCount));
+  const [tableData, setTableData] = useState([]);
 
-  const filters = getFilters(selectedCountry,selectedStatus,selectedColumn, authorizedOperator);
-  /* TODO: для пагинации: запрос на 10 документов коллекции
-  * const queryForAppsWithLimit = query(APPS_REF, ...filters, limit(10));  // NOTE: Для пагинации
-  */
-  const queryForAppsWithoutLimit = getQueryWithConstraints(APPS_REF, filters);
-  const [appsCollSnapshot, tableLoading, tableError] = useCollection(queryForAppsWithoutLimit);
-  const [tableDataBeforeChanging, setTableDataBeforeChanging] = useState(null);
-
-  useEffect(()=> {
-    /*
-      Сохраняет массив с данными таблицы, чтобы они отрисовывались пока новые данные грузятся при пагинации. 
-      Для предотвращение прыгания таблицы а так же лучшего визуального восприятия смены данных 
-    */
-    if(arrangedTableData.length !== 0 ) {
-      setTableDataBeforeChanging(arrangedTableData);
+  useEffect(() => {
+    if(applicationsData && countriesData && chatsCollSnapshot) {
+      setTableData(getDataForTable(applicationsData, countriesData.countries, chatsCollSnapshot, appsCollSnapshot, dialogueForApplication, setSelectedDialogue, clientsData));
     }
-  }, [appsCollSnapshot]) // TODO: вынести в стейт? или найти другой  вариант? 
+  }, [applicationsData, countriesData, chatsCollSnapshot, appsCollSnapshot])
+
+  useEffect(() => {
+    // получаение общего количества возможных заявок
+    const getAllAppsCount = async () => {
+      const queryForAppsWithoutLimit = getQueryForAppsWithoutLimit(APPS_REF, filters);
+      const aggregateSnapshot = await getCountFromServer(queryForAppsWithoutLimit);
+      setTotalAppsCount(aggregateSnapshot.data().count);
+    }
+    getAllAppsCount();
+  }, [filters])
+
+  if(tableError || countriesError || chatsError) {
+    return <Error error={tableError || countriesError || chatsError}/>
+  }
 
   const radioChange = (e) => {
     setSelectedStatus(e.target.value)
+    setPageCount(1)
   }
 
-  let countries = [];
-  let arrangedTableData = [];
-  let applications = [];
-  // let refArray = []; // NOTE: Для пагинации. массив ссылок на документы
-  
-  if(!tableLoading && !countriesLoading && !usersLoading && !chatsLoading) {
-    if(tableError || countriesError || usersError || chatsError) {
-      return <Error error={tableError || countriesError || usersError || chatsError}/>
-    } else {
-      applications = getDataFromCollSnapshot(appsCollSnapshot);
-      const applicants = getDataFromCollSnapshot(usersCollSnapshot);
-      countries = getSingleFieldFromDocSnapshot(countriesDocSnapshot, "countries"); // массив объектов-стран
-      arrangedTableData = getDataForTable(applications, applicants, countries, chatsCollSnapshot);
-      // refArray = getDocsRefs(appsCollSnapshot);  NOTE: Для пагинации
-    }
+  const downloadMoreApps = () => {
+    setPageCount(prev => ++prev);
   }
-  
-  /* TODO: для пагинации: запоминание ссылки на 1 и 10 документы
-  * let firstDocRef = refArray[0];  // NOTE: Для пагинации
-  * let lastDocRef = refArray[TABLE_PAGE_ITEMS_NUMBER - 1];
-  */
+
+  const countries = countriesLoading ? [] : countriesData.countries;
 
   return (
-    <Layout 
+    <Layout
       style={{
         padding:"30px"
       }}
     >
       <Space direction="vertical" size="large">
-        <Radio.Group 
-          optionType="button" 
-          value={selectedStatus} 
-          onChange={radioChange} 
+        <Radio.Group
+          optionType="button"
+          value={selectedStatus}
+          onChange={radioChange}
           size="large"
         >
           <Radio value="allStatuses">Все</Radio>
@@ -95,30 +82,31 @@ const AllApplications = () => {
           <Radio value={buttonFilterSettings.inProgress.value}>{buttonFilterSettings.inProgress.text}</Radio>
           <Radio value={buttonFilterSettings.finished.value}>{buttonFilterSettings.finished.text}</Radio>
         </Radio.Group>
-        <SelectComponent 
-          collectionType={"countries"} 
-          data={
-            {
-              countries: countries,
-              setSelectedCountry: setSelectedCountry, 
-              selectedCountry: selectedCountry,
-            }
-          }
-        />
+        <div style={{display:"flex", justifyContent:'space-between'}}>
+          <SelectComponent
+            collectionType={"countries"}
+            data={{countries, setSelectedCountry, selectedCountry}}
+          />
+          <AppsPaginator currentAppsCount={tableData.length} totalAppsCount={totalAppsCount} />
+        </div>
+
       </Space>
-      <TableComponent 
+      <TableComponent
         role = {role}
-        // TODO: для пагинации.
-        // firstDocRef = {firstDocRef}
-        // lastDocRef = {lastDocRef}
-        // setFirstApplicationRef = {setFirstApplicationRef}
-        // setLastApplicationRef = {setLastApplicationRef}
-        // setCurTablePage = {setCurTablePage}
-        tableDataBeforeChanging={tableDataBeforeChanging} 
-        arrangedTableData={arrangedTableData} 
-        setSelectedColumn={setSelectedColumn} 
-        tableLoading={tableLoading}
+        tableData={tableData}
+        setSelectedColumn={setSelectedColumn}
+        currentAppsCount={tableData.length}
+        totalAppsCount={totalAppsCount}
       />
+      <div style={{display:'flex', justifyContent:'center', marginTop: '1%'}}>
+        <Button
+          loading={tableLoading}
+          onClick={downloadMoreApps}
+          disabled={totalAppsCount === tableData.length}
+        >
+          Загрузить еще
+        </Button>
+      </div>
     </Layout>
   )
 }

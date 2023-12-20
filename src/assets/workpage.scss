@@ -1,0 +1,18 @@
+.workpage {
+  display: block;
+  width: 100%; 
+  min-height: 100vh;
+  margin: 0 auto; 
+
+  .main {
+    position:relative;
+    top:64px;
+    min-height: calc(100vh - 64px);
+
+    .content {
+      position: relative;
+      margin-left: 200px;
+      overflow: hidden;
+    }
+  }
+}

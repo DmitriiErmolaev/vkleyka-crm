@@ -6,15 +6,16 @@ import { getFileRef } from '../../../models/firebase';
 import {createNewMessageObject} from '../../../models/chat/message'
 import { prepareAttachmentsInfo, addPathToDownload } from '../../../models/chat/attachment';
 import SelectedAttachmentsPopup from './SelectedAttachmentsPopup';
-import { ChatAttachmentsContext, ProgramContext } from '../../../models/context';
+import { ApplicationStatus, ChatAttachmentsContext, ProgramContext, WorkPageContext } from '../../../models/context';
 import { sendMessage, chatPaths } from '../../../models/chat/chat-data-processing';
 import { getFileExtension } from '../../../utils';
 
-const ChatUpload = ({chatDocRef, messageText, applicantId, setUploadingMessageWithAttachments, messagesData}) => {
+const ChatUpload = ({dialogueSnap, messageText, applicantId, setUploadingMessageWithAttachments, messages, disabled}) => {
   const [ chatUploadAttachmentList, setChatUploadAttachmentList ] = useState([])
   const [ modalIsOpened, setModalIsOpened ] = useState(false)
   const [ attachmentText, setAttachmentText] = useState(messageText)
-  const { authorizedOperator } = useContext(ProgramContext)
+  const { authorizedUser } = useContext(ProgramContext)
+  const { curAppStatus } = useContext(ApplicationStatus);
 
   useEffect(()=>{
     setAttachmentText(messageText)
@@ -42,7 +43,7 @@ const ChatUpload = ({chatDocRef, messageText, applicantId, setUploadingMessageWi
     setAttachmentText("");
     
     let uploadingAttachments = prepareAttachmentsInfo(chatUploadAttachmentList); // TODO: сделать стейтом ??
-    const newMessage = createNewMessageObject(attachmentText, authorizedOperator.name, uploadingAttachments, true);
+    const newMessage = createNewMessageObject(attachmentText, authorizedUser, uploadingAttachments, true);
     setUploadingMessageWithAttachments( prev => { 
       return [...prev, newMessage];
     })
@@ -62,7 +63,7 @@ const ChatUpload = ({chatDocRef, messageText, applicantId, setUploadingMessageWi
     })
 
     Promise.all(promises).then(() => {
-      sendMessage(attachmentText, authorizedOperator.name, chatDocRef, messagesData, uploadingAttachments); // ошибка
+      sendMessage(attachmentText, authorizedUser, dialogueSnap.ref, messages, uploadingAttachments);
     }).finally(() => {
       setUploadingMessageWithAttachments([]);
     })
@@ -71,13 +72,14 @@ const ChatUpload = ({chatDocRef, messageText, applicantId, setUploadingMessageWi
   return (
     <div className="chat-upload-button__container">
       <Upload
+        disabled={disabled}
         showUploadList={false}
         beforeUpload={beforeUpload}
         fileList={chatUploadAttachmentList}
         multiple
       >
         <PaperClipOutlined 
-          className={"interactive-icons"} 
+          className={curAppStatus === 2 ? "interactive-icons interactive-icons-disabled" : "interactive-icons"} 
           style={{fontSize:"24px", marginRight: "5px"}}
         />
       </Upload>

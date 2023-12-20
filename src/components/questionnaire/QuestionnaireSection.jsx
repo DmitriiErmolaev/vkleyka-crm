@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {Layout} from 'antd';
 import PassportInfo from './applicationPassportInfo/PassportInfo';
 import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQuestionnaire';
@@ -12,16 +12,17 @@ import ApplicationQuestionnaire from './applicationQuestionnaire/ApplicationQues
 
 const QuestionnaireSection = ({questionnaire, passports, appRef, appId}) => {
   return (
-    <Layout style={{backgroundColor:"white", color:"#0F6CA5"}}>
-      <PassportInfo 
-        passports={passports} 
-        appId={appId} 
-      />
-      <ApplicationQuestionnaire 
-        questionnaire={questionnaire} 
+    <div style={{ color:"#0F6CA5"}}>
+      <PassportInfo
+        passports={passports}
+        appId={appId}
         appRef={appRef}
       />
-    </Layout>
+      <ApplicationQuestionnaire
+        questionnaire={questionnaire}
+        appRef={appRef}
+      />
+    </div>
   );
 };
 

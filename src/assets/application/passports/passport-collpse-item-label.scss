@@ -1,0 +1,14 @@
+.passport-collapse-item-label {
+  display: flex;
+  justify-content: space-between;
+
+  .passport-collapse-item-label__title {
+    color:#0F6CA5;
+    font: 500 20px Jost, sans-serif;
+  }
+  .passport-collapse-item-label__applicants-num {
+    margin-left:20px;
+    color:#000000;
+    font: 400 16px Jost, sans-serif;
+  }
+}

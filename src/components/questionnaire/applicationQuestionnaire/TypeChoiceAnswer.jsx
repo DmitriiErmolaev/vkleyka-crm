@@ -1,19 +1,33 @@
 import React, {useState} from 'react';
 import { Radio } from 'antd';
+import { checkChangedValueExists, getQuestionnaireSelectOptions, prepareChanges } from '../../../models/applications/questionnaire/questionnaire';
 
-const TypeChoiceAnswer = ({choice}) => {
-  // тут планируется вложенность. Так что не все так просто здесь в response будет. Наверно как и в дроп дауне.
-  const [selectedRadio, setSelectedRadio] = useState(null);
+const TypeChoiceAnswer = ({questionData, questionIndex, setAnswersToUpdate, answersToUpdate, isEdit}) => {
 
   const handleChange = (e) => {
-    setSelectedRadio(e.target.value);
+    const newResponse = {pickedOption: e.target.value, pickedOptionName: questionData.options[e.target.value].option}
+    const preparedChanges = prepareChanges(answersToUpdate, newResponse, questionIndex);
+    setAnswersToUpdate(preparedChanges);
   }
+  const alreadyChangedResponse = checkChangedValueExists(answersToUpdate, questionIndex);
+  const displayedValue = (alreadyChangedResponse) ? alreadyChangedResponse.pickedOption : questionData.response.pickedOption;
+
+  // const radioButtons = questionData.options.map((option, index) => {
+  //   return <Radio key={} value={index}>{option.option}</Radio>
+  // })
+
+  const options = getQuestionnaireSelectOptions(questionData.options)
 
   return (
-    <Radio.Group name="choice" onChange={handleChange} value={selectedRadio || choice} buttonStyle={"solid"}>
-      <Radio value={true}>Да</Radio>
-      <Radio value={false}>Нет</Radio>
-    </Radio.Group>
+    <Radio.Group 
+      name="choice" 
+      disabled={!isEdit}
+      onChange={handleChange} 
+      value={displayedValue} 
+      optionType="button" 
+      options={options} 
+    />
+      
   );
 };
 

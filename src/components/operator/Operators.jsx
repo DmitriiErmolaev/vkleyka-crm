@@ -33,12 +33,12 @@ const Operators = () => {
             <Button type="primary" block="false" onClick={openRegisterModal}>Новый визовик</Button>
           </Col>
         </Row>
-          <Table 
-            // loading={<Spin size="large"></Spin>} // NOTE; для спиннера загрузки
-            columns={columns}
-            dataSource={onlyOperators}
-            rowKey="id"
-          />
+        <Table 
+          // loading={<Spin size="large"></Spin>} // NOTE; для спиннера загрузки
+          columns={columns}
+          dataSource={onlyOperators}
+          rowKey="id"
+        />
       </Space>
       <Popup 
         isModalOpened={isModalOpened} 

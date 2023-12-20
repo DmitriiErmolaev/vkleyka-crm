@@ -1,0 +1,15 @@
+.uploaded-documents {
+  min-height:26%;
+  margin-top: 2%;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+
+  .uploaded-documents__upload-section {
+    width: 70%;
+
+    a:hover, a:active, a:visited, a:link {
+      color:#0000FF;
+    }
+  }
+}

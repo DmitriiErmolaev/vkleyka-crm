@@ -1,4 +1,4 @@
-import {query} from "firebase/firestore";
+import {limit, query, startAfter} from "firebase/firestore";
 import { updateDoc } from "firebase/firestore";
 
 export const getSingleFieldFromDocSnapshot = (docSnapshot, fieldName) => {
@@ -18,8 +18,14 @@ export const getDataFromCollSnapshot = (collSnap) => {
   })
 }
 
-export const getQueryWithConstraints = (ref,constraints) => {
-  return query(ref, ...constraints)
+export const getQueryForAppsWithLimit = (ref, filters, pageCount) => {
+  // Фильтры нельзя мутировать, т.к. в функции getQueryForAppsWithoutLimit фильтры не должны быть измененными
+  // const constraints = lastDoc ? [...filters, startAfter(lastDoc)] : filters;
+  return query(ref, ...filters, limit(5 * pageCount))
+}
+
+export const getQueryForAppsWithoutLimit = (ref, filters) => {
+  return query(ref, ...filters)
 }
 
 export const getDocsRefs = (collSnap) => {
@@ -31,7 +37,7 @@ export const getDocsRefs = (collSnap) => {
 
 export const updateDocField = async (ref, path, data) => {
   try {
-    await updateDoc(ref, {[path]: data})
+    const res = await updateDoc(ref, {[path]: data})
   } catch (e) {
     // TODO: отобразить 
     console.log(e)

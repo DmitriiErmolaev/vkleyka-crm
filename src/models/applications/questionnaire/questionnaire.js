@@ -1,12 +1,12 @@
 import { updateDoc } from "firebase/firestore";
-import { nanoid } from "nanoid";
+import { getArrayWithoutEmptyStrings } from "./type-list-answer";
 
 // const questionnairePath = "questionnary.answers"; // NOTE: для создания справочника путей
 
 export const prepareChanges = (changedFields, newResponse, questionIndex, nestedOptions = {isNested: false}) => {
   if(changedFields.length === 0) {
     // TODO: Добавить поле об обязательности заполнения. Из newResponse наверно.
-    return [{index: questionIndex, newResponse: newResponse}]
+    return [{newResponse: newResponse, index: questionIndex,}]
   }
 
   const changedAnswerIndex = changedFields.findIndex((elem) => {
@@ -14,19 +14,19 @@ export const prepareChanges = (changedFields, newResponse, questionIndex, nested
   })
 
   if(changedAnswerIndex === -1) {
-    return [...changedFields,{index: questionIndex, newResponse: newResponse}];
+    return [...changedFields, {newResponse: newResponse, index: questionIndex,}];
   } else {
-    const copyChangedFields = [...changedFields];
+    const changedFieldsCopy = [...changedFields];
     if(nestedOptions.isNested) {
-      copyChangedFields[changedAnswerIndex].newResponse.answers[nestedOptions.nestedQuestionIndex].answer = newResponse // для вложенных текстовых ответов
+      changedFieldsCopy[changedAnswerIndex].newResponse.answers[nestedOptions.nestedQuestionIndex].answer = newResponse // для вложенных текстовых ответов
     } else {
-      copyChangedFields[changedAnswerIndex].newResponse = newResponse;
+      changedFieldsCopy[changedAnswerIndex].newResponse = newResponse;
     }
-    return copyChangedFields;
+    return changedFieldsCopy;
   }
 }
 
-export const getChangedValue = (answersToUpdate, quesionIndex, nestedOptions) => {
+export const checkChangedValueExists = (answersToUpdate, quesionIndex, nestedOptions) => {
   if(answersToUpdate.length === 0) {
     return false
   }
@@ -44,16 +44,22 @@ export const getChangedValue = (answersToUpdate, quesionIndex, nestedOptions) =>
 }
 
 const createChangedQuestionnaireCopy = (questionnaireOriginal, answersToUpdate) => {
+  
   let copyQuestionnaire = [...questionnaireOriginal];
   answersToUpdate.forEach((question) => {
-    copyQuestionnaire[question.index].response = question.newResponse
+    if(Array.isArray(question.newResponse)) {
+      const arrayWithoutEmptyStrings = getArrayWithoutEmptyStrings(question.newResponse);
+      copyQuestionnaire[question.index].response = arrayWithoutEmptyStrings;
+      return;
+    }
+    copyQuestionnaire[question.index].response = question.newResponse;
   })
   return copyQuestionnaire;
 }
 
 export const updateQuestionnaireAnswers = async (ref, questionnaireOriginal, answersToUpdate) => {
   const copy = createChangedQuestionnaireCopy(questionnaireOriginal, answersToUpdate)
-  await updateDoc(ref,"questionnary.answers", copy )
+  await updateDoc(ref, "questionnary.answers", copy )
 }
 
 export const getQuestionnaireSelectOptions = (options) => {
@@ -65,75 +71,84 @@ export const getQuestionnaireSelectOptions = (options) => {
   })
 }
 
-export const getPassportInfoQuestions = () => {
+export const getPassportFieldsMatrix = () => {
   return [
     {
-      key:nanoid(),
-      questionTitle: "Имя, латиницей",
-      propWithAnswer: "first_name",
+      fieldTitle: "Имя, латиницей",
+      propWithValue: "first_name",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Фамилия, латиницей",
-      propWithAnswer: "last_name",
+      fieldTitle: "Фамилия, латиницей",
+      propWithValue: "last_name",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Дата рождения",
-      propWithAnswer: "date_of_birth",
+      fieldTitle: "Дата рождения",
+      propWithValue: "date_of_birth",
+      valueType:'date',
     },
     {
-      key:nanoid(),
-      questionTitle: "Пол",
-      propWithAnswer: "gender",
+      fieldTitle: "Пол",
+      propWithValue: "gender",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Гражданство",
-      propWithAnswer: "citizenship",
+      fieldTitle: "Гражданство",
+      propWithValue: "citizenship",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Место рождения",
-      propWithAnswer: "place_of_birth",
+      fieldTitle: "Место рождения",
+      propWithValue: "place_of_birth",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Номер паспорта",
-      propWithAnswer: "passport_number",
+      fieldTitle: "Номер паспорта",
+      propWithValue: "passport_number",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Дата выдачи",
-      propWithAnswer: "issue_date",
+      fieldTitle: "Дата выдачи",
+      propWithValue: "issue_date",
+      valueType:'date',
     },
     {
-      key:nanoid(),
-      questionTitle: "Орган, который выдал",
-      propWithAnswer: "issued_by",
+      fieldTitle: "Орган, который выдал",
+      propWithValue: "issued_by",
+      valueType:'string',
     },
     {
-      key:nanoid(),
-      questionTitle: "Действителен до",
-      propWithAnswer: "valid_until",
+      fieldTitle: "Действителен до",
+      propWithValue: "valid_until",
+      valueType:'date',
     },
     {
-      key:nanoid(),
-      questionTitle: "ИИН",
-      propWithAnswer: "IIN",
+      fieldTitle: "ИИН",
+      propWithValue: "IIN",
+      valueType:'string',
     },
+    {
+      fieldTitle: 'Фото паспорта',
+      propWithValue: 'image_url',
+      valueType:'photo',
+    }
   ]
 }
 
-export const getPassportsInfoCollapseItem = (label, extra, children) => {
-  return {
-    key: "personalInfo",
-    label: label,
-    // extra: extra, // TODO: вернуть, когда внедрю редактирование для passportsInfo
-    // style: panelStyle, // NOTE: для стилизации. Пока не убирать
-    children: children,
-  }
+export const getPassportInfoCollapseItem = (label, extra, children) => {
+  // Collapse будет состоять только из 1 элемента. По этому только 1 объект.
+  return [
+    {
+      key: "personalInfo",
+      label: label,
+      extra: extra, // TODO: вернуть, когда внедрю редактирование для passportsInfo
+      children: children,
+    }
+  ]
 }
+
+
 
 export const getCollapseItems = (questionnaireItems) => {
   const pairs = Object.entries(questionnaireItems)
@@ -141,7 +156,6 @@ export const getCollapseItems = (questionnaireItems) => {
     return {
       key: index,
       label: section[0],
-      // style: panelStyle,  // NOTE: для стилизации. Пока не убирать
       children: section[1],
     }
   })

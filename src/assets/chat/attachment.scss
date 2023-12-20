@@ -1,0 +1,33 @@
+.attachment-link {
+  display:block;
+  margin-bottom:5px;
+
+  .attachment-container {
+    display: flex;
+    align-items:center;
+    
+    .attachment-info {
+      overflow: hidden;
+
+      .attachment-info__name {
+        font: 700 14px Inter, sans-serif;
+        margin-bottom:3px;
+      }
+
+      .attachment-info__size {
+        font: italic 14px sans-serif;
+        color: rgba(109, 107, 107, 0.575);
+      }
+    }
+    
+  }
+}
+
+.forbidden {
+  pointer-events: none;
+}
+
+// TODO: может лишнее. Можно повесить маржин только на иконку и все.
+.attachment-container > *:nth-child(n):not(:last-child) {
+  margin-right:5px;
+}

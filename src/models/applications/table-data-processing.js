@@ -1,11 +1,12 @@
-import {where} from "firebase/firestore";
-import { updateDoc,orderBy } from "firebase/firestore";
+import {limit, startAfter, where} from "firebase/firestore";
+import { updateDoc, orderBy } from "firebase/firestore";
 import { addZero } from "../../utils";
 import { getShortYear } from "../../utils";
-import { getDialogueRef } from "../chat/chat-data-processing";
+import { getDialogueSnap } from "../chat/chat-data-processing";
+import { getCountry, getFullCountryName } from "../countries/countries";
 
 // ====== Получают данные для отображение в таблице ======
-export const getApplicationId = (docId) => {
+export const getShortApplicationId = (docId) => {
   let id = docId.slice(0,4).toUpperCase();
   return id
 }
@@ -30,24 +31,28 @@ export const getUserName = (users, uid) => {
   return user.name
 }
 
-export const getFullCountryName = (countries, countryCode) => {
-  const findedCountry = countries.find(country => {
-    return countryCode === country.country_code;
-  })
-  return findedCountry.name_ru
-}
 
-export const getDataForTable = (applications, applicants, countries, chatsCollSnapshot) => {
+
+export const getDataForTable = (applications, countries, chatsCollSnapshot, appsCollSnapshot, dialogueForApplication, setSelectedDialogue, clientsData ) => {
   return applications.reduce((accum, application) => {
+    const country = getCountry(countries, application.country_code);
+    const client = clientsData.find(client => application.UID === client.UID)
     accum.push(
       {
+        accountIsDeleted: !client?.UID,
         key: application.documentID,
-        id: getApplicationId(application.documentID),
+        clientId: application.UID,
+        country: country,
+        appsCollSnapshot: appsCollSnapshot,
+        dialogueForApplication: dialogueForApplication,
+        setSelectedDialogue: setSelectedDialogue,
+        id: getShortApplicationId(application.documentID),
         date: getApplicationCreationDate(application.createdAt),
-        dialogueRef: getDialogueRef(chatsCollSnapshot, application.UID),
-        applicant: `${application.passports[0].first_name} ${application.passports[0].last_name}`,
+        dialogueSnap: getDialogueSnap(chatsCollSnapshot, application.UID),
+        applicant: client?.name || client?.phone || client?.email || client?.UID || 'Аккаут удален',
+        phone: client?.phone,
         status: application.preparedInformation.preparationStatus,
-        country: getFullCountryName(countries, application.country_code),
+        countryFullName: country.name_ru,
         assignedTo: application.preparedInformation.assignedTo,
       }
     )
@@ -55,14 +60,20 @@ export const getDataForTable = (applications, applicants, countries, chatsCollSn
   }, [])
 }
 
-export const getFilters = (country, status, column, authorizedOperator) => {
+export const getFilters = (country, status, column, authorizedUser, appsSearchFilter, pageCount) => { // Новый с пагинацией
   let filters = [
     where('paymentSuccessful', '==', true),
-    orderBy("createdAt", "desc"),
   ];
-  
-  if (authorizedOperator.role === 'operator') {
-    filters.push(where("preparedInformation.assignedTo", "==", authorizedOperator.id));
+
+  if (authorizedUser.role === 'operator') {
+    filters.push(where("preparedInformation.assignedTo", "==", authorizedUser.id));
+  }
+
+  if (appsSearchFilter) {
+    // при добавлении диапазонных ограничителей, если есть так же и упорядочивающие ограничители - первым идет упорядочивание по свойству, по которому стоит диапазонное ограничение. Затем указываются остальные упорядочивающие.
+    filters.push(where('UID', '>=', appsSearchFilter))
+    filters.push(where('UID', '<=', appsSearchFilter + '\uf8ff'))
+    filters.push(orderBy("UID"))
   }
 
   /*=====!!!!!! ФИЛЬТРЫ. НЕ УДАЛЯТЬ!!!!!!! ========*/
@@ -72,11 +83,20 @@ export const getFilters = (country, status, column, authorizedOperator) => {
   // } else {
   //   filters.push(orderBy("date", "desc"))
   // }
+
   if(country.value) {
     filters.push(where("country_code", "==", country.value));
   }
   if((status && status !== "allStatuses") || status === 0) {
     filters.push(where("preparedInformation.preparationStatus", "==", status))
   }
+
+  filters.push(orderBy("createdAt", "desc"))
+
   return filters;
+}
+
+export const resetBeforeDownloadFilteredData = (lastDoc, setLastDoc, setTableData) => {
+  setTableData([])
+  if(lastDoc) setLastDoc(null); // обязательно стираем сохраненный последний документ, если заявки подгружались.
 }

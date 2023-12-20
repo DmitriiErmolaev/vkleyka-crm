@@ -37,16 +37,22 @@ const memoizedCreationDate = () => {
   }
 }
 
-export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
+export const getChatMessages = (messages, uploadingMessageWithAttachments, authorizedUser, allMessages, scrollMode) => {
   // пустой контейнер, который заполнит диалоговое окно, пока нет новых сообщений.
+  // рефакторить в reduce.
   let result = [
     <li key={"invisible-container"} className="invisible-container">
       <div className="invisible-message"></div>
     </li>,
   ];
-
+  if (!messages.length) {
+    return result;
+  }
   const isDateNew = memoizedCreationDate();
-  let unreadMessageExist = false;
+  // let unreadMessageGroupAdded = false;
+  let unreadMessages = []
+  
+  
 
   messages.forEach((message) => {
     const messageCreationDate = getMessageCreationDate(message.time.seconds);
@@ -57,31 +63,59 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
       result.push(
         <DateDivider key={messageCreationDate} date={messageCreationDate} />
       )
-    } 
-    if(message.sendState === 0 && !unreadMessageExist) {
-      result.push(<div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>)
-      unreadMessageExist = true;
     }
+   
     
+
+    if(message.readBy && !message.readBy.includes('operator')) {
+      if(authorizedUser.role === 'admin' || (authorizedUser.role !== 'admin' && scrollMode)) {
+        unreadMessages.push(
+          <Message
+            key={message.id}
+            styleClass={classNameForMessage}
+            message={message}
+            time={messageCreationTime}
+          />
+        )
+      }
+      return;
+    }
+
+    // if(message.readBy && !message.readBy.includes('operator') && !unreadMessageGroupAdded) {
+    //   if(authorizedUser.role === 'admin' || (authorizedUser.role !== 'admin' && scrollMode)) {
+    //     result.push(<div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>)
+    //     unreadMessageGroupAdded = true;
+    //   }
+    // }
+
     result.push(
-      <Message 
-        key={message.time.toDate().getTime()}
-        styleClass={classNameForMessage} 
-        message={message} 
-        time={messageCreationTime} 
+      <Message
+        key={message.id}
+        styleClass={classNameForMessage}
+        message={message}
+        time={messageCreationTime}
       />
     )
   })
+
+  if (unreadMessages.length > 0) {
+    result.push(
+      <div className='unread-messages__container'>
+        <div key="unread-notification" className="unread-notification">Непрочитанные сообщения</div>
+        {unreadMessages}
+      </div>
+    )
+  }
 
   if( uploadingMessageWithAttachments.length > 0 ) {
     uploadingMessageWithAttachments.forEach((message, index) => {
       const messageCreationTime = getMessageCreationTime(new Date(message.time));
       result.push(
-        <Message 
+        <Message
           key={message.time}
           styleClass={"message__content operator"}
-          message={message} 
-          time={messageCreationTime} 
+          message={message}
+          time={messageCreationTime}
           attachmentsIsLoading={true}
         />
       )
@@ -90,15 +124,17 @@ export const getChatMessages = (messages, uploadingMessageWithAttachments) => {
   return result
 }
 
-export const createNewMessageObject = (text, operatorName, attachmentsArray = [], isSttachmentsLoading) => {
+export const createNewMessageObject = (text, authorizedUser, attachmentsArray = [], isSttachmentsLoading) => {
   const time = isSttachmentsLoading ? Date.now() : Timestamp.now(); // для отображения загружающегося сообщения в чате на фронте или сообщения. принятого из firebase.
   return {
+    id: nanoid(),
     attachments: attachmentsArray,
     content: text,
     sendState: 0,
-    sender: operatorName,
+    readBy: [authorizedUser.role,],
+    sender: authorizedUser.name,
+    avatar: authorizedUser.avatar,
     time: time,
     type: "message",
-    key: nanoid(),
   }
 }

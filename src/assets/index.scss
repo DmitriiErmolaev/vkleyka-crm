@@ -3,7 +3,9 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+body {
+  background-color: #F5F5F5;
+}
 li {
   list-style:none;
 }
@@ -22,4 +24,37 @@ a:active, a:hover, a:visited {
   &:active {
     transform:scale(0.85);
   }
+}
+
+.interactive-icons-disabled {
+  transition: none;
+
+  &:hover {
+    cursor:not-allowed;
+  }
+
+  &:active {
+    transform:scale(0.85);
+  }
+}
+// Scroll bar
+::-webkit-scrollbar {
+  width:6px;
+}
+
+::-webkit-scrollbar-track {
+  display:none;
+  width:1px;
+  background-color: #b8d5ff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  width:6px;
+  background-color: #1677ff;
+  border-radius: 10px;
+}
+
+.is-deleted {
+  opacity: 0.3;
 }

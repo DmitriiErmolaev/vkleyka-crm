@@ -1,3 +1,7 @@
+import { updateDocField } from "../data-processing";
+import { getFileRef } from "../firebase";
+import { deleteObject, getDownloadURL } from "firebase/storage";
+
 export const storageDocumentsPath = {
   visaDocuments: "documents"
 }
@@ -9,39 +13,53 @@ export const docKeys = {
   application: "application",
 }
 
-export function getNewFileExtraProps (fileName, uploadingStatus, id, uploadingPercent) {
-  const props = {
-    name: fileName,
-    status: uploadingStatus,
-    uid: id,
-  }
-
-  return uploadingPercent ?  {...props, percent: uploadingPercent,} : props;
+export const getUpdatedExtraFileList = (fileListState, file) => {
+  return [...fileListState, {name: file.name, status: 'uploading', uid: file.uid}]
 }
 
-export const getNewUploadedDocs = (curUploadedDocs, options) => {
-  const {docType, uploadPath, fileName} = options;
+export const getArrayWithUpdatedPropById = (array, objectToUpdateId, propToUpdate, value) => {
+  return array.map((file) => {
+    if (file.uid === objectToUpdateId) {
+      return {...file, [propToUpdate]: value}
+    }
+    return file;
+  })
+}
 
-  if(uploadPath === null) { // при удалении
-    return curUploadedDocs.filter(doc => {
-      return doc.key !== docKeys[docType];
+export const updateUploadPath = (newUploadedFilesInfo, uid, path) => {
+  return newUploadedFilesInfo.map(fileInfo => {
+    if(fileInfo.uid === uid) {
+      return {...fileInfo, link: path};
+    }
+    return fileInfo;
+  })
+}
+
+const removeFromUploadedFilesInfo = (curUploadedDocs, uid) => {
+  return curUploadedDocs.filter(doc => {
+    return doc.uid !== uid;
+  })
+}
+
+export const updateUploadedFilesInfo = async(ref, path, data) => {
+  await updateDocField(ref, path, data)
+}
+
+export const deleteUploadedFile = async (uploadedDocs, uid, applicationRef) => {
+  try {
+    const deletingFileInfo = uploadedDocs.find(docInfo => {
+      return docInfo.uid === uid
     })
+    const storageFileRef = getFileRef(deletingFileInfo.link);
+    await deleteObject(storageFileRef); // удаление файла из storage
+    const removedFromUploadedFilesInfo = removeFromUploadedFilesInfo(uploadedDocs, uid);
+    await updateUploadedFilesInfo(applicationRef, "preparedInformation.documents", removedFromUploadedFilesInfo); // удаление записи об этом файле из firestore
+  } catch (e) {
+    throw e
   }
-  const newDocToUpload = {key: docType, link:uploadPath, name: fileName}
+}
 
-  if(curUploadedDocs.length === 0) { // при первой загрузке документа
-    return [newDocToUpload];
-  }
-
-  const alreadyUploadedDocIndex = curUploadedDocs.findIndex((doc => {
-    return doc.key === docType;
-  }))
-
-  if(alreadyUploadedDocIndex !== -1) {
-    const newUploadedDocs = [...curUploadedDocs];
-    newUploadedDocs[alreadyUploadedDocIndex] = newDocToUpload;
-    return newUploadedDocs
-  } else {
-    return [...curUploadedDocs, newDocToUpload]
-  }
+export const getuploadedFileDownloadURL = async (path) => {
+  const downloadURL = await getDownloadURL(getFileRef(path))
+  return downloadURL
 }
