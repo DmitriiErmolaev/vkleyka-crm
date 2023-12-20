@@ -8,6 +8,8 @@ import { openNotification } from '../../models/notification/notification.js';
 import { updateDocField } from '../../models/data-processing.js';
 import { ApplicationStatus } from '../../models/context.js';
 import { resetBeforeDownloadFilteredData } from '../../models/applications/table-data-processing.js';
+import { runTransaction } from 'firebase/firestore';
+import { firestore } from '../../models/firebase.js';
 
 const OperatorsSelect = ({dialogueSnap, clientApplicationsSnaps, assignedTo=null, transparent=true, disabledProp=false}) => {
   // TODO: убрать null у assignedTo. Видимо я ждал что с БД придет undefined. Сейчас приходит пустая строка либо айди
@@ -27,20 +29,23 @@ const OperatorsSelect = ({dialogueSnap, clientApplicationsSnaps, assignedTo=null
     }
 
     try {
-      // если clientApplicationsRefs = [], значит ненужно, чтобы происходило назначение оператора на анкету, т.к. у него еще нет оплаченной заявки.
-      if (clientApplicationsSnaps.length > 0) {
-        for (const applicationSnap of clientApplicationsSnaps) { // каждую заявку клиента
-          if (applicationSnap.get('preparedInformation.preparationStatus') !== 2) { // если она не завершена
-            if (role === "operator" && clientId === dialogueSnap.get('UID')) navigate("/"); // если роль визовик и
-            await updateDocField(applicationSnap.ref, "preparedInformation.assignedTo", value);
-             // после каждого внесения изменений в бд - происходит ререндер заявки перед следующим внесением изменений. Если открыта заявка на которую я еще пока назначен, то ошибки нет. Когда внесения внесутся в ту заявку, которая сейчас открыта, произойдет ее ререндер и будет ошибка, т.к. на нее  будут неверные где то. 
+      await runTransaction(firestore, async (transaction) => {
+        // если clientApplicationsRefs = [], значит ненужно, чтобы происходило назначение оператора на анкету, т.к. у него еще нет оплаченной заявки.
+        if (clientApplicationsSnaps.length > 0) {
+          for (const applicationSnap of clientApplicationsSnaps) { // каждую заявку клиента
+            if (applicationSnap.get('preparedInformation.preparationStatus') !== 2) { // если она не завершена
+              if (role === "operator" && clientId === dialogueSnap.get('UID')) navigate("/"); // если роль визовик и
+              transaction.update(applicationSnap.ref, "preparedInformation.assignedTo", value);
+               // после каждого внесения изменений в бд - происходит ререндер заявки перед следующим внесением изменений. Если открыта заявка на которую я еще пока назначен, то ошибки нет. Когда внесения внесутся в ту заявку, которая сейчас открыта, произойдет ее ререндер и будет ошибка, т.к. на нее  будут неверные где то. 
+            }
           }
         }
-      }
-      if(!dialogueSnap.get('active')) {
-        await updateDocField(dialogueSnap.ref, "active", true);
-      }
-      await updateDocField(dialogueSnap.ref, "assignedTo", value);
+        if(!dialogueSnap.get('active')) {
+          transaction.update(dialogueSnap.ref, "active", true).update(dialogueSnap.ref, "assignedTo", value)
+          return
+        }
+        transaction.update(dialogueSnap.ref, "assignedTo", value);
+      })
       openNotification(notificationApi, "success", 'operatorChanged');
     } catch(e) {
       console.log(e)

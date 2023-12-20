@@ -43,14 +43,14 @@ const ProfileAvatar = () => {
         size={50}
         src={url}
       />
-      {/* <Upload
+      <Upload
         maxCount={1}
         beforeUpload={handleBeforeUpload}
         onChange={handleChange}
         showUploadList={false}
       >
         <Button type='link'>добавить</Button>
-      </Upload> */}
+      </Upload>
     </div>
   );
 };

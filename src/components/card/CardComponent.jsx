@@ -28,13 +28,6 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
     }
   }, [])
 
-  // useEffect(() => {
-  //   // TODO: сделать загрузку флага до отображения всей карты. 
-  //   getFileUrl(flagRef).then(res => {
-  //     setFlagUrl(res)
-  //   })
-  // },[])
-
   useEffect(() => {
     if(curAppStatus || curAppStatus === 0) {
       setProgressPercent(testStatuses[curAppStatus].progressPercent);
@@ -50,16 +43,16 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
         headStyle={{padding:"42px 27px 0", backgroundColor:"#182A67", font:"500 20px Jost, sans-serif", color:"#fff", borderRadius:"0"}}
         bodyStyle={{padding:"44px 27px 22px", backgroundColor:"#182A67", borderRadius:"0"}}
         title={<CardTitle cardTitle={cardTitle} flagUrl={flagUrl}/>}
-        // extra={<QuestionnaireFillPercentage />} 
+        // extra={<QuestionnaireFillPercentage />}
       >
-        <Progress 
+        <Progress
           percent = {progressPercent}
           strokeLinecap = "square"
           size = {["418px", 41]} // ширина и высота. Ширина складывается из фактической ширина прогресс бара и зарезервированного паддинга под ::after.
           strokeColor = {progressColor}
           trailColor = "#fff"
           style={{
-            marginBottom:"25px", 
+            marginBottom:"25px",
             position:"relative", // позиционируем, чтобы спан прогресс бара, в котором рендерится селектор позиционировался относительно начальных координат прогресс бара
           }}
           format = {() => <SelectComponent data={{ appDocId, currentClientApplications, dialogueSnap, assignedTo}} collectionType="statuses"/>}
@@ -70,4 +63,4 @@ const CardComponent = ({countryFlag, cardTitle, appDocId, assignedTo, appRef, di
   );
 };
 
-export default CardComponent; 
+export default CardComponent;

@@ -37,7 +37,6 @@ const ApplicationForm = ({ clientId }) => {
   const [ chatsCollSnapshot, chatsLoading, chatsError ] = useCollection(getChatQuery());
   const [ country, setCountry ] = useState();
   const [ curApplicationSnap, setCurApplicationSnap ] = useState();
-  console.log(allClientAppsData)
   useEffect(() => {
     // если форма открыта не из чата - получить dialogue и сохранить в ref для дальнейшего удобства.
     if (!dialogueForApplication?.current && chatsCollSnapshot && allClientAppsCollSnapshot && curApplicationSnap) {

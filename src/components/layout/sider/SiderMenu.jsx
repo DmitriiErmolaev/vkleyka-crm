@@ -31,7 +31,7 @@ const SiderMenu = ({handleMenuSelect, chatListOpen}) => {
     }
   }, [chatListOpen, selectedMenuItem])
 
-  const unreadMessagesCount = role === 'admin' && chatsData.reduce((acc, chat) => {
+  const unreadMessagesCount = role === 'admin' && chatsData && chatsData.reduce((acc, chat) => {
     chat.messages.forEach(message => {
       if (message.readBy && !message.readBy.includes('operator')) {
         acc += 1

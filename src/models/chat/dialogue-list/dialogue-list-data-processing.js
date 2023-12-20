@@ -22,7 +22,7 @@ export const getApplicationsBySetOfApplicantIDs = (chatsCollSnapshot, authorized
 
   const constraints = [
     where('paymentSuccessful', '==', true),
-    where('UID', "in", downloadedChatsApplicantIDs), 
+    where('UID', "in", downloadedChatsApplicantIDs),
     orderBy("createdAt", "asc")
   ]
 

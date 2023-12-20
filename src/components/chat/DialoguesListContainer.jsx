@@ -11,7 +11,6 @@ import { useLocation } from 'react-router-dom';
 
 const DialoguesListContainer = ({chatListOpen, handleDrawerClose, selectedDialogue, setSelectedDialogue, setDialogueWindowOpen}) => {
   const dialoguesListContainerRef = useRef(null)
-  const { chatsCollSnapshot, chatsLoading } = useContext(WorkPageContext);
   const location = useLocation()
 
   useLayoutEffect(() => {
@@ -40,26 +39,13 @@ const DialoguesListContainer = ({chatListOpen, handleDrawerClose, selectedDialog
         getContainer={false}
         zIndex={100}
       >
-        {chatsLoading ? (
-          <Spinner />
-          // <div className="loading">
-          //   <div className="loading__spinner">
-          //     <Spin />
-          //   </div>
-          //   <p className="loading__text">
-          //     Загрузка...
-          //   </p>
-          // </div>
-        ) : (
-          <DialoguesList
-            chatsCollSnapshot={chatsCollSnapshot}
-            selectedDialogue={selectedDialogue}
-            setSelectedDialogue={setSelectedDialogue}
-            setDialogueWindowOpen={setDialogueWindowOpen}
-            handleDrawerClose={handleDrawerClose}
-            dialoguesListContainerRef={dialoguesListContainerRef}
-          />
-        )}
+        <DialoguesList
+          selectedDialogue={selectedDialogue}
+          setSelectedDialogue={setSelectedDialogue}
+          setDialogueWindowOpen={setDialogueWindowOpen}
+          handleDrawerClose={handleDrawerClose}
+          dialoguesListContainerRef={dialoguesListContainerRef}
+        />
       </Drawer>
     </div>
   );
