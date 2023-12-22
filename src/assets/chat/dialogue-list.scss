@@ -1,5 +1,9 @@
 .dialogues-list {
   height: calc(100vh - 64px);
+  
+  .dialogues-list__body {
+    padding:5px 0 10px 0;
+  }
 
   .dialogue-list__group {    
     padding:10px;

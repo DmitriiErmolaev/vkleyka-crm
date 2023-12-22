@@ -11,6 +11,7 @@ import ChatActiveStatus from './ChatActiveStatus.jsx';
 import ChatFooter from './ChatFooter.jsx';
 import SelectComponent from '../selectors/SelectComponent.jsx';
 import "../../assets/chat/chat.scss";
+import ChangeOperator from '../application/ChangeOperator.jsx';
 
 const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
 
@@ -136,7 +137,8 @@ const Chat = ({ applicantId, clientApplicationsSnaps, source }) => {
                 Отв-ный:
               </div>
               <div className="operator-name">
-                <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogue.assignedTo, disabledProp:operatorSelectDisabled}}/>
+                <ChangeOperator dialogueSnap={dialogueSnap} clientApplicationsSnaps={clientApplicationsSnaps} assignedTo={dialogue.assignedTo} disabledProp={operatorSelectDisabled}/>
+                {/* <SelectComponent collectionType={"operators"} data={{dialogueSnap, clientApplicationsSnaps, assignedTo:dialogue.assignedTo, disabledProp:operatorSelectDisabled}}/> */}
               </div>
             </div>
           )

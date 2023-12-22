@@ -37,9 +37,11 @@ const Dialogue = ({dialogueWindowOpen, setDialogueWindowOpen, selectedDialogue, 
       style={{position:'relative'}}
     >
       <Drawer
-        bodyStyle={{padding:"0"}}
+        classNames={{
+          body:'dialogue__body'
+        }}
         width={600}
-        rootClassName="dialog"
+        rootClassName="dialogue"
         placement="left"
         title="Чат"
         mask={false}

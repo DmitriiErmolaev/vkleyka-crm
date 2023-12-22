@@ -1,0 +1,19 @@
+.reassign {
+  width:50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin:0 auto;
+
+  .reassign__title {
+    text-align: center;
+    margin-bottom: 5%;
+
+    .reassign__operator-to-be-deleted {
+      font-weight: 600;
+    }
+  }
+  .reassign__select {
+    margin-bottom: 5%;
+  }
+}

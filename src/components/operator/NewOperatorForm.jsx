@@ -1,10 +1,7 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React from 'react';
 import {Form, Input, Button, Layout,  Alert} from "antd";
 import {fieldRules} from "../../models/operator/register-validation.js";
-import { createNewUser } from '../../models/operator/operators-data-processing.js';
-import { ProgramContext} from '../../models/context.js';
-import { AuthErrorCodes } from 'firebase/auth';
-import { openNotification } from '../../models/notification/notification.js';
+
 // const initialFeedbackStatus = {
 //   name: "validating",
 //   surname: "validating",
@@ -15,54 +12,8 @@ import { openNotification } from '../../models/notification/notification.js';
 //   confirm: "validating",
 // }
 
-const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelled}) => {
-  const [errorMessage, setErrorMessage] = useState("Error!")
-  const [form] = Form.useForm();
+const NewOperatorForm = ({buttonLoadingState, errorMessage, errorMessageHidden, handleValuesChange, handleSubmitFail, handleSubmit, form}) => {
   // const [feedBackStatus, setFeedbackStatus] = useState(initialFeedbackStatus) // для управляемой сигнализации валидации поля. Пока не разобрался.
-  const [buttonLoadingState, setButtonLoadingState] = useState(false);
-  const [errorMessageHidden, setErrorMessageHidden] = useState(true);
-  const {admins, notificationApi} = useContext(ProgramContext)
-
-  function resetFormFileds() {
-    form.resetFields();
-  }
-
-  useEffect(()=> {
-    if(isFormCancelled) {
-      resetFormFileds();
-      setErrorMessageHidden(true)
-      setIsFormCancelled(false);
-    }
-  },[])
-
-  const handleSubmit = async (values) => {
-    try {
-      setButtonLoadingState(true);
-      await createNewUser(values, admins)
-      setButtonLoadingState(false);
-      openNotification(notificationApi, "success", "createNewOperator")
-      closeRegisterModal();
-      resetFormFileds();
-    } catch(e) {
-      console.log(e)
-      if(e.code === AuthErrorCodes.EMAIL_EXISTS) {
-        setErrorMessage('Введенный email уже зарегистрирован!')
-      } else {
-        setErrorMessage(e.message)
-      }
-      setErrorMessageHidden(false)
-      setButtonLoadingState(false);
-    }
-  }
-
-  const handleSubmitFail = (_values, _errorFields, _outOfDate) => {
-    setErrorMessage("Введены неверные данные. Пожалуйста проверьте корректность данных!")
-    setErrorMessageHidden(false)
-  }
-
-  const handleValuesChange = () => {
-    setErrorMessageHidden(true)
-  }
 
   return (
     <Layout style={{margin:"15px", backgroundColor:"inherit"}}>
@@ -93,7 +44,7 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
-            size="large" 
+            size="large"
             placeholder="Фамилия"
             allowClear="true"
           >
@@ -106,11 +57,11 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           rules={fieldRules.tel}
         >
           <Input
-            size="large" 
+            size="large"
             placeholder="Номер телефона с кодом страны (+123456789)"
             allowClear="true"
-          >
-          </Input>
+            autoComplete='off'
+          />
         </Form.Item>
         <Form.Item
           hasFeedback="true"
@@ -119,35 +70,36 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
           validateTrigger={["onChange", "onSubmit"]}
         >
           <Input
-            size="large" 
-            allowClear  
+            size="large"
+            allowClear
             placeholder="e-mail"
+            autoComplete="off"
           />
         </Form.Item>
-        <Form.Item 
+        <Form.Item
           hasFeedback="true"
           name="pass"
           validateTrigger={["onChange", "onBlur"]}
           rules={fieldRules.password}
         >
-          <Input.Password size="large"  placeholder="password"/>
+          <Input.Password size="large"  placeholder="password" autoComplete='off'/>
         </Form.Item>
-        <Form.Item 
+        <Form.Item
           hasFeedback="true"
           name="confirm"
           dependencies={["pass"]}
           rules={fieldRules.passConfirm}
           validateTrigger={["onChange", "onSubmit"]}
         >
-          <Input.Password size="large"  placeholder="Повторите пароль"/>
+          <Input.Password size="large"  placeholder="Повторите пароль" autoComplete='off'/>
         </Form.Item>
         <Form.Item
           wrapperCol={{offset:8}}
         >
-          <Button 
-            type="primary" 
-            size="large" 
-            htmlType="submit" 
+          <Button
+            type="primary"
+            size="large"
+            htmlType="submit"
             loading={buttonLoadingState}
           >
             Создать аккаунт
@@ -156,11 +108,11 @@ const NewOperatorForm = ({closeRegisterModal, isFormCancelled, setIsFormCancelle
         <Form.Item
           hidden={errorMessageHidden}
         >
-          <Alert 
-            type="error" 
+          <Alert
+            type="error"
             message={errorMessage}
-            showIcon 
-          /> 
+            showIcon
+          />
         </Form.Item>
       </Form>
     </Layout>

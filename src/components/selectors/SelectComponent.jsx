@@ -9,9 +9,9 @@ const SelectComponent = ({data, collectionType}) => {
   if (collectionType === 'statuses') {
     select = <StatusesSelect curStatus={data.curAppStatus} appDocId={data.appDocId} currentClientApplications={data.currentClientApplications} dialogueSnap={data.dialogueSnap} assignedTo={data.assignedTo}/>
   }
-  if (collectionType === 'operators') {
-    select = <OperatorsSelect dialogueSnap={data.dialogueSnap} clientApplicationsSnaps={data.clientApplicationsSnaps} assignedTo={data.assignedTo} transparent={data.transparent} disabledProp={data.disabledProp}/>
-  }
+  // if (collectionType === 'operators') {
+  //   select = <OperatorsSelect dialogueSnap={data.dialogueSnap} clientApplicationsSnaps={data.clientApplicationsSnaps} assignedTo={data.assignedTo} transparent={data.transparent} disabledProp={data.disabledProp}/>
+  // }
   if (collectionType === 'countries') {
     select = <CountrySelect setSelectedCountry={data.setSelectedCountry} selectedCountry={data.selectedCountry} countries={data.countries}/>
   }

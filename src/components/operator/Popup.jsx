@@ -1,28 +1,30 @@
-import React, {useState} from 'react';
+import React, {useContext} from 'react';
 import NewOperatorForm from "./NewOperatorForm";
-import {Modal} from "antd";
+import { Modal } from "antd";
+import DeleteOperator from './DeleteOperator';
+import { OperatorsContext } from '../../models/context';
+import NewOperator from './NewOperator';
 
-const Popup = ({isModalOpened, closeRegisterModal}) => {
-  const [isFormCancelled, setIsFormCancelled] = useState(false);
+const Popup = () => {
+  const { actionType,popupIsOpened, setPopupIsOpened} = useContext(OperatorsContext);
 
-  const cancelForm = () => {
-    closeRegisterModal()
-    setIsFormCancelled(true);
+  const closePopup = () => {
+    setPopupIsOpened(false);
   }
 
   return (
-    <Modal 
-      open={isModalOpened} 
-      onCancel={cancelForm} 
+    <Modal
+      styles={{
+        mask: {backgroundColor:"#0000009C"},
+      }}
+      open={popupIsOpened}
+      onCancel={closePopup}
       footer={null}
-      maskStyle={{backgroundColor:"#0000009C"}}
       width="38%"
+      destroyOnClose={true}
     >
-      <NewOperatorForm 
-        closeRegisterModal={closeRegisterModal} 
-        isFormCancelled={isFormCancelled} 
-        setIsFormCancelled={setIsFormCancelled}
-      />
+      {actionType === 'createOperator' && <NewOperator/>}
+      {actionType === 'deleteOperator' && <DeleteOperator />}
     </Modal>
   );
 };

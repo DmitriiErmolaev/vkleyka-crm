@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import SelectComponent from '../selectors/SelectComponent';
 import { updateDocField } from '../../models/data-processing';
 import { ProgramContext } from '../../models/context';
+import ChangeOperator from '../application/ChangeOperator';
 
 const ChatAction = ({dialogue, dialogueSnap, clientApplicationsSnaps=[]}) => {
   const {authorizedUser, role} = useContext(ProgramContext);
@@ -22,26 +23,38 @@ const ChatAction = ({dialogue, dialogueSnap, clientApplicationsSnaps=[]}) => {
   }
 
   return role === 'admin' ? (
-    <SelectComponent
-      collectionType={"operators"}
-      data={{
-        clientApplicationsSnaps,
-        dialogueSnap,
-        assignedTo: dialogue.assignedTo,
-        transparent: false
-      }}
+    <ChangeOperator 
+      dialogueSnap={dialogueSnap}
+      assignedTo={dialogue.assignedTo}
+      clientApplicationsSnaps={clientApplicationsSnaps}
+      transparent={false}
     />
+    // <SelectComponent
+    //   collectionType={"operators"}
+    //   data={{
+    //     clientApplicationsSnaps,
+    //     dialogueSnap,
+    //     assignedTo: dialogue.assignedTo,
+    //     transparent: false
+    //   }}
+    // />
   ) : (
     dialogue.assignedTo ? (
-      <SelectComponent
-        collectionType={"operators"}
-        data={{
-          clientApplicationsSnaps,
-          dialogueSnap,
-          assignedTo:dialogue.assignedTo,
-          transparent:false
-        }}
+      <ChangeOperator 
+        dialogueSnap={dialogueSnap}
+        assignedTo={dialogue.assignedTo}
+        clientApplicationsSnaps={clientApplicationsSnaps}
+        transparent={false}
       />
+      // <SelectComponent
+      //   collectionType={"operators"}
+      //   data={{
+      //     clientApplicationsSnaps,
+      //     dialogueSnap,
+      //     assignedTo:dialogue.assignedTo,
+      //     transparent:false
+      //   }}
+      // />
     ) : (
       <Button
         type={"primary"}

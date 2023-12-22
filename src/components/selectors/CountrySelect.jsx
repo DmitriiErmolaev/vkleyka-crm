@@ -30,9 +30,10 @@ const CountrySelect = ({setSelectedCountry, selectedCountry, countries}) => {
     <Select
       showSearch
       filterOption = {filterOption}
-      allowClear="true"
       placeholder="Выберите страну"
-      clearIcon={<CloseCircleOutlined style={{color:"red"}}/>}
+      allowClear={{
+        clearIcon: <CloseCircleOutlined style={{color:"red"}}/>
+      }}
       onChange={handleSelect}
       value={selectedCountry.label}
       options={options}

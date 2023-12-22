@@ -29,7 +29,9 @@ const DialoguesListContainer = ({chatListOpen, handleDrawerClose, selectedDialog
       style={{position:'relative'}}
     >
       <Drawer
-        bodyStyle={{padding:"5px 0 10px 0"}}
+        classNames={{
+          body:'dialogues-list__body'
+        }}
         rootClassName="dialogues-list"
         placement="left"
         title={<DialogueSearch />}

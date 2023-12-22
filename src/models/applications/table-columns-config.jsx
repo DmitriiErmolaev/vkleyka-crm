@@ -1,9 +1,9 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Tag} from "antd";
-import SelectComponent from "../../components/selectors/SelectComponent";
 import {GLOBAL_ROLES, roleBasedContent} from "../role-based-rules";
 import { testStatuses } from "../status/status";
+import ChangeOperator from "../../components/application/ChangeOperator";
 
 const admin = GLOBAL_ROLES.admin;
 const all = "all";
@@ -106,22 +106,27 @@ const viser_object = {
         }
         return acc;
       }, [])
-      const operatorSelectDisabled = record.status
       return (
-        <SelectComponent
-          collectionType={"operators"}
-          data={{
-            assignedTo,
-            dialogueSnap: record.dialogueSnap,
-            clientApplicationsSnaps,
-            disabledProp: record.status === 2 ? true : false,
-          }}
+        <ChangeOperator 
+          assignedTo={assignedTo}
+          dialogueSnap={record.dialogueSnap}
+          clientApplicationsSnaps={clientApplicationsSnaps}
+          disabledProp={record.status === 2 ? true : false}
         />
+        // <SelectComponent
+        //   collectionType={"operators"}
+        //   data={{
+        //     assignedTo,
+        //     dialogueSnap: record.dialogueSnap,
+        //     clientApplicationsSnaps,
+        //     disabledProp: record.status === 2 ? true : false,
+        //   }}
+        // />
       )
     }
   }
 }
-// массив общий для всех колонок, т.к. важен порядок в их отображении 
+// массив общий для всех колонок, т.к. важен порядок в их отображении
 const allObjects = [
   id_object,
   date_object,

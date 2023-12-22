@@ -1,6 +1,7 @@
-import {firestore} from "../firebase";
-import {doc} from "firebase/firestore";
+import { firestore } from "../firebase";
+import { collection, doc, query, where } from "firebase/firestore";
 import { GLOBAL_ROLES } from "../role-based-rules";
+import { chatPaths } from "../chat/chat-data-processing";
 
 export const adminsPath = {
   admins: "admins/all-admins", // массив всех админов содержит и админов и оперторов(визовиков)
@@ -16,6 +17,14 @@ export const operatorOptionMatrix = {
 
 export const getAdminsRef = () => {
   return doc(firestore, adminsPath.admins);
+}
+
+export const getDeletingOperatorAppsQuery = (id) => {
+  return query(collection(firestore, 'applications'), where('preparedInformation.assignedTo', '==', id), where('paymentSuccessful', '==', true));
+}
+
+export const getDeletingOperatorChatQuery = (id) => {
+  return query(collection(firestore, chatPaths.chatCollection), where('assignedTo', '==', id));
 }
 
 export const getOperatorOptions = (data) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Select } from 'antd';
 import SelectComponent from '../selectors/SelectComponent';
+import ChangeOperator from '../application/ChangeOperator';
 import '../../assets/application-info-card-footer.scss';
 import { getApplicationsSwitcherOptions } from '../../models/applications/applications-switcher';
 const {Title} = Typography;
@@ -28,7 +29,13 @@ const ApplicationInfoCardFooter = ({assignedTo, dialogueSnap, currentClientAppli
             Отв-ный
           </Title>
         </Typography>
-        <SelectComponent data={{clientApplicationsSnaps: currentClientApplications, assignedTo, dialogueSnap, transparent: false}} collectionType="operators"/>
+        <ChangeOperator
+          dialogueSnap={dialogueSnap}
+          assignedTo={assignedTo}
+          clientApplicationsSnaps={currentClientApplications}
+          transparent={false}
+        />
+        {/* <SelectComponent data={{clientApplicationsSnaps: currentClientApplications, assignedTo, dialogueSnap, transparent: false}} collectionType="operators"/> */}
       </div>
       <div className="aplication-info-card__application-switcher">
         <Typography >

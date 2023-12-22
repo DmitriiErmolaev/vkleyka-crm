@@ -1,8 +1,7 @@
-import {collection, orderBy, query, where} from "firebase/firestore";
+import {collection, query, where} from "firebase/firestore";
 import {firestore} from "../firebase.js";
 import { updateDocField } from "../data-processing.js";
 import { createNewMessageObject } from "./message.js";
-import { findOperatorName } from "../operator/operators-data-processing.js";
 
 export const chatPaths = {
   chatCollection: 'vkleyka_chat',
@@ -47,10 +46,6 @@ export const getChatsQueryForDialoguesList = (authorizedUser, searchFilter) => {
 // ищет документ в коллекции, в котором поле UID содержит искомый айди юзера.
 export const getChatQueryForApplication = (applicantId) => {
     return query(getChatsCollectionRef(), where("UID", "==", applicantId))
-}
-
-export const getAssignedOperator = (admins, operatorId) => {
-  return operatorId ? findOperatorName(admins, operatorId) : 'Не назначен';
 }
 
 /**

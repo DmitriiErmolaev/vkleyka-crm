@@ -1,7 +1,8 @@
-import DeleteOperator from "../../components/operator/DeleteOperator";
-const renderTrashCan = (_text, record, _index) => {
-  return <DeleteOperator id={record.id} />
-} 
+import DeleteOperatorButtonContainer from '../../components/operator/DeleteOperatorButtonContainer';
+
+const renderDeleteOperator = (_text, record, _index) => {
+  return <DeleteOperatorButtonContainer id={record.id} name={record.name} />
+}
 
 export const columns = [
   {
@@ -36,6 +37,6 @@ export const columns = [
   },
   {
     key: "delete",
-    render: renderTrashCan,
+    render: renderDeleteOperator,
   },
 ]
