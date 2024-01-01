@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Layout, Menu, Button, ConfigProvider } from "antd";
 import { signOut } from "firebase/auth";
-import { auth } from "../../../models/firebase";
+import { auth } from "../../../firebase/firebase";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import HeadSearch from "./HeadSearch";
 import '../../../assets/header/head.scss';

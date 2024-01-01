@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Space, Alert } from "antd";
-import { fieldRules } from "../../models/operator/register-validation";
+import { fieldRules } from "../../models/auth/auth-validation-rules";
 
 const AuthForm = ({onFinishInternal, authError, setAuthError, signInLoading}) => {
   const errorIsHidden = authError ? false : true;

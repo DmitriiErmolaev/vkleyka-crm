@@ -1,4 +1,5 @@
-import { getShortApplicationId, getApplicationCreationDate } from "./table-data-processing";
+import { getShortApplicationId } from "../../utils/getShortApplicationId";
+import { getApplicationCreationDate } from "../../utils/getApplicationCreationDate";
 
 export const getApplicationsSwitcherOptions = (clientApplicationsSnapshots) => {
   return clientApplicationsSnapshots.map(appSnap => {

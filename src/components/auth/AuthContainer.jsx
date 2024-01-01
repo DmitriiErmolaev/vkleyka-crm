@@ -1,7 +1,7 @@
 import React from 'react';
 import Auth from './Auth';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../models/firebase';
+import { auth } from '../../firebase/firebase';
 
 const contentInsideLayoutStyle = {
   // flexDirection:"row",

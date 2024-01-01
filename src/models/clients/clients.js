@@ -1,5 +1,5 @@
 import {collection, query} from "firebase/firestore";
-import {firestore} from "../firebase.js";
+import { firestore } from "../../firebase/firebase";
 
 export const clientsPath = {
   clients: "users",

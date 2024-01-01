@@ -2,8 +2,9 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {Tag} from "antd";
 import {GLOBAL_ROLES, roleBasedContent} from "../role-based-rules";
-import { testStatuses } from "../status/status";
+import { testStatuses } from "../../helpers/app-status";
 import ChangeOperator from "../../components/application/ChangeOperator";
+import { getAllFieldsFromDocSnapshot } from "../../helpers/getAllFieldsFromDocSnapshot";
 
 const admin = GLOBAL_ROLES.admin;
 const all = "all";
@@ -20,13 +21,15 @@ const id_object = {
     key: 'id',
     align: "center",
     render: (text, record, _) => {
+      if (record.dialogueSnap === undefined) console.log(record.id) //TODO: удалить
+      
       return (
         <Link
           to={`/application/${record.clientId}/${record.key}`}
           style={{ color:"#0EA5E9", fontWeight:"800" }}
-          state={{ savedCountry: record.country, dialogue: record.dialogueSnap.data() }}
+          state={{ savedCountry: record.country, dialogue: getAllFieldsFromDocSnapshot(record.dialogueSnap)}}
           onClick={() => {
-            record.dialogueForApplication.current = record.dialogueSnap.data();
+            record.dialogueForApplication.current = getAllFieldsFromDocSnapshot(record.dialogueSnap);
             record.setSelectedDialogue({dialogue: record.dialogueForApplication.current});
           }}
         >

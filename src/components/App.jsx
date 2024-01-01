@@ -1,30 +1,37 @@
-import React from "react"
+import React, { useRef } from "react"
 import {useAuthState} from "react-firebase-hooks/auth";
-import {useDocument, useDocumentData} from "react-firebase-hooks/firestore";
+import {useDocumentData} from "react-firebase-hooks/firestore";
 import {Routes, Route, Navigate} from "react-router-dom";
 import {Spin, notification} from 'antd';
 import EntryPage from "../pages/EntryPage"
 import WorkPage from "../pages/WorkPage"
-import AuthForm from "./auth/AuthForm";
-import AllApplications from "./application/AllApplications";
-import ApplicationForm from "./application/ApplicationForm";
-import ApplicationContainer from "./application/ApplicationContainer";
-import Operators from "./operator/Operators";
+import ApplicationContainer from "../pages/ApplicationWorkArea/components/ApplicationContainer.jsx";
 import Error from "./error/Error";
-import {auth} from "../models/firebase";
+import { auth } from "../firebase/firebase.js";
 import { ProgramContext } from "../models/context.js"
-import { getAdminsRef } from "../models/operator/operators.js";
-import { getSingleFieldFromDocSnapshot } from "../models/data-processing";
+import { getAdminsRef } from "../firebase/admins/getAdminsRef.js";
 import { GLOBAL_ROLES } from "../models/role-based-rules";
 import { getAuthorizedOperator } from "../models/operator/operators-data-processing";
-import Profile from "./profile/Profile";
 import NotificationsBoard from "./notifications/NotificationsBoard";
 import AuthContainer from "./auth/AuthContainer.jsx";
+import Applications from "../modules/Applications/components/Applications.jsx";
+import ProfilePage from "../pages/Profile/components/ProfilePage.jsx";
+import AccountsManager from "../pages/AccountsManager/components/AccountsManager.jsx";
+import { Timestamp } from "firebase/firestore";
+import ApplicationWorkArea from "../pages/ApplicationWorkArea/components/ApplicationWorkArea.jsx";
 
 const ADMINS_REF = getAdminsRef();
 
+const notificationsConfigGlobal = {
+  closeIcon: true,
+  placement: 'topRight',
+  stack: {
+    threshold: 3,
+  },
+}
+
 const RoutesComponent = () => {
-  const [api, contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification(notificationsConfigGlobal);
   const [user, loading, error] = useAuthState(auth);
   const [adminsData, adminsLoading, adminsError, adminsDocSnapshot] = useDocumentData(ADMINS_REF)
 
@@ -59,14 +66,14 @@ const RoutesComponent = () => {
 
   if(role === GLOBAL_ROLES.operator) {
     return  (
-      <ProgramContext.Provider value = {{user, authorizedUser, role, admins: adminsData.admins, notificationApi:api}}>
+      <ProgramContext.Provider value = {{user, authorizedUser, role, admins: adminsData.admins, notificationAPI:api}}>
         {contextHolder}
         <Routes>
           <Route path="/" element={ <WorkPage /> }>
-            <Route index element={ <AllApplications/> }/>
-            <Route path="user-profile" element={< Profile />}/>
+            <Route index element={ <Applications/> }/>
+            <Route path="user-profile" element={< ProfilePage />}/>
             <Route path="notifications" element={< NotificationsBoard />}/>
-            <Route path="application/:clientId/:appId" element={< ApplicationContainer />}/>
+            <Route path="application/:clientId/:appId" element={< ApplicationWorkArea />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
         </Routes>
@@ -76,15 +83,15 @@ const RoutesComponent = () => {
 
   if(role === GLOBAL_ROLES.admin) {
     return  (
-      <ProgramContext.Provider value = {{user, authorizedUser, role, admins: adminsData.admins, notificationApi:api}}>
+      <ProgramContext.Provider value = {{user, authorizedUser, role, admins: adminsData.admins, notificationAPI:api}}>
         {contextHolder}
         <Routes>
           <Route path="/" element={<WorkPage />}>
-            <Route index element={< AllApplications />}/>
-            <Route path="users-manager" element={<Operators/>}/>
-            <Route path="user-profile" element={<Profile />}/>
+            <Route index element={< Applications />}/>
+            <Route path="users-manager" element={<AccountsManager/>}/>
+            <Route path="user-profile" element={<ProfilePage />}/>
             <Route path="notifications" element={<NotificationsBoard />}/>
-            <Route path="application/:clientId/:appId" element={<ApplicationContainer />}/>
+            <Route path="application/:clientId/:appId" element={<ApplicationWorkArea />}/>
           </Route>
           <Route path="*" element={<Navigate to="/" replace={true}/>}/>
         </Routes>

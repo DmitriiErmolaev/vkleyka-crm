@@ -1,18 +1,18 @@
 import React, {useContext, useEffect} from 'react';
 import { Select } from 'antd';
-import { testStatuses } from '../../models/status/status';
-import { getStatusesSelectOptions } from '../../models/status/status';
-import { updateDocField } from '../../models/data-processing';
-import { getAppRefById } from '../../models/applications/applications';
+import { testStatuses } from '../../helpers/app-status.js';
+import { getStatusesSelectOptions } from '../../modules/ApplicationToolBar/helpers/getStatusesSelectOptions.js';
+import updateDocField  from '../../firebase/updateDocField.js';
+import { getAppRefById } from '../../firebase/applications/getAppRefById.js';
 import { openNotification } from '../../models/notification/notification.js';
 import { ApplicationStatus, ProgramContext } from '../../models/context.js';
 import { Transaction, collection, query, runTransaction, serverTimestamp, where } from 'firebase/firestore';
-import { firestore } from '../../models/firebase.js';
+import { firestore } from '../../firebase/firebase.js';
 import { getShortApplicationId } from '../../models/applications/table-data-processing.js';
+import showNotification from '../../modules/NotificationService/helpers/showNotification.js';
 
 const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assignedTo}) => {
-  
-  const {notificationApi} = useContext(ProgramContext)
+  const {notificationAPI} = useContext(ProgramContext)
   const {curAppStatus} = useContext(ApplicationStatus); // если рендерится из ApplicationForm - получает статус заявки.
 
   const unFinishedAppsCount = currentClientApplications.reduce((acc, appSnap) => {
@@ -42,10 +42,14 @@ const StatusesSelect = ({appDocId, currentClientApplications, dialogueSnap, assi
           transaction.update(dialogueSnap.ref, 'active',  true).update(dialogueSnap.ref, 'assignedTo', assignedTo)
         })
       }
-      openNotification(notificationApi, "success", 'statusChanged')
+      showNotification(notificationAPI, 'process', {processName: 'statusChanged', status: 'success',})
+
+      // openNotification(notificationAPI, "success", 'statusChanged')
     } catch (e) {
       console.log(e)
-      openNotification(notificationApi, "error", 'statusChanged')
+      showNotification(notificationAPI, 'process', {processName: 'statusChanged', status: 'error',})
+
+      // openNotification(notificationAPI, "error", 'statusChanged')
     }
   }
 

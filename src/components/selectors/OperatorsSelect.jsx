@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import { Select } from "antd";
 import { ProgramContext } from '../../models/context.js';
-import { getOperatorOptions } from '../../models/operator/operators.js';
+import { getOperatorOptions } from '../../modules/Accounts/helpers/getOperatorOptions.js';
 
 const  OperatorsSelect = ({changeOperatorIntern, transparent, curOperator, selectIsDisabled, showSelected=false}) => {
   const { admins } = useContext(ProgramContext)

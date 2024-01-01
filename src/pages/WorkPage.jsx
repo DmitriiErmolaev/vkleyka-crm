@@ -3,7 +3,6 @@ import {ConfigProvider, Layout} from "antd";
 import {Outlet} from "react-router-dom";
 import Head from "../components/layout/head/Head";
 import Aside from "../components/layout/sider/Aside";
-import GlobalChat from "../components/chat/GlobalChat";
 import '../assets/workpage.scss';
 import '../assets/notification/notification.scss';
 import { useCollection, useCollectionData, useCollectionDataOnce } from "react-firebase-hooks/firestore";
@@ -11,8 +10,11 @@ import { getClientsQuery } from "../models/clients/clients";
 import Error from "../components/error/Error";
 import { ProgramContext, WorkPageContext } from "../models/context";
 import { getChatsQueryForDialoguesList } from "../models/chat/chat-data-processing";
-import UnreadMessageNotificationContextHolder from "../components/UnreadMessageNotificationContextHolder";
 import GlobalDataDownload from "../components/GlobalDataDownload";
+import Messenger from "../modules/Messenger/components/Messenger";
+import NewApplicationNotificationService from "../modules/NotificationService/components/NewApplicationNotificationService";
+import { Timestamp } from "firebase/firestore";
+import UnreadMessagesNotificationSystem from "../modules/NotificationService/components/UnreadMessagesNotificationSystem";
 const {Content} = Layout;
 
 const CLIENTS_QUERY = getClientsQuery();
@@ -30,25 +32,28 @@ const WorkPage = () => {
   const contentRef = useRef(null);
   const [ clientsData, clientsLoading, clientsError, clientsCollSnapshot ] = useCollectionData(CLIENTS_QUERY);
   const [ chatsData, chatsLoading, chatsError, chatsCollSnapshot ] = useCollectionData(getChatsQueryForDialoguesList(authorizedUser, chatsSearchFilter));
+  const [ newApplciationsWillShow, setNewApplicationsWillShow ] = useState([]);
+  const loginTime = useRef(Timestamp.now());
 
-  useEffect(() => {
-    if(!chatsLoading) {
-      if (role === 'admin') return;
-      // cохраняем в стейт те сообщения, которые не были прочитаны, пока визовик был оффлайн и новые непрочитанные, которые визовик еще не прочитал.
-      // чтобы при получении новых сообщений, текущие непрочитанные не показывались повторно.
-      setNotificationsWillBeNotShown(chatsData.reduce((acc, dialogue) => {
-        const dialogIsOpened = dialogue.UID === selectedDialogue?.dialogue.UID;
-        if(dialogIsOpened && !scrollMode) return acc;
-        dialogue.messages.forEach(message => {
-          if(message.readBy && !message.readBy.includes('operator')) { // если в массиве нет 'operator' значит сообщение отправил не визовик и он его не прочитал.
-            // сохраняем message, на случай если в будующем нужно будет повторно показать непрочитанное оповещение
-            acc.push({id: message.id, message})
-          }
-        })
-        return acc;
-      }, []))
-    }
-  },[chatsData, chatsLoading, authorizedUser.name, scrollMode, selectedDialogue?.dialogue.UID, role ])
+
+  // useEffect(() => {
+  //   if(!chatsLoading) {
+  //     if (role === 'admin') return;
+  //     // cохраняем в стейт те сообщения, которые не были прочитаны, пока визовик был оффлайн и новые непрочитанные, которые визовик еще не прочитал.
+  //     // чтобы при получении новых сообщений, текущие непрочитанные не показывались повторно.
+  //     setNotificationsWillBeNotShown(chatsData.reduce((acc, dialogue) => {
+  //       const dialogIsOpened = dialogue.UID === selectedDialogue?.dialogue.UID;
+  //       if(dialogIsOpened && !scrollMode) return acc;
+  //       dialogue.messages.forEach(message => {
+  //         if(message.readBy && !message.readBy.includes('operator')) { // если в массиве нет 'operator' значит сообщение отправил не визовик и он его не прочитал.
+  //           // сохраняем message, на случай если в будующем нужно будет повторно показать непрочитанное оповещение
+  //           acc.push({id: message.id, message})
+  //         }
+  //       })
+  //       return acc;
+  //     }, []))
+  //   }
+  // },[chatsData, chatsLoading, authorizedUser.name, scrollMode, selectedDialogue?.dialogue.UID, role ])
 
   if(clientsLoading) {
     return
@@ -65,8 +70,9 @@ const WorkPage = () => {
   }
 
   return (
-    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsData, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, selectedDialogue, setSelectedDialogue, dialogueForApplication  }}>
-      {(!chatsLoading && notificationsWillBeNotShown && role === 'operator') ? <UnreadMessageNotificationContextHolder chatsData={chatsData} notificationsWillBeNotShown={notificationsWillBeNotShown} selectedDialogue={selectedDialogue}/> : null}
+    <WorkPageContext.Provider value={{clientsData, chatsCollSnapshot, chatsData, chatsLoading, chatsSearchFilter, setChatsSearchFilter, appsSearch, setAppsSearch, unreadMessagesArray: notificationsWillBeNotShown, pageCount, setPageCount, scrollMode, setScrollMode, selectedDialogue, setSelectedDialogue, dialogueForApplication, loginTime: loginTime.current  }}>
+      {role === 'operator' && <UnreadMessagesNotificationSystem chatsData={chatsData} />}
+      <NewApplicationNotificationService newApplciationsWillShow={newApplciationsWillShow} setNewApplicationsWillShow={setNewApplicationsWillShow}/>
       <ConfigProvider
         theme={{
           token: {
@@ -83,7 +89,7 @@ const WorkPage = () => {
                 ref={contentRef}
                 className="content"
               >
-                <GlobalChat
+                <Messenger
                   chatListOpen={chatListOpen}
                   setChatListOpen={setChatListOpen}
                   selectedDialogue={selectedDialogue}
